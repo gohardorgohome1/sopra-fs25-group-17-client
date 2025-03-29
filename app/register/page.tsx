@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"; // use NextJS router for navigation
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Card } from "antd";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
 
@@ -48,13 +48,47 @@ const Register: React.FC = () => {
         }
       }
 
-      // Navigate to the user overview
-      router.push("/users");
+      // Navigate to the dashboard after successfull registration
+      router.push("/dashboard");
       
     };
   
     return (
-      <div className="register-container">
+      <div
+        className="register-container"
+        style={{
+          position: "relative",
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <img
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: 1
+            }}
+          src="/background1.png"
+        />
+        <Card
+        className="dashboard-container"
+        style={{
+          zIndex: 1, 
+          padding: "20px",
+          height: "500px",
+          width: "762px",
+          background: 'black',
+          borderRadius: 98,
+          opacity: 0.65
+        }}
+      >
         <Form
           form={form}
           name="register"
@@ -70,13 +104,7 @@ const Register: React.FC = () => {
           >
             <Input placeholder="Enter a username" />
           </Form.Item>
-          <Form.Item
-          name="name"
-          label="name"
-          rules={[{ required: false, message: "optional" }]}
-        >
-          <Input placeholder="optional" />
-        </Form.Item>
+
           <Form.Item
             name="password"
             label="Password"
@@ -84,12 +112,22 @@ const Register: React.FC = () => {
           >
             <Input.Password placeholder="Create password" />
           </Form.Item>
+
           <Form.Item>
             <Button type="primary" htmlType="submit" className="register-button">
               Register
             </Button>
+
+            <Button
+              onClick={() => router.push("/login")}
+              type="primary"
+              htmlType="button"
+            >
+              Log in
+              </Button>
           </Form.Item>
         </Form>
+        </Card>
       </div>
     );
   };
