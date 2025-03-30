@@ -68,7 +68,8 @@ const Register: React.FC = () => {
         <img // Title image: "Exoplanet Hunting Platform"
           style={{
             width: "80vw",
-            height: "14vh"
+            height: "14vh",
+            marginTop: "50px" // determines distance to the top of the window
             }}
           src="/title.png" // image under /public/title.png
         />
@@ -76,7 +77,8 @@ const Register: React.FC = () => {
         <Card // Card for registration
         className="dashboard-container"
         style={{
-          padding: "20px", // position
+          padding: "20px", // position & size
+          paddingTop: "80px", // adjust to center vertically
           height: "500px",
           width: "762px",
 
@@ -95,6 +97,8 @@ const Register: React.FC = () => {
           variant="outlined"
           onFinish={handleRegister}
           layout="horizontal" // Label to the left by default
+          colon={false} // no colon between label and input field
+          requiredMark={false} // no star before label
         >
           <Form.Item // Input username field & Label
             name="username"
@@ -103,13 +107,15 @@ const Register: React.FC = () => {
                 width: 317, // size
                 height: 49,
 
-                textAlign: 'center', // font & text related
+                textAlign: 'end', // font & text related
                 background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 fontSize: 40,
                 fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
                 fontWeight: '700',
+                WebkitTextStrokeWidth: "1px",   // Add black edge to text
+                WebkitTextStrokeColor: "#000000",
               }}
             >
               Username
@@ -121,13 +127,14 @@ const Register: React.FC = () => {
             rules={[{ required: true, message: "Please input your username!" }]}
           >
             <Input
-            placeholder="Enter username"
             style={{
               width: "353px",
               height: "52px",
               background: 'white',
               borderRadius: 46,
-              fontSize: "16px"
+              fontSize: "24px",
+              fontFamily: 'Jura',
+              color: "#000000"
             }}
             />
           </Form.Item>
@@ -139,13 +146,15 @@ const Register: React.FC = () => {
                 width: 317, // size
                 height: 49,
 
-                textAlign: 'center', // font & text related
+                textAlign: 'end', // font & text related
                 background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 fontSize: 40,
                 fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
                 fontWeight: '700',
+                WebkitTextStrokeWidth: "1px",   // Add black edge to text
+                WebkitTextStrokeColor: "#000000",
               }}
             >
               Password
@@ -157,13 +166,13 @@ const Register: React.FC = () => {
             rules={[{ required: true, message: "Please input a password!" }]}
           >
             <Input.Password
-            placeholder="Create password"
             style={{
               width: "353px",
               height: "52px",
               background: 'white',
               borderRadius: 46,
-              fontSize: "16px"
+              fontSize: "24px",
+              color: "#000000"
             }}
             />
           </Form.Item>
@@ -200,6 +209,8 @@ const Register: React.FC = () => {
                 background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
+                WebkitTextStrokeWidth: "1px",   // Add black edge to text
+                WebkitTextStrokeColor: "#000000",
               }}
               >
                 REGISTER
@@ -286,7 +297,7 @@ const Register: React.FC = () => {
               zIndex: 1, // foreground
             }}
           >
-            Take exoplanet collaborative research to the next level
+            Take exoplanet collaborative research to the next level!
           </h1>
           <h1 // Shadow Exoplanet Hunting Platform
             style={{
@@ -298,12 +309,12 @@ const Register: React.FC = () => {
               fontWeight: "700",
               wordWrap: "break-word",
               color: "transparent", // transparent text
-              textShadow: "0px 4px 10.8px rgba(255, 255, 255, 1)", // White shadow behind text
-              // adjust this ^ to change strength of shadow
+              textShadow: "0px 4px 32px rgba(255, 255, 255, 1)", // White shadow behind text
+                    // adjust this ^ to change strength of shadow
               zIndex: 0,
             }}
           >
-            Take exoplanet collaborative research to the next level
+            Take exoplanet collaborative research to the next level!
           </h1>
         </div>
       </div>
