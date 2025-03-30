@@ -113,22 +113,74 @@ const Register: React.FC = () => {
           size="large"
           variant="outlined"
           onFinish={handleRegister}
-          layout="vertical"
+          layout="horizontal" // Label to the left by default
         >
-          <Form.Item // Input username field
+          <Form.Item // Input username field & Label
             name="username"
-            label="Username"
+            label={<span
+              style={{
+                width: 317, // size
+                height: 49,
+
+                textAlign: 'center', // font & text related
+                color: '#8A5555',
+                fontSize: 40,
+                fontFamily: 'Karantina',
+                fontWeight: '700',
+              }}
+            >
+              Username
+            </span>
+            }
+            labelCol={{ span: 8 }} // "maximum" width of the label
+            wrapperCol={{ span: 18 }} // "maximum" width of the input field
+
             rules={[{ required: true, message: "Please input your username!" }]}
           >
-            <Input placeholder="Enter a username" />
+            <Input
+            placeholder="Enter username"
+            style={{
+              width: "353px",
+              height: "52px",
+              background: 'white',
+              borderRadius: 46,
+              fontSize: "16px"
+            }}
+            />
           </Form.Item>
 
-          <Form.Item // Input password field
+          <Form.Item // Input password field & Label
             name="password"
-            label="Password"
+            label={<span
+              style={{
+                width: 317, // size
+                height: 49,
+
+                textAlign: 'center', // font & text related
+                color: '#8A5555',
+                fontSize: 40,
+                fontFamily: 'Karantina',
+                fontWeight: '700',
+              }}
+            >
+              Password
+            </span>
+            }
+            labelCol={{ span: 8 }} // "maximum" width of the label
+            wrapperCol={{ span: 18 }} // "maximum" width of the input field
+
             rules={[{ required: true, message: "Please input a password!" }]}
           >
-            <Input.Password placeholder="Create password" />
+            <Input.Password
+            placeholder="Create password"
+            style={{
+              width: "353px",
+              height: "52px",
+              background: 'white',
+              borderRadius: 46,
+              fontSize: "16px"
+            }}
+            />
           </Form.Item>
 
           <Form.Item> 
