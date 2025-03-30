@@ -50,8 +50,9 @@ const Register: React.FC = () => {
       router.push("/dashboard");
       
     };
-  
+
     return (
+      
       <div
         className="register-container"
         style={{
@@ -64,18 +65,6 @@ const Register: React.FC = () => {
           alignItems: "center",
         }}
       >
-        <img // Background image
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            opacity: 1 // 0.96 according to figma
-            }}
-          src="/background1.png" // picture under /public/background1.png
-        />
 
         <h1 // Text Exoplanet Hunting Platform
           style={{
