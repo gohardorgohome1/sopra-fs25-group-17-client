@@ -26,8 +26,6 @@ const Register: React.FC = () => {
           if (response.id != null){
             localStorage.setItem("userId", response.id.toString());
           }
-          
-           // Redirect to users overview after registration
         }
         
       } catch (error) {
@@ -61,11 +59,12 @@ const Register: React.FC = () => {
           width: "100vw",
           height: "100vh",
           display: "flex",
+          flexDirection: "column", // Makes sure the Text (Exoplanet Hunting Platform) stays above the Card
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <img
+        <img // Background image
           style={{
             position: "absolute",
             top: 0,
@@ -73,23 +72,42 @@ const Register: React.FC = () => {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            opacity: 1
+            opacity: 1 // 0.96 according to figma
             }}
-          src="/background1.png"
+          src="/background1.png" // picture under /public/background1.png
         />
-        <Card
+
+        <h1 // Text Exoplanet Hunting Platform
+          style={{
+            width: 1659, // position
+            height: 96,
+            
+            color: "white", // font & text related
+            fontSize: "2rem",
+            textAlign: "center",
+            marginBottom: "20px",
+
+            zIndex: 1 // foreground
+          }}
+        >
+          Exoplantet Hunting Platform
+        </h1>
+        <Card // Card for registration
         className="dashboard-container"
         style={{
-          zIndex: 1, 
-          padding: "20px",
+          padding: "20px", // position
           height: "500px",
           width: "762px",
-          background: 'black',
+
+          background: 'black', // visuals
+          border: "none",
           borderRadius: 98,
-          opacity: 0.65
+          opacity: 0.65,
+
+          zIndex: 1 // foreground
         }}
       >
-        <Form
+        <Form // Registration
           form={form}
           name="register"
           size="large"
@@ -97,7 +115,7 @@ const Register: React.FC = () => {
           onFinish={handleRegister}
           layout="vertical"
         >
-          <Form.Item
+          <Form.Item // Input username field
             name="username"
             label="Username"
             rules={[{ required: true, message: "Please input your username!" }]}
@@ -105,7 +123,7 @@ const Register: React.FC = () => {
             <Input placeholder="Enter a username" />
           </Form.Item>
 
-          <Form.Item
+          <Form.Item // Input password field
             name="password"
             label="Password"
             rules={[{ required: true, message: "Please input a password!" }]}
@@ -113,12 +131,16 @@ const Register: React.FC = () => {
             <Input.Password placeholder="Create password" />
           </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" className="register-button">
+          <Form.Item> 
+            <Button // Register button
+              type="primary"
+              htmlType="submit"
+              className="register-button"
+            >
               Register
             </Button>
 
-            <Button
+            <Button // Login button
               onClick={() => router.push("/login")}
               type="primary"
               htmlType="button"
@@ -128,6 +150,25 @@ const Register: React.FC = () => {
           </Form.Item>
         </Form>
         </Card>
+        <h1 // Text Exoplanet Hunting Platform
+          style={{
+            width: 943, // position
+            height: 168,
+            marginBottom: "20px",
+
+            color: 'black', // font & text related
+            textAlign: "center",
+            fontSize: 40,
+            fontFamily: 'Jura',
+            fontWeight: '700',
+            wordWrap: 'break-word',
+            textShadow: '0px 4px 11px rgba(255, 255, 255, 1.00)',
+
+            zIndex: 1 // foreground
+          }}
+        >
+          Take exoplanet collaborative research to the next level
+        </h1>
       </div>
     );
   };
