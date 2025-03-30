@@ -78,11 +78,11 @@ const Register: React.FC = () => {
         className="dashboard-container"
         style={{
           padding: "20px", // position & size
-          paddingTop: "80px", // adjust to center vertically
-          height: "500px",
-          width: "762px",
+          paddingTop: "50px", // adjust to center vertically
+          height: "400px",
+          width: "620px",
 
-          background: 'black', // visuals
+          background: "black", // visuals
           border: "none",
           borderRadius: 98,
           backgroundColor: "rgba(0, 0, 0, 0.65)", // instead of opacity = 0.65 -> buttons etc. would inherit opacity
@@ -104,16 +104,16 @@ const Register: React.FC = () => {
             name="username"
             label={<span
               style={{
-                width: 317, // size
-                height: 49,
+                width: "317px", // size
+                height: "49px",
 
-                textAlign: 'end', // font & text related
+                textAlign: "end", // font & text related
                 background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                fontSize: 40,
-                fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
-                fontWeight: '700',
+                fontSize: "40px",
+                fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                fontWeight: "700",
                 WebkitTextStrokeWidth: "1px",   // Add black edge to text
                 WebkitTextStrokeColor: "#000000",
               }}
@@ -128,12 +128,12 @@ const Register: React.FC = () => {
           >
             <Input
             style={{
-              width: "353px",
+              width: "340px",
               height: "52px",
-              background: 'white',
+              background: "white",
               borderRadius: 46,
               fontSize: "24px",
-              fontFamily: 'Jura',
+              fontFamily: "Jura",
               color: "#000000"
             }}
             />
@@ -143,16 +143,16 @@ const Register: React.FC = () => {
             name="password"
             label={<span
               style={{
-                width: 317, // size
-                height: 49,
+                width: "317px", // size
+                height: "49px",
 
-                textAlign: 'end', // font & text related
+                textAlign: "end", // font & text related
                 background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                fontSize: 40,
-                fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
-                fontWeight: '700',
+                fontSize: "40px",
+                fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                fontWeight: "700",
                 WebkitTextStrokeWidth: "1px",   // Add black edge to text
                 WebkitTextStrokeColor: "#000000",
               }}
@@ -167,9 +167,9 @@ const Register: React.FC = () => {
           >
             <Input.Password
             style={{
-              width: "353px",
+              width: "340px",
               height: "52px",
-              background: 'white',
+              background: "white",
               borderRadius: 46,
               fontSize: "24px",
               color: "#000000"
@@ -192,14 +192,14 @@ const Register: React.FC = () => {
                 style={{
                   width: "509px", // button size & style
                   height: "55px",
-                  background: 'black',
+                  background: "black",
                   borderRadius: 46,
 
-                  textAlign: 'center', // Text size & style
-                  color: '#8A5555',
-                  fontSize: 40,
-                  fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
-                  fontWeight: '700',
+                  textAlign: "center", // Text size & style
+                  color: "#8A5555",
+                  fontSize: "40px",
+                  fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                  fontWeight: "700",
 
                   boxShadow: "none", // removes default green shadow of button
                 }}
@@ -226,11 +226,11 @@ const Register: React.FC = () => {
                 <span
                   style=
                   {{
-                    textAlign: 'center',
-                    color: '#8A5555',
-                    fontSize: 24,
-                    fontFamily: 'Jura', // imported fontFamily -> see top of globals.css
-                    fontWeight: '700',
+                    textAlign: "center",
+                    color: "#8A5555",
+                    fontSize: "24px",
+                    fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+                    fontWeight: "700",
 
                     background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
                     WebkitBackgroundClip: "text",
@@ -246,14 +246,14 @@ const Register: React.FC = () => {
                   style={{
                     width: "100px", // button size & style
                     height: "35px",
-                    background: 'black',
+                    background: "black",
                     borderRadius: 46,
 
-                    textAlign: 'center', // Text size & style
-                    color: '#8A5555',
-                    fontSize: 20,
-                    fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
-                    fontWeight: '700',
+                    textAlign: "center", // Text size & style
+                    color: "#8A5555",
+                    fontSize: "20px",
+                    fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                    fontWeight: "700",
 
                     boxShadow: "none", // removes default green shadow of button
                   }}
@@ -276,8 +276,9 @@ const Register: React.FC = () => {
         <div
           style={{
             position: "relative", // position & size
-            width: "943px",
+            width: "800px",
             height: "168px",
+            marginTop: "40px",
             marginBottom: "20px",
             textAlign: "center",
           }}
@@ -285,7 +286,7 @@ const Register: React.FC = () => {
           <h1 // Text Exoplanet Hunting Platform
             style={{
               position: "relative",
-              fontSize: 40,
+              fontSize: "32px",
               fontFamily: "Jura", // imported fontFamily -> see top of globals.css
               fontWeight: "700",
               wordWrap: "break-word",
@@ -305,11 +306,11 @@ const Register: React.FC = () => {
               top: 0,
               left: 0,
               fontFamily: "Jura",
-              fontSize: "40px",
+              fontSize: "32px",
               fontWeight: "700",
               wordWrap: "break-word",
               color: "transparent", // transparent text
-              textShadow: "0px 4px 32px rgba(255, 255, 255, 1)", // White shadow behind text
+              textShadow: "0px 4px 10.8px rgba(255, 255, 255, 1)", // White shadow behind text
                     // adjust this ^ to change strength of shadow
               zIndex: 0,
             }}
