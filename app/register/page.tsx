@@ -102,7 +102,7 @@ const Register: React.FC = () => {
           background: 'black', // visuals
           border: "none",
           borderRadius: 98,
-          opacity: 0.65,
+          backgroundColor: "rgba(0, 0, 0, 0.65)", // instead of opacity = 0.65 -> buttons etc. would inherit opacity
 
           zIndex: 1 // foreground
         }}
@@ -183,22 +183,73 @@ const Register: React.FC = () => {
             />
           </Form.Item>
 
-          <Form.Item> 
-            <Button // Register button
-              type="primary"
-              htmlType="submit"
-              className="register-button"
-            >
-              Register
-            </Button>
+          <Form.Item>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px"
+              }}>
+              <Button // Register button
+                type="primary"
+                htmlType="submit"
+                className="register-button"
+                style={{
+                  width: "509px", // button size & style
+                  height: "55px",
+                  background: 'black',
+                  borderRadius: 46,
 
-            <Button // Login button
-              onClick={() => router.push("/login")}
-              type="primary"
-              htmlType="button"
-            >
-              Log in
+                  textAlign: 'center', // Text size & style
+                  color: '#8A5555',
+                  fontSize: 40,
+                  fontFamily: 'Karantina',
+                  fontWeight: '700'
+                }}
+              >
+                REGISTER
               </Button>
+              <div
+                style={{
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  gap: "10px"
+                }}>
+                <span
+                  style=
+                  {{
+                    textAlign: 'center',
+                    color: '#8A5555',
+                    fontSize: 24,
+                    fontFamily: 'Jura',
+                    fontWeight: '700'
+                  }}
+                  >
+                    Already registered? Then log in
+                  </span>
+                <Button // Login button
+                  onClick={() => router.push("/login")}
+                  type="primary"
+                  htmlType="button"
+                  style={{
+                    width: "100px", // button size & style
+                    height: "35px",
+                    background: 'black',
+                    borderRadius: 46,
+
+                    textAlign: 'center', // Text size & style
+                    color: '#8A5555',
+                    fontSize: 20,
+                    fontFamily: 'Karantina',
+                    fontWeight: '700'
+                  }}
+                >
+                  Log in
+                  </Button>
+                </div>
+              </div>
           </Form.Item>
         </Form>
         </Card>
