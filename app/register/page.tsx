@@ -108,7 +108,7 @@ const Register: React.FC = () => {
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 fontSize: 40,
-                fontFamily: 'Karantina',
+                fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
                 fontWeight: '700',
               }}
             >
@@ -144,7 +144,7 @@ const Register: React.FC = () => {
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 fontSize: 40,
-                fontFamily: 'Karantina',
+                fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
                 fontWeight: '700',
               }}
             >
@@ -189,7 +189,7 @@ const Register: React.FC = () => {
                   textAlign: 'center', // Text size & style
                   color: '#8A5555',
                   fontSize: 40,
-                  fontFamily: 'Karantina',
+                  fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
                   fontWeight: '700',
 
                   boxShadow: "none", // removes default green shadow of button
@@ -218,7 +218,7 @@ const Register: React.FC = () => {
                     textAlign: 'center',
                     color: '#8A5555',
                     fontSize: 24,
-                    fontFamily: 'Jura',
+                    fontFamily: 'Jura', // imported fontFamily -> see top of globals.css
                     fontWeight: '700',
 
                     background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
@@ -241,7 +241,7 @@ const Register: React.FC = () => {
                     textAlign: 'center', // Text size & style
                     color: '#8A5555',
                     fontSize: 20,
-                    fontFamily: 'Karantina',
+                    fontFamily: 'Karantina', // imported fontFamily -> see top of globals.css
                     fontWeight: '700',
 
                     boxShadow: "none", // removes default green shadow of button
@@ -262,29 +262,50 @@ const Register: React.FC = () => {
           </Form.Item>
         </Form>
         </Card>
-        <h1 // Text Exoplanet Hunting Platform
+        <div
           style={{
-            width: 943, // position
-            height: 168,
+            position: "relative", // position & size
+            width: "943px",
+            height: "168px",
             marginBottom: "20px",
-
-            color: 'black', // font & text related
             textAlign: "center",
-            fontSize: 40,
-            fontFamily: 'Jura',
-            fontWeight: '700',
-            wordWrap: 'break-word',
-            textShadow: '0px 4px 32px rgba(255, 255, 255, 1)', // White shadow behind text
-                  // adjust this ^ to change strength of shadow
-            background: "linear-gradient(90deg, #000000, #B60000)", // color gradient
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-
-            zIndex: 1 // foreground
           }}
         >
-          Take exoplanet collaborative research to the next level
-        </h1>
+          <h1 // Text Exoplanet Hunting Platform
+            style={{
+              position: "relative",
+              fontSize: 40,
+              fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+              fontWeight: "700",
+              wordWrap: "break-word",
+
+              background: "linear-gradient(90deg, #000000, #B60000)", // color gradient
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+
+              zIndex: 1, // foreground
+            }}
+          >
+            Take exoplanet collaborative research to the next level
+          </h1>
+          <h1 // Shadow Exoplanet Hunting Platform
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              fontFamily: "Jura",
+              fontSize: "40px",
+              fontWeight: "700",
+              wordWrap: "break-word",
+              color: "transparent", // transparent text
+              textShadow: "0px 4px 10.8px rgba(255, 255, 255, 1)", // White shadow behind text
+              // adjust this ^ to change strength of shadow
+              zIndex: 0,
+            }}
+          >
+            Take exoplanet collaborative research to the next level
+          </h1>
+        </div>
       </div>
     );
   };
