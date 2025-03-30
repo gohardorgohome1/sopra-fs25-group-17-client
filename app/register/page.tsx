@@ -60,27 +60,19 @@ const Register: React.FC = () => {
           width: "100vw",
           height: "100vh",
           display: "flex",
-          flexDirection: "column", // Makes sure the Text (Exoplanet Hunting Platform) stays above the Card
+          flexDirection: "column", // Makes sure the title image (Exoplanet Hunting Platform) stays above the Card
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-
-        <h1 // Text Exoplanet Hunting Platform
+        <img // Title image: "Exoplanet Hunting Platform"
           style={{
-            width: 1659, // position
-            height: 96,
-            
-            color: "white", // font & text related
-            fontSize: "2rem",
-            textAlign: "center",
-            marginBottom: "20px",
+            width: "80vw",
+            height: "14vh"
+            }}
+          src="/title.png" // image under /public/title.png
+        />
 
-            zIndex: 1 // foreground
-          }}
-        >
-          Exoplantet Hunting Platform
-        </h1>
         <Card // Card for registration
         className="dashboard-container"
         style={{
@@ -112,7 +104,9 @@ const Register: React.FC = () => {
                 height: 49,
 
                 textAlign: 'center', // font & text related
-                color: '#8A5555',
+                background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
                 fontSize: 40,
                 fontFamily: 'Karantina',
                 fontWeight: '700',
@@ -146,7 +140,9 @@ const Register: React.FC = () => {
                 height: 49,
 
                 textAlign: 'center', // font & text related
-                color: '#8A5555',
+                background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
                 fontSize: 40,
                 fontFamily: 'Karantina',
                 fontWeight: '700',
@@ -194,10 +190,20 @@ const Register: React.FC = () => {
                   color: '#8A5555',
                   fontSize: 40,
                   fontFamily: 'Karantina',
-                  fontWeight: '700'
+                  fontWeight: '700',
+
+                  boxShadow: "none", // removes default green shadow of button
                 }}
               >
+              <span
+              style={{
+                background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+              >
                 REGISTER
+              </span>
               </Button>
               <div
                 style={{
@@ -213,7 +219,11 @@ const Register: React.FC = () => {
                     color: '#8A5555',
                     fontSize: 24,
                     fontFamily: 'Jura',
-                    fontWeight: '700'
+                    fontWeight: '700',
+
+                    background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
                   }}
                   >
                     Already registered? Then log in
@@ -232,11 +242,21 @@ const Register: React.FC = () => {
                     color: '#8A5555',
                     fontSize: 20,
                     fontFamily: 'Karantina',
-                    fontWeight: '700'
+                    fontWeight: '700',
+
+                    boxShadow: "none", // removes default green shadow of button
                   }}
                 >
+                <span
+                  style={{
+                    background: "linear-gradient(90deg, #FFFFFF, #8A5555)", // color gradient
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                  >
                   Log in
-                  </Button>
+                </span>
+                </Button>
                 </div>
               </div>
           </Form.Item>
@@ -254,7 +274,11 @@ const Register: React.FC = () => {
             fontFamily: 'Jura',
             fontWeight: '700',
             wordWrap: 'break-word',
-            textShadow: '0px 4px 11px rgba(255, 255, 255, 1.00)',
+            textShadow: '0px 4px 32px rgba(255, 255, 255, 1)', // White shadow behind text
+                  // adjust this ^ to change strength of shadow
+            background: "linear-gradient(90deg, #000000, #B60000)", // color gradient
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
 
             zIndex: 1 // foreground
           }}
