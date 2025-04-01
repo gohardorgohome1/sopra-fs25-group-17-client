@@ -8,43 +8,148 @@ import styles from "@/styles/page.module.css";
 
 export default function Home() {
   const router = useRouter();
+  
   return (
-    
 
-    <div className={styles.page}>
-      <main className={styles.main}>
+    <div
+        className="common-background"
+        style={{
+          position: "relative",
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column", // Makes sure the title image (Exoplanet Hunting Platform) stays above the text
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
 
-        <h1>Group 17 - Exoplanet Hunting</h1>
-        <p>Group Leader: Jesse Koller</p>
-        <h4>Group Members:</h4>
-        <ul>
-          <li>Lucía Cortés, lucia.cortespaes@uzh.ch, 24-744-112, @luciacortes063</li>
-          <li>Alex Capilla, alex.capillamiralles@uzh.ch, 24-754-970, @AlexCapillaUZH</li>
-          <li>Pascal Senn,pascal.senn2@uzh.ch, 23-938-723, @PascalSenn2</li>
-          <li>Ayleen Rüegg, ayleenmona.rueegg@uzh.ch, 23-725-179, @ayleenmr</li>
-          <li>Jesse Koller, jesse.koller@uzh.ch, 21-928-379, @gohardorgohome1</li>
-        </ul>
-        <p>
-          Check out our project on <a href="https://github.com/gohardorgohome1/sopra-fs25-group-17-server" target="_blank" rel="noopener noreferrer">GitHub</a>.
-        </p>
+        <img // Title image: "Exoplanet Hunting Platform"
+          style={{
+            width: "80vw",
+            height: "14vh",
+            marginTop: "200px" // determines distance to the top of the window
+            }}
+          src="/title.png" // image under /public/title.png
+        />
 
-        <div className={styles.ctas}>
-          <Button
-            type="primary"
-            variant="solid"
-            onClick={() => router.push("/login")}
-          >
-            Go to login
-          </Button>
-          <Button
-            type="primary"
-            variant="solid"
-            onClick={() => router.push("/register")}
-          >
-            Register
-          </Button>
-        </div>
-      </main>
+      <div
+          style={{
+            position: "relative", // position & size
+            width: "800px",
+            height: "168px",
+            marginTop: "-10px",
+            marginBottom: "20px",
+            textAlign: "center",
+          }}
+        >
+        <h1 // Motivational text
+          style={{
+            position: "relative",
+            fontSize: "32px",
+            fontFamily: "Jura", // imported fontFamily -> see top of globals.css              fontWeight: "700",
+            wordWrap: "break-word",
+
+            background: "linear-gradient(90deg, #000000, #B60000)", // color gradient
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+
+            zIndex: 1, // foreground
+          }}
+        >
+          Take exoplanet collaborative research to the next level!
+        </h1>
+        <h1 // Shadow Exoplanet Hunting Platform
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            fontFamily: "Jura",
+            fontSize: "32px",
+            fontWeight: "700",
+            wordWrap: "break-word",
+            color: "transparent", // transparent text
+            textShadow: "0px 4px 10.8px rgba(255, 255, 255, 1)", // White shadow behind text
+                  // adjust this ^ to change strength of shadow
+            zIndex: 0,
+          }}
+        >
+          Take exoplanet collaborative research to the next level!
+        </h1>
+      </div>
+
+      <div
+        style={{
+          position: "absolute", // position & size
+          bottom: "40px",
+          right: "40px",
+
+          display: "flex", // These two lines ensure the buttons are stacked on top of each other
+          flexDirection: "column",
+        }}
+      >
+        <Button // Register button
+          onClick={() => router.push("/register")}
+          type="primary"
+          htmlType="button"
+          style={{
+            width: "100px", // button size & style
+            height: "35px",
+            background: "black",
+            borderRadius: 46,
+
+            marginBottom: "10px", // Creates some distance between the two buttons
+
+            textAlign: "center", // Text size & style
+            color: "#8A5555",
+            fontSize: "20px",
+            fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+            fontWeight: "700",
+
+            boxShadow: "none", // removes default green shadow of button
+          }}
+        >
+        <span
+          style={{
+            background: "linear-gradient(90deg, #8A5555, #830101)", // color gradient
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Register
+        </span>
+        </Button>
+
+        <Button // Login button
+          onClick={() => router.push("/login")}
+          type="primary"
+          htmlType="button"
+          style={{
+            width: "100px", // button size & style
+            height: "35px",
+            background: "black",
+            borderRadius: 46,
+
+            textAlign: "center", // Text size & style
+            color: "#8A5555",
+            fontSize: "20px",
+            fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+            fontWeight: "700",
+
+            boxShadow: "none", // removes default green shadow of button
+          }}
+        >
+        <span
+          style={{
+            background: "linear-gradient(90deg, #8A5555, #830101)", // color gradient
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Log in
+        </span>
+        </Button>
+      </div>
     </div>
   );
 }

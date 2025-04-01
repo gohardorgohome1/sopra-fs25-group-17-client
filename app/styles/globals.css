@@ -64,7 +64,7 @@ a {
   background-color: rgb(41, 44, 59);
 }
 
-.register-container { /*background image of registration page*/
+.common-background { /*background image of start, login & registration page*/
   width: 100vw;
   height: 100vh;
   opacity: 0.96;
