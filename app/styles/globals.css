@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Karantina:wght@300;400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jura:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Koulen:wght@400;700&display=swap');
 
 :root {
   --background: #ffffff;
@@ -74,4 +75,11 @@ a {
   background-position: center;
   background-color: rgb(0, 0, 0);*/
   background: url("/background1.png") lightgray 50% / cover no-repeat;
+}
+
+.dashboard-container { /*background image of dashboard page*/
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.96;
+  background: url("/background2.png") lightgray 50% / cover no-repeat;
 }
