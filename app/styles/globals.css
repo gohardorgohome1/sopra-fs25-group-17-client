@@ -44,13 +44,13 @@ a {
   }
 }
 
-.login-container {
+/*.login-container {  Deleted -> now use .common-background
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background-color: rgb(41, 44, 59);
-}
+}*/
 
 .login-button {
   width: 100%;
