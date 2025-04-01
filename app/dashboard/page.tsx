@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"; // use NextJS router for navigation
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Card } from "antd";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
 
@@ -112,6 +112,22 @@ const Dashboard: React.FC = () => {
         EXOPLANET DASHBOARD
       </h1>
     </div>
+    <Card //Card that contains interactive map and Earth Similarity Ranking
+        className="dashboard-container"
+        style={{
+          position: "relative",
+          padding: "20px", // position & size
+          paddingTop: "50px", // adjust to center vertically
+          height: "600px",
+          width: "1300px",
+
+          background: "#000000",
+          border: "none",
+          borderRadius: 98,
+
+          zIndex: 1 // foreground
+        }}
+      ></Card>
     </div>
     
   );
