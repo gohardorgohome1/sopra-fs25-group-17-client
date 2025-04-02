@@ -22,7 +22,7 @@ export default function Home() {
     >
 
       <Card // Card for upload
-        className="exoplanet-container"
+        className="uploadOuter-container"
         style={{
           width: "95vw", // size
           height: "95vh",
@@ -52,6 +52,34 @@ export default function Home() {
           >
             Exoplanet Transit Analysis
           </div>
+          
+          <div // This div makes sure the second card can be centered while the title is still at the top left
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              marginTop: "6vh"
+            }}
+          >
+            <Card
+              className="uploadInner-container"
+              style={{
+                width: "500px", // size
+                height: "360px",
+
+                background: "black", // visuals
+                border: "none",
+                borderRadius: 26,
+                backgroundColor: "rgba(0, 0, 0, 0.66)", // instead of opacity = 0.66 -> buttons etc. would inherit opacity
+
+                zIndex: 1 // foreground
+              }}
+            >
+
+            </Card>
+          </div>
+          
+
       </Card>
 
     </div>
