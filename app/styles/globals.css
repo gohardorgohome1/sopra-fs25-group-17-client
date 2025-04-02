@@ -73,5 +73,11 @@ a {
   background-repeat: no-repeat;
   background-position: center;
   background-color: rgb(0, 0, 0);*/
-  background: url("/background1.png") lightgray 50% / cover no-repeat;
+  background: url("/backgroundStart.png") lightgray 50% / cover no-repeat;
+}
+
+.exoplanet-background {
+  width: 100vw;
+  height: 100vh;
+  background: url("/backgroundExoplanet.png") lightgray 50% / cover no-repeat;
 }
