@@ -77,6 +77,41 @@ export default function Home() {
               }}
             >
             </Card>
+
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                width: "320px", // button size & style
+                height: "35px",
+                background: "black",
+                borderRadius: 46,
+                //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
+                
+                marginTop: "60px", // button position
+
+                textAlign: "center", // Text size & style
+                color: "#8A5555",
+                fontSize: "32px",
+                fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                fontWeight: "700",
+
+                boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)', // red glow around button
+              }}
+              >
+              <span
+                style={{
+                  background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+
+                  WebkitTextStrokeWidth: "1px",   // Add black edge to text
+                  WebkitTextStrokeColor: "#000000",
+                }}
+              >
+                Calculate
+              </span>
+            </Button>
           </div>
           
           <Button // Button: Back to dashboard
@@ -90,8 +125,8 @@ export default function Home() {
               borderRadius: 46,
               //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
               
-              marginTop: "120px", // button position
-              marginLeft: "60px",
+              marginLeft: "60px", // button position
+              marginTop: "20px",
 
               textAlign: "center", // Text size & style
               color: "#8A5555",
@@ -115,42 +150,7 @@ export default function Home() {
               Back to Dashboard
             </span>
           </Button>
-          <Button
-            onClick={() => router.push("/dashboard")}
-            type="primary"
-            htmlType="button"
-            style={{
-              width: "160px", // button size & style
-              height: "35px",
-              background: "black",
-              borderRadius: 46,
-              //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
-              
-              marginTop: "120px", // button position
-              marginLeft: "60px",
-
-              textAlign: "center", // Text size & style
-              color: "#8A5555",
-              fontSize: "20px",
-              fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
-              fontWeight: "700",
-
-              boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)', // red glow around button
-            }}
-            >
-            <span
-              style={{
-                background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-
-                WebkitTextStrokeWidth: "1px",   // Add black edge to text
-                WebkitTextStrokeColor: "#000000",
-              }}
-            >
-              Back to Dashboard
-            </span>
-          </Button>
+          
       </Card>
 
     </div>
