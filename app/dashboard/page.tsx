@@ -181,7 +181,6 @@ const Dashboard: React.FC = () => {
                   color: "#888",
                 }}
               >
-                Star Map Placeholder
                 <StarMap />
               </div>
             </div>
@@ -225,7 +224,6 @@ const Dashboard: React.FC = () => {
                   color: "#888",
                 }}
               >
-                Exoplanet Ranking Placeholder
                 <ExoplanetRanking />
               </div>
             </div>

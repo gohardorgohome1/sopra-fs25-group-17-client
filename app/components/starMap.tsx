@@ -23,11 +23,17 @@ const StarMap = () => {
     title: "Star Map Example",
   };
 
-  return (
+  return 
+  
+  /*
+  (
     <div style={{ height: "100%", width: "100%" }}>
       <Plot data={data} layout={layout} />
     </div>
   );
+  
+  
+  */
 };
 
 export default StarMap;
