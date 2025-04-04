@@ -17,7 +17,7 @@ const Register: React.FC = () => {
 
     
 
-    const handleRegister = async (values: { username: string; name: string; password: string }) => {
+    const handleRegister = async (values: { username: string; password: string }) => {
       try {
         const response = await apiService.post<User>("/users", values);
         
@@ -54,7 +54,7 @@ const Register: React.FC = () => {
     return (
       
       <div
-        className="register-container"
+        className="common-background"
         style={{
           position: "relative",
           width: "100vw",
@@ -283,7 +283,7 @@ const Register: React.FC = () => {
             textAlign: "center",
           }}
         >
-          <h1 // Text Exoplanet Hunting Platform
+          <h1 // Motivational text
             style={{
               position: "relative",
               fontSize: "32px",
