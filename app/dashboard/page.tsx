@@ -9,6 +9,10 @@ import { Button, Form, Input, Card } from "antd";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
 
+import StarMap from "../components/starMap";  // Import the StarMap component
+import ExoplanetRanking from "../components/exoplanetRanking";  // Import the ExoplanetRanking component
+
+
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
@@ -61,7 +65,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard-container">
-    
+
     <Button onClick={handleLogout}
       type="primary"
       className="logout-button"
@@ -112,6 +116,8 @@ const Dashboard: React.FC = () => {
         EXOPLANET DASHBOARD
       </h1>
     </div>
+
+
     <Card //Card that contains interactive map and Earth Similarity Ranking
         className="dashboard-container"
         style={{
@@ -119,15 +125,113 @@ const Dashboard: React.FC = () => {
           padding: "20px", // position & size
           paddingTop: "50px", // adjust to center vertically
           height: "600px",
-          width: "1300px",
-
+          width: "1500px",
           background: "#000000",
           border: "none",
           borderRadius: 98,
-
           zIndex: 1 // foreground
         }}
-      ></Card>
+      >
+      {/* Flexbox container for left and right side */}
+      <div
+            style={{
+              display: "flex",
+              flexDirection: "row", // Align children horizontally
+              gap: "0px", // Space between the sides
+              height: "100%", // Ensure it takes full height
+            }}
+          >
+            {/* Left Side */}
+            <div
+              style={{
+                flex: 1,
+                backgroundColor: "black",
+                borderRadius: "20px",
+                padding: "20px",
+                color: "white",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <h2
+                style={{
+                fontFamily: "Jura",
+                background: "linear-gradient(90deg, #FFFFFF 0%, #0058B6 100%)", // Apply gradient to text
+                WebkitBackgroundClip: "text", // Clip the background to the text
+                color: "transparent", // Make the text color transparent so the gradient shows through
+                fontWeight: "700",
+                fontSize: "40px",
+                lineHeight: "100%",
+                letterSpacing: "0%",
+                textAlign: "center",
+
+                }}
+              >
+                Exoplanet Populations
+              </h2>
+              <div
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#888",
+                }}
+              >
+                Star Map Placeholder
+                <StarMap />
+              </div>
+            </div>
+
+            {/* Right Side */}
+            <div
+              style={{
+                flex: 1,
+                backgroundColor: "black",
+                borderRadius: "20px",
+                padding: "20px",
+                color: "white",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <h2
+                style={{
+                fontFamily: "Jura",
+                background: "linear-gradient(90deg, #FFFFFF 0%, #0058B6 100%)", // Apply gradient to text
+                WebkitBackgroundClip: "text", // Clip the background to the text
+                color: "transparent", // Make the text color transparent so the gradient shows through
+                fontWeight: "700",
+                fontSize: "40px",
+                lineHeight: "100%",
+                letterSpacing: "0%",
+                textAlign: "center",
+                }}
+              >
+                Earth Similarity Ranking
+              </h2>
+              <div
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#888",
+                }}
+              >
+                Exoplanet Ranking Placeholder
+                <ExoplanetRanking />
+              </div>
+            </div>
+          </div>
+
+      </Card>
     </div>
     
   );
