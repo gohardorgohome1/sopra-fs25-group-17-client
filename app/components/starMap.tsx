@@ -1,6 +1,6 @@
 // StarMap.tsx
 import React from "react";
-import Plot from "react-plotly.js"; // Import Plotly
+// import Plot from "react-plotly.js"; // Import Plotly
 
 const StarMap: React.FC = () => {
   return (
