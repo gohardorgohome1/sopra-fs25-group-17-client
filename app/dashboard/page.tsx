@@ -105,7 +105,7 @@ const Dashboard: React.FC = () => {
         style={{
           position: "relative",
           padding: "20px", // position & size
-          paddingTop: "50px", // adjust to center vertically
+          paddingTop: "0px", // adjust to center vertically
           height: "600px",
           width: "1500px",
           background: "#000000",
@@ -126,7 +126,7 @@ const Dashboard: React.FC = () => {
             {/* Left Side */}
             <div
               style={{
-                flex: 1,
+                flex: 2, // uses 2/3 of the space
                 backgroundColor: "black",
                 borderRadius: "20px",
                 padding: "20px",
@@ -145,7 +145,7 @@ const Dashboard: React.FC = () => {
                 WebkitBackgroundClip: "text", // Clip the background to the text
                 color: "transparent", // Make the text color transparent so the gradient shows through
                 fontWeight: "700",
-                fontSize: "40px",
+                fontSize: "30px",
                 lineHeight: "100%",
                 letterSpacing: "0%",
                 textAlign: "center",
@@ -170,7 +170,7 @@ const Dashboard: React.FC = () => {
             {/* Right Side */}
             <div
               style={{
-                flex: 1,
+                flex: 1, // uses 1/3 of the space
                 backgroundColor: "black",
                 borderRadius: "20px",
                 padding: "20px",
@@ -189,7 +189,7 @@ const Dashboard: React.FC = () => {
                 WebkitBackgroundClip: "text", // Clip the background to the text
                 color: "transparent", // Make the text color transparent so the gradient shows through
                 fontWeight: "700",
-                fontSize: "40px",
+                fontSize: "30px",
                 lineHeight: "100%",
                 letterSpacing: "0%",
                 textAlign: "center",
