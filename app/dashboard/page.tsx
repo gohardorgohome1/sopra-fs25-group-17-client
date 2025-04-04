@@ -53,16 +53,16 @@ const Dashboard: React.FC = () => {
       className="logout-button"
       style={{
         position: "absolute", // position & size
-        top: "15px",
-        right: "20px",
-        width: "130px", // button size & style
-        height: "42px",
+        top: "2vh",
+        right: "2vw",
+        width: "8vw", // button size & style
+        height: "3vw",
         background: "#202343",
-        borderRadius: 13,
+        borderRadius: "0.8vw",
 
         textAlign: "center", // Text size & style
         color: "#FFFFFF",
-        fontSize: "24px",
+        fontSize: "1.4vw",
         fontFamily: "Jura", // imported fontFamily -> see top of globals.css
         fontWeight: "700",
 
@@ -78,17 +78,17 @@ const Dashboard: React.FC = () => {
 
     <div
       style={{
-        width: "800px",
-        height: "168px",
-        top: "35px",
-        left: "30px",
+        width: "60vw",
+        height: "12vh",
+        top: "3vh",
+        left: "1vh",
         textAlign: "center",
       }}
     >
       <h1
         style={{
           position: "relative",
-          fontSize: "80px",
+          fontSize: "5vw",
           fontFamily: "Koulen",
           fontWeight: "400",
           color: "#D0E0F3",
@@ -104,13 +104,17 @@ const Dashboard: React.FC = () => {
         className="dashboard-container"
         style={{
           position: "relative",
-          padding: "20px", // position & size
-          paddingTop: "0px", // adjust to center vertically
-          height: "600px",
-          width: "1500px",
+          marginTop: "5vh",       // pushes it down, adjust as needed
+          marginLeft: "auto",     // centers horizontally
+          marginRight: "auto",    // centers horizontally
+          padding: "2vw", // position & size
+          paddingTop: "1vh", // adjust to center vertically
+          height: "70vh",
+          width: "97vw",
           background: "#000000",
           border: "none",
-          borderRadius: 98,
+          borderRadius: "2vw",
+          overflow: "hidden", // prevents children from spilling out
           zIndex: 1 // foreground
         }}
       >
@@ -119,7 +123,7 @@ const Dashboard: React.FC = () => {
             style={{
               display: "flex",
               flexDirection: "row", // Align children horizontally
-              gap: "0px", // Space between the sides
+              gap: "2vw", // Space between the sides
               height: "100%", // Ensure it takes full height
             }}
           >
@@ -128,8 +132,8 @@ const Dashboard: React.FC = () => {
               style={{
                 flex: 2, // uses 2/3 of the space
                 backgroundColor: "black",
-                borderRadius: "20px",
-                padding: "20px",
+                borderRadius: "1.5vw",
+                padding: "0vh 2vw",
                 color: "white",
                 display: "flex",
                 flexDirection: "column",
@@ -145,9 +149,9 @@ const Dashboard: React.FC = () => {
                 WebkitBackgroundClip: "text", // Clip the background to the text
                 color: "transparent", // Make the text color transparent so the gradient shows through
                 fontWeight: "700",
-                fontSize: "30px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
+                fontSize: "2vw",
+                lineHeight: "1.2",
+                letterSpacing: "0em",
                 textAlign: "center",
 
                 }}
@@ -172,8 +176,8 @@ const Dashboard: React.FC = () => {
               style={{
                 flex: 1, // uses 1/3 of the space
                 backgroundColor: "black",
-                borderRadius: "20px",
-                padding: "20px",
+                borderRadius: "1.5vw",
+                padding: "0vh 2vw",
                 color: "white",
                 display: "flex",
                 flexDirection: "column",
@@ -189,9 +193,9 @@ const Dashboard: React.FC = () => {
                 WebkitBackgroundClip: "text", // Clip the background to the text
                 color: "transparent", // Make the text color transparent so the gradient shows through
                 fontWeight: "700",
-                fontSize: "30px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
+                fontSize: "2vw",
+                lineHeight: "1.2",
+                letterSpacing: "0em",
                 textAlign: "center",
                 }}
               >
