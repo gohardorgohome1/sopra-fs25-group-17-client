@@ -3,15 +3,30 @@ import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Button, Form, Input, Card } from "antd";
-import { Span } from "next/dist/trace";
 
 const Upload: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [form] = Form.useForm();
 
-  const handleUpload = async (values: { exoplanetName: string }) => {
-    return;
+  const handleUpload = async (value: { exoplanetName: string }) => {
+    try {
+      const response = await apiService.post<PhotometricCurve>("/exoplanet",  value ); /////////////////////////////////////////////////////////
+
+      router.push("/dashboard");
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes("Invalid photometric curve or exoplanet name!")) {
+          alert("Invalid photometric curve or exoplanet name!");
+        }
+        else{
+          alert(`Something went wrong during the upload of your photometric curve:\n${error.message}`);
+        }
+        
+      } else {
+        console.error("An unknown error occurred during the upload of your photometric curve!");
+      }
+    }
   }
 
   return (
@@ -184,43 +199,51 @@ const Upload: React.FC = () => {
                   }}
                   />
                 </Form.Item>
+                <Form.Item
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "2vh"
+                  }}
+                >
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    style={{
+                      width: "32vw", // button size & style
+                      height: "6vh",
+                      background: "black",
+                      borderRadius: 46,
+                      //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
+                      
+                      marginTop: "16vh", // button position
+
+                      textAlign: "center", // Text size & style
+                      color: "#8A5555",
+                      fontSize: "32px",
+                      fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                      fontWeight: "700",
+
+                      boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)', // red glow around button
+                    }}
+                    >
+                    <span
+                      style={{
+                        background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+
+                        WebkitTextStrokeWidth: "1px",   // Add black edge to text
+                        WebkitTextStrokeColor: "#000000",
+                      }}
+                    >
+                      Calculate
+                    </span>
+                  </Button>
+                </Form.Item>
               </Form>
             </Card>
-
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{
-                width: "320px", // button size & style
-                height: "35px",
-                background: "black",
-                borderRadius: 46,
-                //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
-                
-                marginTop: "6vh", // button position
-
-                textAlign: "center", // Text size & style
-                color: "#8A5555",
-                fontSize: "32px",
-                fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
-                fontWeight: "700",
-
-                boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)', // red glow around button
-              }}
-              >
-              <span
-                style={{
-                  background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-
-                  WebkitTextStrokeWidth: "1px",   // Add black edge to text
-                  WebkitTextStrokeColor: "#000000",
-                }}
-              >
-                Calculate
-              </span>
-            </Button>
           </div>
           
           <Button // Button: Back to dashboard
@@ -228,14 +251,14 @@ const Upload: React.FC = () => {
             type="primary"
             htmlType="button"
             style={{
-              width: "160px", // button size & style
-              height: "35px",
+              width: "10vw", // button size & style
+              height: "6vh",
               background: "black",
               borderRadius: 46,
               //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
               
-              marginLeft: "60px", // button position
-              marginTop: "20px",
+              marginLeft: "4vw", // button position
+              marginTop: "11vh",
 
               textAlign: "center", // Text size & style
               color: "#8A5555",
