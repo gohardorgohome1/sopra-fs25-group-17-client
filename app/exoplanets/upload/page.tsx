@@ -1,12 +1,18 @@
 "use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
 import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { useApi } from "@/hooks/useApi";
 import { Button, Form, Input, Card } from "antd";
 import { Span } from "next/dist/trace";
 
-export default function Home() {
+const Upload: React.FC = () => {
   const router = useRouter();
+  const apiService = useApi();
+  const [form] = Form.useForm();
+
+  const handleUpload = async (values: { exoplanetName: string }) => {
+    return;
+  }
 
   return (
     <div
@@ -65,8 +71,12 @@ export default function Home() {
             <Card
               className="uploadInner-container"
               style={{
-                width: "500px", // size
-                height: "360px",
+                width: "36vw", // size
+                height: "52vh",
+
+                display: "flex", // center items horizontally
+                flexDirection: "column",
+                alignItems: "center",
 
                 background: "black", // visuals
                 border: "none",
@@ -76,6 +86,105 @@ export default function Home() {
                 zIndex: 1 // foreground
               }}
             >
+              <span
+                style=
+                {{
+                  display: "flex", // center text horizontally
+                  flexDirection: "column",
+                  alignItems: "center",
+
+                  textAlign: "center",
+                  color: "#8A5555",
+                  fontSize: "2vw",
+                  fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+                  fontWeight: "700",
+
+                  background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Upload a lightcurve file (.txt)
+              </span>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="upload-button"
+                style={{
+                  width: "32vw", // button size & style
+                  height: "8vh",
+                  background: "black",
+                  borderRadius: 46,
+                  marginTop: "20px",
+
+                  textAlign: "center", // Text size & style
+                  color: "#8A5555",
+                  fontSize: "40px",
+                  fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                  fontWeight: "700",
+
+                  boxShadow: "none", // removes default green shadow of button
+                }}
+              >
+                <span
+                  style={{
+                    background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    WebkitTextStrokeWidth: "1px",   // Add black edge to text
+                    WebkitTextStrokeColor: "#000000",
+                  }}
+                >
+                  Upload file
+                </span>
+              </Button>
+
+              <Form // Input field "Name of the Exoplanet" with label
+                form={form}
+                name="upload"
+                size="large"
+                variant="outlined"
+                onFinish={handleUpload}
+                layout="vertical" // Label on top by default
+                requiredMark={false} // no star before label
+              >
+                <Form.Item // Input exoplanet name field & Label
+                  name="exoplanetName"
+                  label={
+                  <span
+                    style={{
+                      width: "32vw", // size
+                      height: "8vh",
+                      marginTop: "6vh",
+
+                      textAlign: "center",
+                      background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      fontSize: "2vw",
+                      fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+                      fontWeight: "700",
+                    }}
+                  >
+                    Name of the Exoplanet
+                  </span>
+                  }
+
+                  rules={[{ required: true, message: "Please input the name of the Exoplanet!" }]}
+                >
+                  <Input
+                  style={{
+                    width: "32vw",
+                    height: "8vh",
+                    background: "white",
+                    borderRadius: 46,
+                    fontSize: "2vw",
+                    fontFamily: "Jura",
+                    color: "#000000"
+                  }}
+                  />
+                </Form.Item>
+              </Form>
             </Card>
 
             <Button
@@ -88,7 +197,7 @@ export default function Home() {
                 borderRadius: 46,
                 //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
                 
-                marginTop: "60px", // button position
+                marginTop: "6vh", // button position
 
                 textAlign: "center", // Text size & style
                 color: "#8A5555",
@@ -156,3 +265,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Upload;
