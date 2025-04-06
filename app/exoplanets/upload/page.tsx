@@ -11,7 +11,7 @@ const Upload: React.FC = () => {
 
   const handleUpload = async (value: { exoplanetName: string }) => {
     try {
-      const response = await apiService.post<PhotometricCurve>("/exoplanet",  value ); /////////////////////////////////////////////////////////
+      const response = await apiService.post<PhotometricCurve>("/upload",  value ); /////////////////////////////////////////////////////////
 
       router.push("/dashboard");
     } catch (error) {
