@@ -1,29 +1,57 @@
-// your code here for S2 to display a single user profile after having clicked on it
-// each user has their own slug /[id] (/1, /2, /3, ...) and is displayed using this file
-// try to leverage the component library from antd by utilizing "Card" to display the individual user
-// import { Card } from "antd"; // similar to /app/users/page.tsx
-
-"use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
+"use client"; 
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { User } from "@/types/user";
-import { Card, Typography, Button} from "antd";
-// import type { TableProps } from "antd";
+//import { Typography } from "antd";
+//import dynamic from "next/dynamic";
 
 
-const { Title, Text } = Typography;
+//const { Title, Text } = Typography;
 
-const UserProfile: React.FC = () => {
+//const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+
+interface Exoplanet {
+  id: string;
+  planetName: string;
+  ownerId: string;
+
+  hostStarName: string;
+  fractionalDepth: number;
+  density: number;
+  orbitalPeriod: number;
+  radius: number;
+  surfaceGravity: number;
+  theoreticalTemperature: number;
+  mass: number;
+  escapeVelocity: number;
+  earthSimilarityIndex: number;
+
+  photometricCurveId:string;
+}
+
+interface DataPoint {
+  time: number;
+  brightness: number;
+  brightnessError?: number;
+}
+
+interface PhotometricCurve {
+  id: string;
+  fileName: string;
+  exoplanetId: string;
+  dataPoints: DataPoint[];
+  metadata?: Record<string, string>;
+}
+
+const ExoplanetProfile: React.FC = () => {
   const router = useRouter();
   const { id } = useParams(); // Get user ID from the URL
   const apiService = useApi();
-  const [user, setUser] = useState<User | null>(null);
-  //const [loading, setLoading] = useState<boolean>(true);
-  //const [_, setLoading] = useState<boolean>(true);
-  const setLoading = useState<boolean>(true)[1];
+  const [exoplanet, setExoplanet] = useState<Exoplanet | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [lightCurveData, setLightCurveData] = useState<DataPoint[]>([]);
 
 
   const {
@@ -32,75 +60,104 @@ const UserProfile: React.FC = () => {
     //clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
+  
   useEffect(() => {
-    const storedToken = localStorage.getItem("token"); 
-    if(!storedToken){
-      router.push("/login");
-      return;
-    }
-
     if (!id) return;
 
-    const fetchUser = async () => {
+    const fetchExoplanet = async () => {
       try {
-        const userData: User = await apiService.get<User>(`/users/${id}`);
-        setUser(userData);
-        console.log("Fetched user:", userData)
+        // Fetch exoplanet data
+        const data: Exoplanet = await apiService.get(`/exoplanets/${id}`);
+        console.log(data);
+        setExoplanet(data);
+
+        // Fetch photometric/light curve data
+        const curve = await apiService.get(`/photometric-curves/${data.photometricCurveId}`);
+        const typedCurve = curve as PhotometricCurve;
+        setLightCurveData(typedCurve.dataPoints); // Assume format: [{ time, brightness, brightnesserror }]
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error("Failed to fetch exoplanet data:", error);
+        router.push("/exoplanets");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
-  }, [id, apiService, router, setLoading]);
-/*
-  if (loading) {
-    return <Text size="large" style={{ display: "block", margin: "20px auto" }} />;
-  }
-
-  if (!user) {
-    return <Text type="danger">User not found.</Text>;
-  }
-*/
+    fetchExoplanet();
+  }, [id, apiService]);
+  if (loading) return <div>Loading...</div>;
+  if (!exoplanet) return <div>Exoplanet not found.</div>;
   return (
-    <div className="user-profile"> 
-    loading={!user}
-    <Card title="User Profile" style={{ maxWidth: 600, margin: "20px auto" }}>
-      
-      { user && (
-        <>
-        <Title level={3}>{user.username}</Title>
-        <Text strong>Name:</Text> <Text>{user.name}</Text>
-        <br />
-        <Text strong>Birth day:</Text> <Text>{user.birthday}</Text>
-        <br />
-        <Text strong>Creation Date:</Text> <Text>{user.creation_date}</Text>
-        <br />
-        <Text strong>Status:</Text> <Text>{user.status}</Text>
-        <br />
-        <Text strong>ID:</Text> <Text>{user.id}</Text>
-        <br />
-        </>
-     ) }
-        <Button
-            type="primary"
-            variant="solid"
-            onClick={() => router.push("/users")}
-          >
-            users overview
-          </Button>
-
-    </Card>
-     <div>
-     
-     </div>
-    
+    <div style={{ width: '100%', height: '100%', position: 'relative', background: 'white', overflow: 'hidden' }}>
+    <div className="exoplanet-background" style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      zIndex: -1
+    }} />
+      {<div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100vw',
+          height: '100vh',
+          overflow: 'auto', // lets the user scroll if the scaled content overflows
+          position: 'relative',
+        }}>
+       <div
+        style={{
+            transform: 'scale(0.67)',
+            transformOrigin: 'center center',
+            position: 'relative', // sets context for all your absolutely positioned elements
+            width: '2430px', // original full canvas width
+            height: '1600px', // original full canvas height
+          }}
+        >
+     <div style={{width: '100%', height: '100%', position: 'relative', opacity: 0.87, background: 'white', overflow: 'hidden'}}>
+    <div style={{width: 667, height: 113, left: 427, top: 984, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 20, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>100</div>
+    <div style={{width: 1629, height: 1042, left: 49, top: 55, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 98, filter: 'blur(0px)'}} />
+    <div style={{width: 1524, height: 436, left: 136, top: 635, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 26, filter: 'blur(0px)'}} />
+    <div style={{width: 1495, height: 420, left: 136, top: 181, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 14, filter: 'blur(0px)'}} />
+    <div style={{width: 667, height: 113, left: 1178, top: 137, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Host Star</div>
+    <div style={{width: 667, height: 113, left: 1231, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>User</div>
+    <div style={{width: 667, height: 102, left: 1215, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Analyzed by:</div>
+    <div style={{width: 667, height: 101, left: -105, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>CSIC-IAC</div>
+    <div style={{width: 667, height: 91, left: -98, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Research Group:</div>
+    <div style={{width: 667, height: 113, left: -15, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Fractional Depth:</div>
+    <div style={{width: 667, height: 113, left: 190, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.fractionalDepth* 100).toFixed(2)}%</div>
+    <div style={{width: 667, height: 113, left: 65, top: 833, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.radius).toFixed(2)} R⊕</div>
+    <div style={{width: 667, height: 113, left: 36, top: 962, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.mass).toFixed(2)} M⊕</div>
+    <div style={{width: 667, height: 113, left: 652, top: 839, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.surfaceGravity).toFixed(2)}m/s2</div>
+    <div style={{width: 667, height: 113, left: 652, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.escapeVelocity).toFixed(2)} × vₑ⊕</div>
+    <div style={{width: 667, height: 113, left: 1099, top: 715, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.orbitalPeriod.toFixed(2)} days</div>
+    <div style={{width: 667, height: 113, left: 546, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.density.toFixed(2)}× ρₑ⊕ </div>
+    <div style={{width: 667, height: 113, left: 1250, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.theoreticalTemperature.toFixed(1)} K</div>
+    <div style={{width: 667, height: 113, left: 1173, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.earthSimilarityIndex).toFixed(2)}%</div>
+    <div style={{width: 667, height: 113, left: 372, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Density:</div>
+    <div style={{width: 667, height: 113, left: 879, top: 715, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Oribital Period:</div>
+    <div style={{width: 667, height: 113, left: 968, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Theoretical Temperature:</div>
+    <div style={{width: 667, height: 113, left: 947, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Earth Index Similarity:</div>
+    <div style={{width: 667, height: 113, left: 432, top: 838, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Surface Gravity:</div>
+    <div style={{width: 667, height: 113, left: 432, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Escape velocity:</div>
+    <div style={{width: 667, height: 113, left: -98, top: 833, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Radius:</div>
+    <div style={{width: 667, height: 113, left: -112, top: 963, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Mass:</div>
+    <div style={{width: 1001, height: 112, left: -124, top: 35, position: 'absolute', textAlign: 'center', color: '#FFD9D9', fontSize: 96, fontFamily: 'Koulen', fontWeight: '400', wordWrap: 'break-word'}}>{exoplanet.planetName}</div>
+    <div style={{width: 1001, height: 78, left: 994, top: 59, position: 'absolute', textAlign: 'center', color: '#FFD9D9', fontSize: 64, fontFamily: 'Koulen', fontWeight: '400', wordWrap: 'break-word'}}>{exoplanet.hostStarName}</div>
+    <div style={{width: 236, height: 49, left: 22, top: 1039, position: 'absolute', background: '#650808', boxShadow: '69.30000305175781px 69.30000305175781px 69.30000305175781px ', filter: 'blur(34.65px)'}} />
+    <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
+    <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
+    {lightCurveData.length > 0 && (
+      <div>
+        <p>Light curve has {lightCurveData.length} points.</p>
+      </div>
+    )}
+    </div>
+</div>
+</div>}
     </div>
   );
 };
 
-export default UserProfile;
+export default ExoplanetProfile;
 
 
