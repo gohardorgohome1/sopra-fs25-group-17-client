@@ -104,12 +104,12 @@ const Dashboard: React.FC = () => {
         className="dashboard-container"
         style={{
           position: "relative",
-          marginTop: "5vh",       // pushes it down, adjust as needed
+          marginTop: "1vh",       // pushes it down, adjust as needed
           marginLeft: "auto",     // centers horizontally
           marginRight: "auto",    // centers horizontally
           padding: "2vw", // position & size
           paddingTop: "1vh", // adjust to center vertically
-          height: "70vh",
+          height: "80vh",
           width: "97vw",
           background: "#000000",
           border: "none",
@@ -153,18 +153,20 @@ const Dashboard: React.FC = () => {
                 lineHeight: "1.2",
                 letterSpacing: "0em",
                 textAlign: "center",
-
                 }}
               >
                 Exoplanet Populations
               </h2>
               <div
                 style={{
+                  flexGrow: 1,
                   width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  position: "relative",
+                  //width: "100%",
+                  //height: "100%",
+                  //display: "flex",
+                  //justifyContent: "center",
+                  //alignItems: "center",
                   color: "#888",
                 }}
               >

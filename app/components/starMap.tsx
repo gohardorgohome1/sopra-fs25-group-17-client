@@ -78,47 +78,70 @@ const StarMap: React.FC = () => {
     paper_bgcolor: "black",
     plot_bgcolor: "black",
     xaxis: {
-      title: "Orbital Period (Days)",
+      title: { 
+        text: "Orbital Period (Days)",
+          font: {
+            family: "Jura",  // You can change the font family if needed
+            size: 12,
+            color: "white"
+          },
+        },
       type: "log",
       color: "white",
       range: [Math.log10(0.2), Math.log10(1000)], // 0.2 to 1000 days
       showgrid: false,
       zeroline: false,
       tickmode: "array", // Manually set tick positions
-      tickvals: [0.2, 1, 10, 100, 1000], // Set specific ticks
-      ticktext: ["0.2", "1", "10", "100", "1000"], // Corresponding labels
+      tickvals: [1, 10, 100, 1000], // Set specific ticks
+      ticktext: [ "1", "10", "100", "1000"], // Corresponding labels
       tickangle: 0, // If you'd like to adjust label angle
       //ticks: "outside", // Optional: you can set it as "inside" for a different look
+      scaleanchor: "y",
     },
     yaxis: {
-      title: "Radius (Earth Units)",
+      title: { 
+        text: "Radius (Earth Units)",
+          font: {
+            family: "Jura",  // You can change the font family if needed
+            size: 12,
+            color: "white"
+          },},
       type: "log",
       color: "white",
       range: [Math.log10(0.3), Math.log10(25)], // 0.3 to 25 Earth radii
       showgrid: false,
       zeroline: false,
       tickmode: "array", // Manually set tick positions
-      tickvals: [0.3, 1, 3, 10, 25], // Set specific ticks
-      ticktext: ["0.3", "1", "3", "10", "25"], // Corresponding labels
+      tickvals: [1, 4, 10, 20], // Set specific ticks
+      ticktext: ["1", "4", "10", "20"], // Corresponding labels
       tickangle: 0, // If you'd like to adjust label angle
       //ticks: "outside", // Optional: you can set it as "inside" for a different look
+      scaleanchor: "x",
     },
+
+    margin: {
+      t: 0,  // Top margin - reduce it to give more space
+      b: 30,  // Bottom margin
+      l: 30,  // Left margin
+      r: 0,  // Right margin
+    },
+
     shapes: [
       {
         // Lava Worlds
         type: "rect",
         x0: 0.2, x1: 4,
-        y0: 0.5, y1: 3,
+        y0: 0.5, y1: 2.5,
         fillcolor: "#4D0E13",
         opacity: 1,
-        line: { width: 0 },
+        line: { width: 0, color: "white", shape: "round"},
         layer: "below",
       },
       {
         // Rocky Planets
         type: "rect",
-        x0: 2, x1: 50,
-        y0: 0.8, y1: 3.5,
+        x0: 4, x1: 140,
+        y0: 0.35, y1: 3.5,
         fillcolor: "#704214",
         opacity: 1,
         line: { width: 0 },
@@ -128,7 +151,7 @@ const StarMap: React.FC = () => {
         // Ocean Worlds & Ice Giants
         type: "rect",
         x0: 2, x1: 300,
-        y0: 3.5, y1: 8,
+        y0: 3.5, y1: 10,
         fillcolor: "#0A2942",
         opacity: 1,
         line: { width: 0 },
@@ -138,7 +161,7 @@ const StarMap: React.FC = () => {
         // Hot Jupiters
         type: "rect",
         x0: 0.5, x1: 10,
-        y0: 10, y1: 20,
+        y0: 10, y1: 25,
         fillcolor: "#422626",
         opacity: 1,
         line: { width: 0 },
@@ -147,8 +170,8 @@ const StarMap: React.FC = () => {
       {
         // Cold Gas Giants
         type: "rect",
-        x0: 100, x1: 1000,
-        y0: 10, y1: 20,
+        x0: 140, x1: 1000,
+        y0: 10, y1: 25,
         fillcolor: "#001133",
         opacity: 1,
         line: { width: 0 },
@@ -157,28 +180,57 @@ const StarMap: React.FC = () => {
       {
         // Earth-Like Planets
         type: "rect",
-        x0: 100, x1: 300,
-        y0: 0.8, y1: 1.5,
+        x0: 140, x1: 700,
+        y0: 0.8, y1: 1.8,
         fillcolor: "#0B4F2D",
         opacity: 1,
         line: { width: 0 },
         layer: "below",
       },
     ],
+    
     annotations: [
-      { x: 0.001, y: 0.1, text: "Lava Worlds", showarrow: false, font: { color: "white", size: 14 } , xref: "x", yref: "y",},
-      { x: 10, y: 2.5, text: "Rocky Planets", showarrow: false, font: { color: "white" } },
-      { x: 30, y: 5.5, text: "Ocean Worlds & Ice Giants", showarrow: false, font: { color: "white" } },
-      { x: 3, y: 15, text: "Hot Jupiters", showarrow: false, font: { color: "white" } },
-      { x: 400, y: 15, text: "Cold Gas Giants", showarrow: false, font: { color: "white" } },
-      { x: 180, y: 1.1, text: "Earth-Like Planets", showarrow: false, font: { color: "white" } },
+      { x: 0.2, y: 0.4, text: "Lava Worlds", showarrow: false, 
+        font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
+        xanchor: "right", yanchor: "top"},
+
+      { x: 1.65, y: 0.55, text: "Rocky Planets", showarrow: false, 
+        font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
+      xanchor: "right", yanchor: "top"},
+
+      { x: 1.8, y: 0.98, text: "Ocean Worlds & Ice Giants", showarrow: false, 
+        font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
+      xanchor: "right", yanchor: "top"},
+
+      { x: 0.55, y: 1.4, text: "Hot Jupiters", showarrow: false, 
+        font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
+      xanchor: "right", yanchor: "top"},
+
+      { x: 2.9, y: 1.4, text: "Cold Gas Giants", showarrow: false, 
+        font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
+      xanchor: "right", yanchor: "top"},
+
+      { x: 2.84, y: 0.25, text: "Earth-Like Planets", showarrow: false, 
+        font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
+      xanchor: "right", yanchor: "top"},
     ],
   };
 
+  const config = {
+    displayModeBar: false,
+    scrollZoom: true,
+  };
+
   return (
-    <div style={{ width: "100%", height: "100%" }}>
-      <Plot data={data} layout={layout} config={{ responsive: true }} />
-    </div>
+      <div style={{ width: "100%", height: "100%" }}> 
+        <Plot 
+          data={data}
+          layout={layout}
+          config={config}
+          style={{ width: "100%", height: "100%" }}
+          useResizeHandler
+        />
+      </div>
   );
 };
 
