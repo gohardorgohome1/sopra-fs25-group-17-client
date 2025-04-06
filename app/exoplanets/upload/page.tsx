@@ -215,7 +215,7 @@ const Upload: React.FC = () => {
                       height: "6vh",
                       background: "black",
                       borderRadius: 46,
-                      //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
+                      //backdropFilter: "blur(10px)", // according to figma, we need this -> I do not think it is visible
                       
                       marginTop: "16vh", // button position
 
@@ -255,7 +255,7 @@ const Upload: React.FC = () => {
               height: "6vh",
               background: "black",
               borderRadius: 46,
-              //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
+              //backdropFilter: "blur(10px)", // according to figma, we need this -> I do not think it is visible
               
               marginLeft: "4vw", // button position
               marginTop: "11vh",
