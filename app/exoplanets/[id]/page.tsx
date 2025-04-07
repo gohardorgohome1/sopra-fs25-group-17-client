@@ -107,7 +107,7 @@ const ExoplanetProfile: React.FC = () => {
        <div
         style={{
             transform: 'scale(0.67)',
-            transformOrigin: 'top left',
+            transformOrigin: 'center center',
             position: 'relative', // sets context for all your absolutely positioned elements
             width: '2430px', // original full canvas width
             height: '1600px', // original full canvas height
