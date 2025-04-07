@@ -18,13 +18,19 @@ const Upload: React.FC = () => {
       return;
     }
 
-    const formData = new FormData();
+    const formData = new FormData(); // Backend: PhotometricCurve curve = photometricCurveService.processAndSavePhotometricCurve(file, hostStar, exoplanet, ownerId);
+    formData.append("file", selectedFile); // should be object of type: MultipartFile
+    formData.append("hostStar", "PlaceholderHostStar")
     formData.append("exoplanetName", value.exoplanetName);
-    formData.append("file", selectedFile);
-    // If needed: formData.append("userId", userId.toString());
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("User ID not found. Please log before trying to upload.");
+      return;
+    }
+    formData.append("userId", userId);
 
     try {
-      const response = await apiService.post<PhotometricCurve>("/upload",  value ); /////////////////////////////////////////////////////////
+      await apiService.post<PhotometricCurve>("/photometric-curves/upload",  formData ); // post request for Photometric Curve
 
       router.push("/dashboard");
     } catch (error) {
@@ -50,7 +56,7 @@ const Upload: React.FC = () => {
       alert("Please upload a .txt file.");
       return;
     }
-    setSelectedFile(file);
+    setSelectedFile(file);  // save new file
   };
 
 
@@ -170,7 +176,7 @@ const Upload: React.FC = () => {
                     height: "8vh",
                     background: "black",
                     borderRadius: 46,
-                    marginTop: "20px",
+                    marginTop: "1vh",
                     border: "none", // removes white border
 
                     textAlign: "center", // Text size & style
@@ -194,6 +200,26 @@ const Upload: React.FC = () => {
                     Upload file
                   </span>
                 </Button>
+
+                {selectedFile && ( // This part is responsible for showing the name of the selected file
+                  <div
+                    style={{
+                      marginTop: "1.2vh",
+                      textAlign: "center",
+                      color: "#8A5555",
+                      fontSize: "1.2vw",
+                      fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+                      fontWeight: "700",
+
+                      background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    Selected file: <strong>{selectedFile.name}</strong>
+                  </div>
+                )}
+
                 <Form.Item // Input exoplanet name field & Label
                   name="exoplanetName"
                   label={
@@ -201,7 +227,7 @@ const Upload: React.FC = () => {
                     style={{
                       width: "32vw", // size
                       height: "8vh",
-                      marginTop: "6vh",
+                      marginTop: "2vh",
 
                       textAlign: "center",
                       background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
