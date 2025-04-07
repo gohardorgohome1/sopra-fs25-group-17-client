@@ -69,14 +69,16 @@ const ExoplanetProfile: React.FC = () => {
         // Fetch exoplanet data
         const data: Exoplanet = await apiService.get(`/exoplanets/${id}`);
         setExoplanet(data);
-
+        if (false) {
+          router.push("/exoplanets");
+        }
         // Fetch photometric/light curve data
         const curve = await apiService.get(`/photometricCurves/${data.photometricCurveId}`);
         const typedCurve = curve as PhotometricCurve;
         setLightCurveData(typedCurve.dataPoints); // Assume format: [{ time, brightness, brightnesserror }]
       } catch (error) {
         console.error("Failed to fetch exoplanet data:", error);
-        router.push("/exoplanets");
+
       } finally {
         setLoading(false);
       }
