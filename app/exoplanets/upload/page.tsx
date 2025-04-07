@@ -21,13 +21,13 @@ const Upload: React.FC = () => {
     const formData = new FormData(); // Backend: PhotometricCurve curve = photometricCurveService.processAndSavePhotometricCurve(file, hostStar, exoplanet, ownerId);
     formData.append("file", selectedFile); // should be object of type: MultipartFile
     formData.append("hostStar", "PlaceholderHostStar")
-    formData.append("exoplanetName", value.exoplanetName);
+    formData.append("exoplanet", value.exoplanetName);
     const userId = localStorage.getItem("userId");
     if (!userId) {
       alert("User ID not found. Please log before trying to upload.");
       return;
     }
-    formData.append("userId", userId);
+    formData.append("ownerId", userId);
 
     try {
       await apiService.post<PhotometricCurve>("/photometric-curves/upload",  formData ); // post request for Photometric Curve
