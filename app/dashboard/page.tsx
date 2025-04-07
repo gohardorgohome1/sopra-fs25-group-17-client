@@ -124,7 +124,8 @@ const Dashboard: React.FC = () => {
               display: "flex",
               flexDirection: "row", // Align children horizontally
               gap: "2vw", // Space between the sides
-              height: "100%", // Ensure it takes full height
+              height: "100vh", // Ensure it takes full height
+              width: "100%",
             }}
           >
             {/* Left Side */}
@@ -144,15 +145,15 @@ const Dashboard: React.FC = () => {
             >
               <h2
                 style={{
-                fontFamily: "Jura",
-                background: "linear-gradient(90deg, #FFFFFF 0%, #0058B6 100%)", // Apply gradient to text
-                WebkitBackgroundClip: "text", // Clip the background to the text
-                color: "transparent", // Make the text color transparent so the gradient shows through
-                fontWeight: "700",
-                fontSize: "2vw",
-                lineHeight: "1.2",
-                letterSpacing: "0em",
-                textAlign: "center",
+                  fontFamily: "Jura",
+                  background: "linear-gradient(90deg, #FFFFFF 0%, #0058B6 100%)", // Apply gradient to text
+                  WebkitBackgroundClip: "text", // Clip the background to the text
+                  color: "transparent", // Make the text color transparent so the gradient shows through
+                  fontWeight: "700",
+                  fontSize: "2vw",
+                  lineHeight: "1.2",
+                  letterSpacing: "0em",
+                  textAlign: "center",
                 }}
               >
                 Exoplanet Populations
@@ -160,13 +161,13 @@ const Dashboard: React.FC = () => {
               <div
                 style={{
                   flexGrow: 1,
+                  height: "100vh",
                   width: "100%",
                   position: "relative",
-                  //width: "100%",
-                  //height: "100%",
-                  //display: "flex",
-                  //justifyContent: "center",
-                  //alignItems: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
                   color: "#888",
                 }}
               >

@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import Plot from "react-plotly.js";
+//import Plot from "react-plotly.js";
 
 //import { useRouter } from "next/navigation";
 //import apiService from "../services/apiService"; // Adjust the import based on your structure
 import { useApi } from "@/hooks/useApi";
+
+import dynamic from "next/dynamic";
+
+// Dynamically import Plotly.js component with no SSR
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+import type { ScatterData } from "plotly.js";
+import type { Layout } from "plotly.js";
 
 
 interface Exoplanet {
@@ -18,6 +25,7 @@ const StarMap: React.FC = () => {
   const apiService = useApi();
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchExoplanets = async () => {
@@ -39,6 +47,7 @@ const StarMap: React.FC = () => {
     fetchExoplanets();
   }, []);
 
+
   if (loading) {
     return <div style={{ color: "white" }}>Loading...</div>;
   }
@@ -47,12 +56,13 @@ const StarMap: React.FC = () => {
   const manualPoint = {
     orbitalPeriod: 3.23469439654,
     radius: 13.31600225,
+    planetName: "Test Planet",
   };
   
   // Combine fetched exoplanets with the test point
   const combinedPlanets = [...exoplanets, manualPoint];
 
-  const data = [
+  const data: Partial<ScatterData>[] = [
     {
       // x: exoplanets.map((p) => p.orbitalPeriod),
       // y: exoplanets.map((p) => p.radius),
@@ -74,7 +84,12 @@ const StarMap: React.FC = () => {
     },
   ];
 
-  const layout = {
+  const layout: Partial<Layout> = {
+    autosize: true,
+    // width: "100%",
+    // height: "100vh",
+    width: 1000, 
+    height: 700,
     paper_bgcolor: "black",
     plot_bgcolor: "black",
     xaxis: {
@@ -134,7 +149,7 @@ const StarMap: React.FC = () => {
         y0: 0.5, y1: 2.5,
         fillcolor: "#4D0E13",
         opacity: 1,
-        line: { width: 0, color: "white", shape: "round"},
+        line: { width: 0, color: "white", },
         layer: "below",
       },
       {
