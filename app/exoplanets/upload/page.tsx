@@ -3,31 +3,56 @@ import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Button, Form, Input, Card } from "antd";
+import { useRef, useState } from "react";
 
 const Upload: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [form] = Form.useForm();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleUpload = async (value: { exoplanetName: string }) => {
+  const handleUpload = async (value: {  exoplanetName: string }) => {
+    if (!selectedFile) {
+      alert("Please upload a .txt file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("exoplanetName", value.exoplanetName);
+    formData.append("file", selectedFile);
+    // If needed: formData.append("userId", userId.toString());
+
     try {
       const response = await apiService.post<PhotometricCurve>("/upload",  value ); /////////////////////////////////////////////////////////
 
       router.push("/dashboard");
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message.includes("Invalid photometric curve or exoplanet name!")) {
-          alert("Invalid photometric curve or exoplanet name!");
+        if (error.message.includes("Invalid photometric curve file or exoplanet name!")) {
+          alert("Invalid photometric curve file or exoplanet name!");
         }
         else{
-          alert(`Something went wrong during the upload of your photometric curve:\n${error.message}`);
+          alert(`Something went wrong during the upload of your photometric curve file:\n${error.message}`);
         }
         
       } else {
-        console.error("An unknown error occurred during the upload of your photometric curve!");
+        console.error("An unknown error occurred during the upload of your photometric curve file!");
       }
     }
   }
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "text/plain") {
+      alert("Please upload a .txt file.");
+      return;
+    }
+    setSelectedFile(file);
+  };
+
 
   return (
     <div
@@ -101,58 +126,6 @@ const Upload: React.FC = () => {
                 zIndex: 1 // foreground
               }}
             >
-              <span
-                style=
-                {{
-                  display: "flex", // center text horizontally
-                  flexDirection: "column",
-                  alignItems: "center",
-
-                  textAlign: "center",
-                  color: "#8A5555",
-                  fontSize: "2vw",
-                  fontFamily: "Jura", // imported fontFamily -> see top of globals.css
-                  fontWeight: "700",
-
-                  background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                Upload a lightcurve file (.txt)
-              </span>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="upload-button"
-                style={{
-                  width: "32vw", // button size & style
-                  height: "8vh",
-                  background: "black",
-                  borderRadius: 46,
-                  marginTop: "20px",
-
-                  textAlign: "center", // Text size & style
-                  color: "#8A5555",
-                  fontSize: "40px",
-                  fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
-                  fontWeight: "700",
-
-                  boxShadow: "none", // removes default green shadow of button
-                }}
-              >
-                <span
-                  style={{
-                    background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    WebkitTextStrokeWidth: "1px",   // Add black edge to text
-                    WebkitTextStrokeColor: "#000000",
-                  }}
-                >
-                  Upload file
-                </span>
-              </Button>
 
               <Form // Input field "Name of the Exoplanet" with label
                 form={form}
@@ -163,6 +136,64 @@ const Upload: React.FC = () => {
                 layout="vertical" // Label on top by default
                 requiredMark={false} // no star before label
               >
+                <div // Text above button
+                  style=
+                  {{
+                    textAlign: "center",
+                    color: "#8A5555",
+                    fontSize: "2vw",
+                    fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+                    fontWeight: "700",
+
+                    background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  Upload a lightcurve file (.txt)
+                </div>                  
+                <input // Button to upload file
+                  type="file"
+                  accept=".txt"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  style={{
+                    display: "none",
+                  }}
+                >
+                </input>
+                <Button
+                  type="default"
+                  onClick={() => fileInputRef.current?.click()}
+                  style = {{
+                    width: "32vw", // button size & style
+                    height: "8vh",
+                    background: "black",
+                    borderRadius: 46,
+                    marginTop: "20px",
+                    border: "none", // removes white border
+
+                    textAlign: "center", // Text size & style
+                    color: "#8A5555",
+                    fontSize: "40px",
+                    fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                    fontWeight: "700",
+
+                    boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)', // red glow around button
+                  }}
+                >
+                  <span
+                    style={{
+                      background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      WebkitTextStrokeWidth: "1px",   // Add black edge to text
+                      WebkitTextStrokeColor: "#000000",
+                    }}
+                  >
+                    Upload file
+                  </span>
+                </Button>
                 <Form.Item // Input exoplanet name field & Label
                   name="exoplanetName"
                   label={
