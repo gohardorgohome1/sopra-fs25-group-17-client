@@ -234,7 +234,7 @@ const Upload: React.FC = () => {
                     style={{
                       width: "32vw", // size
                       height: "8vh",
-                      marginTop: "1vh",
+                      marginTop: "0vh",
 
                       textAlign: "center",
                       background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
@@ -292,7 +292,7 @@ const Upload: React.FC = () => {
                     style={{
                       width: "32vw", // size
                       height: "8vh",
-                      marginTop: "-4vh",
+                      marginTop: "-5vh",
 
                       textAlign: "center",
                       background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
@@ -358,7 +358,7 @@ const Upload: React.FC = () => {
                       borderRadius: 46,
                       //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
                       
-                      marginTop: "16vh", // button position
+                      marginTop: "10vh", // button position
 
                       textAlign: "center", // Text size & style
                       color: "#8A5555",
