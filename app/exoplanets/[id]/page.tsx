@@ -70,15 +70,14 @@ const ExoplanetProfile: React.FC = () => {
         const data: Exoplanet = await apiService.get(`/exoplanets/${id}`);
         setExoplanet(data);
 
-        if (false) {
-          router.push("/exoplanets");
-        }
         // Fetch photometric/light curve data
         const curve = await apiService.get(`/photometricCurves/${data.photometricCurveId}`);
         const typedCurve = curve as PhotometricCurve;
         setLightCurveData(typedCurve.dataPoints); // Assume format: [{ time, brightness, brightnesserror }]
       } catch (error) {
         console.error("Failed to fetch exoplanet data:", error);
+        router.push("/exoplanets");
+
       } finally {
         setLoading(false);
       }
@@ -91,15 +90,16 @@ const ExoplanetProfile: React.FC = () => {
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: 'white', overflow: 'hidden' }}>
 
-      {<div style={{ 
-        transform: 'scale(0.67)', 
-        transformOrigin: 'top center', 
-        width: '100%', 
-        height: '100%', 
-        overflow: 'auto' 
-      }}>
-
-        <div style={{width: '100%', height: '100%', position: 'relative', opacity: 0.87, background: 'white', overflow: 'hidden'}}>
+      {
+       <div
+       style={{
+         transform: 'scale(0.67)',
+         transformOrigin: 'top center',
+         width: 'fit-content',
+         height: 'fit-content',
+       }}
+     > 
+     <div style={{width: '100%', height: '100%', position: 'relative', opacity: 0.87, background: 'white', overflow: 'hidden'}}>
 
       <div className="exoplanet-background" style={{ position: 'relative', overflow: 'hidden' }}></div>
     <div style={{width: 667, height: 113, left: 427, top: 984, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 20, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>100</div>
