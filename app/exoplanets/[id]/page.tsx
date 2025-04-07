@@ -78,6 +78,7 @@ const ExoplanetProfile: React.FC = () => {
         setLightCurveData(typedCurve.dataPoints); // Assume format: [{ time, brightness, brightnesserror }]
       } catch (error) {
         console.error("Failed to fetch exoplanet data:", error);
+
       } finally {
         setLoading(false);
       }
