@@ -82,10 +82,11 @@ export class ApiService {
    */
   public async post<T>(endpoint: string, data: unknown): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+    const isFormData = data instanceof FormData;
     const res = await fetch(url, {
       method: "POST",
-      headers: this.defaultHeaders,
-      body: JSON.stringify(data),
+      headers: isFormData ? undefined: this.defaultHeaders,       // Check whether the type is FormData (file upload): If yes, no header is set and no serialization is performed
+      body: isFormData ? data as FormData: JSON.stringify(data),  //  -> browser will sautomatically set the header to multipart/form-data if it's a file
     });
     return this.processResponse<T>(
       res,
