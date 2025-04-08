@@ -4,6 +4,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import dynamic from 'next/dynamic';
+const Plot = dynamic(() => import('react-plotly.js'), {
+  ssr: false
+});
 //import { Typography } from "antd";
 //import dynamic from "next/dynamic";
 
@@ -34,7 +38,7 @@ interface Exoplanet {
 interface DataPoint {
   time: number;
   brightness: number;
-  brightnessError?: number;
+  brightnessError: number;
 }
 
 interface PhotometricCurve {
@@ -90,30 +94,103 @@ const ExoplanetProfile: React.FC = () => {
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: 'white', overflow: 'hidden' }}>
     <div className="exoplanet-background" style={{
-      position: 'fixed',
       top: 0,
       left: 0,
       zIndex: -1
-    }} />
-      {<div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100vw',
-          height: '100vh',
-          overflow: 'auto', // lets the user scroll if the scaled content overflows
-          position: 'relative',
-        }}>
-       <div
+    }}>
+
+{lightCurveData.length > 0 && (
+            <div
+            style={{
+              position: 'absolute', // absolute positioning
+              top: '100px',          // distance from the top
+              left: '47%',          // center horizontally
+              transform: 'translateX(-50%)', // perfect horizontal centering
+              width: '80%',
+              zIndex: 10,
+              maxWidth: '600px'
+            }}
+          >
+            <Plot
+              data={[
+                { x: lightCurveData.map(point => point.time),
+                  y: lightCurveData.map(point => point.brightness),
+                  error_y: {
+                    type: 'data',
+                    array: lightCurveData.map(point => point.brightnessError),
+                    visible: true,
+                    color: 'rgba(173, 216, 230, 0.5)', // lightblue with transparency
+                    thickness: 0.5
+                  },
+                  type: 'scatter',
+                  mode: 'lines+markers',
+                  line: { shape: 'spline', smoothing: 1.3 }, // smooths the curve
+                  marker: { color: '#00ffff', size: 4 }, // smaller, cleaner markers
+                  name: 'Brightness'
+                }
+              ]}
+              layout={{
+                height: 310, 
+                margin: {
+                  l: 50, r: 20, t: 40, b: 50
+                },
+                title: `Light Curve of ${exoplanet.planetName}`,
+                xaxis: {
+                  title: {
+                    text: 'Time',
+                    font: {
+                      size: 20,
+                      color: 'white'
+                    },
+                    standoff: 10
+                  },
+                  showline: true,
+                  linecolor: 'white',
+                  linewidth: 4, // Thicker line
+                  showgrid: false,
+                  showticklabels: false, // Show labels
+                  tickformat: '.5f',
+                  ticks: '',
+                  color: 'white'
+                },
+                yaxis: {
+                  title: {
+                    text: 'Brightness',
+                    font: {
+                      size: 20,
+                      color: 'white'
+                    },
+                    standoff: 10
+                  },
+                  showline: true,
+                  linecolor: 'white',
+                  linewidth: 4, // Thicker line
+                  showgrid: false,
+                  showticklabels: false, 
+                  ticks: '',
+                  color: 'white'
+                },
+                paper_bgcolor: 'rgba(0, 0, 0, 0)',
+                plot_bgcolor: 'rgba(0, 0, 0, 0)',
+                font: {
+                  color: 'white',
+                  family: 'Jura, sans-serif'
+                }
+              }}
+              
+              config={{ responsive: true }}
+            />
+          </div>
+        )}
+      {<div
         style={{
             transform: 'scale(0.67)',
-            transformOrigin: 'center center',
+            transformOrigin: 'top center',
             position: 'relative', // sets context for all your absolutely positioned elements
-            width: '2430px', // original full canvas width
-            height: '1600px', // original full canvas height
+            width: '1215px', // original full canvas width
+            height: '800px', // original full canvas height
           }}
         >
-     <div style={{width: '100%', height: '100%', position: 'relative', opacity: 0.87, background: 'white', overflow: 'hidden'}}>
     <div style={{width: 667, height: 113, left: 427, top: 984, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 20, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>100</div>
     <div style={{width: 1629, height: 1042, left: 49, top: 55, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 98, filter: 'blur(0px)'}} />
     <div style={{width: 1524, height: 436, left: 136, top: 635, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 26, filter: 'blur(0px)'}} />
@@ -127,12 +204,12 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 667, height: 113, left: 190, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.fractionalDepth* 100).toFixed(2)}%</div>
     <div style={{width: 667, height: 113, left: 65, top: 833, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.radius).toFixed(2)} R⊕</div>
     <div style={{width: 667, height: 113, left: 36, top: 962, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.mass).toFixed(2)} M⊕</div>
-    <div style={{width: 667, height: 113, left: 652, top: 839, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.surfaceGravity).toFixed(2)}m/s2</div>
+    <div style={{width: 667, height: 113, left: 652, top: 839, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.surfaceGravity).toFixed(2)} g</div>
     <div style={{width: 667, height: 113, left: 652, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.escapeVelocity).toFixed(2)} × vₑ⊕</div>
     <div style={{width: 667, height: 113, left: 1099, top: 715, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.orbitalPeriod.toFixed(2)} days</div>
     <div style={{width: 667, height: 113, left: 546, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.density.toFixed(2)}× ρₑ⊕ </div>
     <div style={{width: 667, height: 113, left: 1250, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.theoreticalTemperature.toFixed(1)} K</div>
-    <div style={{width: 667, height: 113, left: 1173, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.earthSimilarityIndex).toFixed(2)}%</div>
+    <div style={{width: 667, height: 113, left: 1193, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.earthSimilarityIndex).toFixed(2)}%</div>
     <div style={{width: 667, height: 113, left: 372, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Density:</div>
     <div style={{width: 667, height: 113, left: 879, top: 715, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Oribital Period:</div>
     <div style={{width: 667, height: 113, left: 968, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Theoretical Temperature:</div>
@@ -146,15 +223,9 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 236, height: 49, left: 22, top: 1039, position: 'absolute', background: '#650808', boxShadow: '69.30000305175781px 69.30000305175781px 69.30000305175781px ', filter: 'blur(34.65px)'}} />
     <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
     <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
-    {lightCurveData.length > 0 && (
-      <div>
-        <p>Light curve has {lightCurveData.length} points.</p>
-      </div>
-    )}
-    </div>
-</div>
 </div>}
     </div>
+  </div>
   );
 };
 
