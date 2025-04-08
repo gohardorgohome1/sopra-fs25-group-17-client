@@ -30,7 +30,7 @@ const Upload: React.FC = () => {
     formData.append("ownerId", userId);
 
     try {
-      await apiService.post<PhotometricCurve>("/photometric-curves/upload",  formData ); // post request for Photometric Curve
+      await apiService.post<void>("/photometric-curves/upload",  formData ); // post request for Photometric Curve
 
       router.push("/dashboard");
     } catch (error) {
@@ -234,7 +234,7 @@ const Upload: React.FC = () => {
                     style={{
                       width: "32vw", // size
                       height: "8vh",
-                      marginTop: "0vh",
+                      marginTop: "2vh",
 
                       textAlign: "center",
                       background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
@@ -249,18 +249,8 @@ const Upload: React.FC = () => {
                   </span>
                   }
 
-                  rules={[{ required: true, message: "Please input the name of the Exoplanet!" }]}
-                  validateStatus="error" // another check if the message really should be displayed
-                  help={
-                    <div
-                      style={{
-                        textAlign: "center",
-                        marginTop: "-3vh" // moves error message closer to the input field
-                        }}
-                      >
-                      Please input the name of the Exoplanet!
-                    </div>
-                  }
+                  rules={[{ required: true, message: "" }]} // For now, I did not manage to implement the message without creating
+                                                            // a big improper looking gap between message and input field. 
                 >
                   <div
                     style={{
@@ -307,18 +297,8 @@ const Upload: React.FC = () => {
                   </span>
                   }
 
-                  rules={[{ required: true, message: "Please input the name of the Host Star!" }]}
-                  validateStatus="error" // another check if the message really should be displayed
-                  help={
-                    <div
-                      style={{
-                        textAlign: "center",
-                        marginTop: "-3vh", // moves error message closer to the input field
-                        }}
-                      >
-                      Please input the name of the Host Star!
-                    </div>
-                  }
+                  rules={[{ required: true, message: "" }]} // For now, I did not manage to implement the message without creating
+                                                            // a big improper looking gap between message and input field. 
                 >
                   <div
                     style={{
@@ -335,7 +315,7 @@ const Upload: React.FC = () => {
                       borderRadius: 46,
                       fontSize: "2vw",
                       fontFamily: "Jura",
-                      color: "#000000"
+                      color: "#000000",
                     }}
                     />
                   </div>

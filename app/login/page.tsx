@@ -234,7 +234,7 @@ const Login: React.FC = () => {
                   WebkitTextFillColor: "transparent",
                 }}
                 >
-                  Haven't registered yet? Then register
+                  Have not registered yet? Then register
                 </span>
               <Button // Register button
                 onClick={() => router.push("/register")}
