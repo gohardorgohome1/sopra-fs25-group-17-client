@@ -69,11 +69,11 @@ const Login: React.FC = () => {
         src="/title.png" // image under /public/title.png
       />
 
-      <Card // Card for registration
+      <Card // Card for Login
       className="dashboard-container"
       style={{
         padding: "20px", // position & size
-        paddingTop: "50px", // adjust to center vertically
+        paddingTop: "50px",
         height: "400px",
         width: "620px",
 
@@ -85,7 +85,7 @@ const Login: React.FC = () => {
         zIndex: 1 // foreground
       }}
     >
-      <Form // Registration
+      <Form // Login
         form={form}
         name="login"
         size="large"
@@ -97,7 +97,8 @@ const Login: React.FC = () => {
       >
         <Form.Item // Input username field & Label
           name="username"
-          label={<span
+          label={
+          <span
             style={{
               width: "317px", // size
               height: "49px",
@@ -136,7 +137,8 @@ const Login: React.FC = () => {
 
         <Form.Item // Input password field & Label
           name="password"
-          label={<span
+          label={
+          <span
             style={{
               width: "317px", // size
               height: "49px",
