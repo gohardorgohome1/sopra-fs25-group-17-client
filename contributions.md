@@ -55,8 +55,8 @@ Note: If a team member fails to show continuous progress after using their Joker
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 | **[@PascalSenn2]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-| **[@gohardorgohome1]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+| **[@gohardorgohome1]** | [06.04.2025]    | [Link to Commit 1](https://github.com/gohardorgohome1/sopra-fs25-group-17-client/commit/4ea185388f5e9b6151b0c05f871ee1f0e02fa781)          | Basic starmap with plotly    | its one of the main features on our dashboard, it categorises exoplanets and makes them visible on the map. I made the full design according to figma and also implemented the logic and put one test planet on the map.   |
+|                   | [08.04.2025]    | [Link to Commit 2](https://github.com/gohardorgohome1/sopra-fs25-group-17-server/commit/61bddf1abc82f75fbc54cb7fb9f30d107bd878e8)          | setup of web sockets    | as we want real-time notifications we need this setup in the backend, what is missing right now is the endpoint which needs to be done in the PhotometricCurveController.java, but this file first needs to be changed anyway, I will add the web sockets logic there once the basic logic is adjusted.    |
 
 ---
 
