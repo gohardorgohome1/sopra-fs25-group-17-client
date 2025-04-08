@@ -52,8 +52,19 @@ const ExoplanetRanking: React.FC = () => {
     
 
   return (
-    <div id = "exoplanet-chart">
+    <div
+      style={{
+              fontFamily: "Jura",
+              color: "#FFFFFF",
+              fontWeight: "700",
+              fontSize: "32vw",
+              lineHeight: "1.0",
+              letterSpacing: "0",
+              textAlign: "center",
+            }}>
+      <div id = "exoplanet-chart">
 
+      </div>
     </div>
   );
 };
