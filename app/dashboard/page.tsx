@@ -104,12 +104,12 @@ const Dashboard: React.FC = () => {
         className="dashboard-container"
         style={{
           position: "relative",
-          marginTop: "5vh",       // pushes it down, adjust as needed
+          marginTop: "1vh",       // pushes it down, adjust as needed
           marginLeft: "auto",     // centers horizontally
           marginRight: "auto",    // centers horizontally
           padding: "2vw", // position & size
           paddingTop: "1vh", // adjust to center vertically
-          height: "70vh",
+          height: "80vh",
           width: "97vw",
           background: "#000000",
           border: "none",
@@ -124,7 +124,8 @@ const Dashboard: React.FC = () => {
               display: "flex",
               flexDirection: "row", // Align children horizontally
               gap: "2vw", // Space between the sides
-              height: "100%", // Ensure it takes full height
+              height: "100vh", // Ensure it takes full height
+              width: "100%",
             }}
           >
             {/* Left Side */}
@@ -144,24 +145,27 @@ const Dashboard: React.FC = () => {
             >
               <h2
                 style={{
-                fontFamily: "Jura",
-                background: "linear-gradient(90deg, #FFFFFF 0%, #0058B6 100%)", // Apply gradient to text
-                WebkitBackgroundClip: "text", // Clip the background to the text
-                color: "transparent", // Make the text color transparent so the gradient shows through
-                fontWeight: "700",
-                fontSize: "2vw",
-                lineHeight: "1.2",
-                letterSpacing: "0em",
-                textAlign: "center",
-
+                  fontFamily: "Jura",
+                  background: "linear-gradient(90deg, #FFFFFF 0%, #0058B6 100%)", // Apply gradient to text
+                  WebkitBackgroundClip: "text", // Clip the background to the text
+                  color: "transparent", // Make the text color transparent so the gradient shows through
+                  fontWeight: "700",
+                  fontSize: "2vw",
+                  lineHeight: "1.2",
+                  letterSpacing: "0em",
+                  textAlign: "center",
                 }}
               >
                 Exoplanet Populations
               </h2>
               <div
                 style={{
-                  height: "100%",
+                  flexGrow: 1,
+                  height: "100vh",
+                  width: "100%",
+                  position: "relative",
                   display: "flex",
+                  flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
                   color: "#888",
