@@ -91,3 +91,8 @@ a {
   opacity: 0.96;
   background: url("/background2.png") lightgray 50% / cover no-repeat;
 }
+
+/*.ant-form-item-explain-error {
+  text-align: center;
+  font-size: 1vw;
+}*/ /*Could be used to change style of message, when not filling an input field properly*/

@@ -3,31 +3,62 @@ import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Button, Form, Input, Card } from "antd";
+import { useRef, useState } from "react";
 
 const Upload: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [form] = Form.useForm();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleUpload = async (value: { exoplanetName: string }) => {
+  const handleUpload = async (value: {  exoplanetName: string, hostStar: string }) => {
+    if (!selectedFile) {
+      alert("Please upload a .txt file.");
+      return;
+    }
+
+    const formData = new FormData(); // Backend: PhotometricCurve curve = photometricCurveService.processAndSavePhotometricCurve(file, hostStar, exoplanet, ownerId);
+    formData.append("file", selectedFile); // should be object of type: MultipartFile
+    formData.append("hostStar", value.hostStar)
+    formData.append("exoplanet", value.exoplanetName);
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("User ID not found. Please log before trying to upload.");
+      return;
+    }
+    formData.append("ownerId", userId);
+
     try {
-      await apiService.post<void>("/upload",  value );
+      await apiService.post<void>("/photometric-curves/upload",  formData ); // post request for Photometric Curve
 
       router.push("/dashboard");
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message.includes("Invalid photometric curve or exoplanet name!")) {
-          alert("Invalid photometric curve or exoplanet name!");
+        if (error.message.includes("Invalid photometric curve file or exoplanet name!")) {
+          alert("Invalid photometric curve file or exoplanet name!");
         }
         else{
-          alert(`Something went wrong during the upload of your photometric curve:\n${error.message}`);
+          alert(`Something went wrong during the upload of your photometric curve file:\n${error.message}`);
         }
         
       } else {
-        console.error("An unknown error occurred during the upload of your photometric curve!");
+        console.error("An unknown error occurred during the upload of your photometric curve file!");
       }
     }
   }
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "text/plain") {
+      alert("Please upload a .txt file.");
+      return;
+    }
+    setSelectedFile(file);  // save new file
+  };
+
 
   return (
     <div
@@ -52,7 +83,7 @@ const Upload: React.FC = () => {
           background: "black", // visuals
           border: "none",
           borderRadius: 98,
-          backgroundColor: "rgba(0, 0, 0, 0.66)", // instead of opacity = 0.66 -> buttons etc. would inherit opacity
+          backgroundColor: "rgba(0, 0, 0, 0.5)", // instead of opacity = 0.66 -> buttons etc. would inherit opacity
 
           zIndex: 1 // foreground
         }}
@@ -86,7 +117,7 @@ const Upload: React.FC = () => {
             <Card
               className="uploadInner-container"
               style={{
-                width: "36vw", // size
+                width: "32vw", // size
                 height: "52vh",
 
                 display: "flex", // center items horizontally
@@ -96,63 +127,11 @@ const Upload: React.FC = () => {
                 background: "black", // visuals
                 border: "none",
                 borderRadius: 26,
-                backgroundColor: "rgba(0, 0, 0, 0.66)", // instead of opacity = 0.66 -> buttons etc. would inherit opacity
+                backgroundColor: "rgba(0, 0, 0, 0.5)", // instead of opacity = 0.66 -> buttons etc. would inherit opacity
 
                 zIndex: 1 // foreground
               }}
             >
-              <span
-                style=
-                {{
-                  display: "flex", // center text horizontally
-                  flexDirection: "column",
-                  alignItems: "center",
-
-                  textAlign: "center",
-                  color: "#8A5555",
-                  fontSize: "2vw",
-                  fontFamily: "Jura", // imported fontFamily -> see top of globals.css
-                  fontWeight: "700",
-
-                  background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                Upload a lightcurve file (.txt)
-              </span>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="upload-button"
-                style={{
-                  width: "32vw", // button size & style
-                  height: "8vh",
-                  background: "black",
-                  borderRadius: 46,
-                  marginTop: "20px",
-
-                  textAlign: "center", // Text size & style
-                  color: "#8A5555",
-                  fontSize: "40px",
-                  fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
-                  fontWeight: "700",
-
-                  boxShadow: "none", // removes default green shadow of button
-                }}
-              >
-                <span
-                  style={{
-                    background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    WebkitTextStrokeWidth: "1px",   // Add black edge to text
-                    WebkitTextStrokeColor: "#000000",
-                  }}
-                >
-                  Upload file
-                </span>
-              </Button>
 
               <Form // Input field "Name of the Exoplanet" with label
                 form={form}
@@ -163,6 +142,91 @@ const Upload: React.FC = () => {
                 layout="vertical" // Label on top by default
                 requiredMark={false} // no star before label
               >
+                <div // Text above button
+                  style=
+                  {{
+                    textAlign: "center",
+                    color: "#8A5555",
+                    fontSize: "1.6vw",
+                    fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+                    fontWeight: "700",
+
+                    background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  Upload a lightcurve file (.txt)
+                </div>
+                <div
+                  style = {{
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <input // Button to upload file
+                    type="file"
+                    accept=".txt"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    style={{
+                      display: "none",
+                    }}
+                  >
+                  </input>
+                  <Button
+                    type="default"
+                    onClick={() => fileInputRef.current?.click()}
+                    style = {{
+                      width: "28vw", // button size & style
+                      height: "6vh",
+                      background: "black",
+                      borderRadius: 46,
+                      marginTop: "1vh",
+                      border: "none", // removes white border
+
+                      textAlign: "center", // Text size & style
+                      color: "#8A5555",
+                      fontSize: "40px",
+                      fontFamily: "Karantina", // imported fontFamily -> see top of globals.css
+                      fontWeight: "700",
+
+                      boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)', // red glow around button
+                    }}
+                  >
+                    <span
+                      style={{
+                        background: "linear-gradient(90deg, #8A5555, #FFFFFF)", // color gradient
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        WebkitTextStrokeWidth: "1px",   // Add black edge to text
+                        WebkitTextStrokeColor: "#000000",
+                      }}
+                    >
+                      Upload file
+                    </span>
+                  </Button>
+                  </div>                 
+                
+                {selectedFile && ( // This part is responsible for showing the name of the selected file
+                  <div
+                    style={{
+                      marginTop: "1.2vh",
+                      textAlign: "center",
+                      color: "#8A5555",
+                      fontSize: "0.8vw",
+                      fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+                      fontWeight: "700",
+
+                      background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    Selected file: <strong>{selectedFile.name}</strong>
+                  </div>
+                )}
+
                 <Form.Item // Input exoplanet name field & Label
                   name="exoplanetName"
                   label={
@@ -170,13 +234,13 @@ const Upload: React.FC = () => {
                     style={{
                       width: "32vw", // size
                       height: "8vh",
-                      marginTop: "6vh",
+                      marginTop: "2vh",
 
                       textAlign: "center",
                       background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
-                      fontSize: "2vw",
+                      fontSize: "1.6vw",
                       fontFamily: "Jura", // imported fontFamily -> see top of globals.css
                       fontWeight: "700",
                     }}
@@ -185,19 +249,76 @@ const Upload: React.FC = () => {
                   </span>
                   }
 
-                  rules={[{ required: true, message: "Please input the name of the Exoplanet!" }]}
+                  rules={[{ required: true, message: "" }]} // For now, I did not manage to implement the message without creating
+                                                            // a big improper looking gap between message and input field. 
                 >
-                  <Input
-                  style={{
-                    width: "32vw",
-                    height: "8vh",
-                    background: "white",
-                    borderRadius: 46,
-                    fontSize: "2vw",
-                    fontFamily: "Jura",
-                    color: "#000000"
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      marginTop: "-6vh",
+                    }}
+                  >
+                    <Input
+                    style={{
+                      width: "24vw",
+                      height: "6vh",
+                      background: "white",
+                      borderRadius: 46,
+                      fontSize: "2vw",
+                      fontFamily: "Jura",
+                      color: "#000000"
+                    }}
+                    />
+                  </div>
+                </Form.Item>
+                <Form.Item // Input hostStar name field & Label
+                  name="hostStar"
+                  style = {{
+                    marginTop: "-4vh"
                   }}
-                  />
+                  label={
+                  <span
+                    style={{
+                      width: "32vw", // size
+                      height: "8vh",
+                      marginTop: "-5vh",
+
+                      textAlign: "center",
+                      background: "linear-gradient(90deg, #FFFFFF 0%, #D05C5C 63.9%, #B60000 100%)", // color gradient
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      fontSize: "1.6vw",
+                      fontFamily: "Jura", // imported fontFamily -> see top of globals.css
+                      fontWeight: "700",
+                    }}
+                  >
+                    Name of the Host Star
+                  </span>
+                  }
+
+                  rules={[{ required: true, message: "" }]} // For now, I did not manage to implement the message without creating
+                                                            // a big improper looking gap between message and input field. 
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      marginTop: "-6vh",
+                    }}
+                  >
+                    <Input
+                    style={{
+                      width: "24vw",
+                      height: "6vh",
+                      background: "white",
+                      borderRadius: 46,
+                      fontSize: "2vw",
+                      fontFamily: "Jura",
+                      color: "#000000",
+                    }}
+                    />
+                  </div>
                 </Form.Item>
                 <Form.Item
                   style={{
@@ -215,9 +336,9 @@ const Upload: React.FC = () => {
                       height: "6vh",
                       background: "black",
                       borderRadius: 46,
-                      //backdropFilter: "blur(10px)", // according to figma, we need this -> I do not think it is visible
+                      //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
                       
-                      marginTop: "16vh", // button position
+                      marginTop: "10vh", // button position
 
                       textAlign: "center", // Text size & style
                       color: "#8A5555",
@@ -255,7 +376,7 @@ const Upload: React.FC = () => {
               height: "6vh",
               background: "black",
               borderRadius: 46,
-              //backdropFilter: "blur(10px)", // according to figma, we need this -> I do not think it is visible
+              //backdropFilter: "blur(10px)", // according to figma, we need this -> I don't think it is visible
               
               marginLeft: "4vw", // button position
               marginTop: "11vh",
