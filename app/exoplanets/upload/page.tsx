@@ -3,7 +3,7 @@ import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Button, Form, Input, Card } from "antd";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { PhotometricCurve } from "@/types/photometricCurve";
 
 const Upload: React.FC = () => {
@@ -60,6 +60,14 @@ const Upload: React.FC = () => {
     }
     setSelectedFile(file);  // save new file
   };
+
+  useEffect(() => { // Redirect User to login if he is not logged in
+    const storedToken = localStorage.getItem("token"); 
+    if(!storedToken){
+      router.push("/login");
+      return;
+    }
+  }, [apiService, router]);
 
   return (
     <div
