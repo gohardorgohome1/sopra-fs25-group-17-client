@@ -88,8 +88,8 @@ const StarMap: React.FC = () => {
     autosize: true,
     // width: "100%",
     // height: "100vh",
-    width: 1000, 
-    height: 700,
+    //width: 800, 
+    //height: 600,
     paper_bgcolor: "black",
     plot_bgcolor: "black",
     xaxis: {
@@ -101,9 +101,12 @@ const StarMap: React.FC = () => {
             color: "white"
           },
         },
+      showline: true,
+      linecolor: 'white',
+      linewidth: 4, // Thicker line
       type: "log",
       color: "white",
-      range: [Math.log10(0.2), Math.log10(1000)], // 0.2 to 1000 days
+      range: [Math.log10(0.2), Math.log10(1500)], // 0.2 to 1000 days
       showgrid: false,
       zeroline: false,
       tickmode: "array", // Manually set tick positions
@@ -121,6 +124,9 @@ const StarMap: React.FC = () => {
             size: 12,
             color: "white"
           },},
+      showline: true,
+      linecolor: 'white',
+      linewidth: 4, // Thicker line
       type: "log",
       color: "white",
       range: [Math.log10(0.3), Math.log10(25)], // 0.3 to 25 Earth radii
@@ -135,10 +141,10 @@ const StarMap: React.FC = () => {
     },
 
     margin: {
-      t: 0,  // Top margin - reduce it to give more space
+      t: 10,  // Top margin - reduce it to give more space
       b: 30,  // Bottom margin
       l: 30,  // Left margin
-      r: 0,  // Right margin
+      r: 30,  // Right margin
     },
 
     shapes: [
@@ -234,6 +240,7 @@ const StarMap: React.FC = () => {
   const config = {
     displayModeBar: false,
     scrollZoom: true,
+    responsive: true,
   };
 
   return (

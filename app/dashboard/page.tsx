@@ -107,25 +107,29 @@ const Dashboard: React.FC = () => {
           marginTop: "1vh",       // pushes it down, adjust as needed
           marginLeft: "auto",     // centers horizontally
           marginRight: "auto",    // centers horizontally
-          padding: "2vw", // position & size
-          paddingTop: "1vh", // adjust to center vertically
-          height: "80vh",
+          //padding: "0.5vw", // position & size
+          //paddingTop: "0.5vh", // adjust to center vertically
+          height: "100vh",
           width: "97vw",
+          maxWidth: "1500px" ,
           background: "#000000",
           border: "none",
-          borderRadius: "2vw",
+          borderRadius: "1vw",
           overflow: "hidden", // prevents children from spilling out
-          zIndex: 1 // foreground
+          zIndex: 1,  // foreground
+          //outline: "1px solid lime",
         }}
+
       >
       {/* Flexbox container for left and right side */}
       <div
             style={{
               display: "flex",
               flexDirection: "row", // Align children horizontally
-              gap: "2vw", // Space between the sides
-              height: "100vh", // Ensure it takes full height
+              gap: "0.5vw", // Space between the sides
+              height: "80vh", // Ensure it takes full height
               width: "100%",
+              flex: 1,
             }}
           >
             {/* Left Side */}
@@ -134,7 +138,7 @@ const Dashboard: React.FC = () => {
                 flex: 2, // uses 2/3 of the space
                 backgroundColor: "black",
                 borderRadius: "1.5vw",
-                padding: "0vh 2vw",
+                padding: "0vh 0vw",
                 color: "white",
                 display: "flex",
                 flexDirection: "column",
@@ -161,7 +165,7 @@ const Dashboard: React.FC = () => {
               <div
                 style={{
                   flexGrow: 1,
-                  height: "100vh",
+                  height: "100%",
                   width: "100%",
                   position: "relative",
                   display: "flex",
@@ -181,7 +185,7 @@ const Dashboard: React.FC = () => {
                 flex: 1, // uses 1/3 of the space
                 backgroundColor: "black",
                 borderRadius: "1.5vw",
-                padding: "0vh 2vw",
+                padding: "0vh 0vw",
                 color: "white",
                 display: "flex",
                 flexDirection: "column",
