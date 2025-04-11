@@ -119,6 +119,7 @@ const Dashboard: React.FC = () => {
           zIndex: 1,  // foreground
           //outline: "1px solid lime",
         }}
+        styles={{ body: { padding: "0", backgroundColor: "black" } }} // overrides antd Card setting
 
       >
       {/* Flexbox container for left and right side */}
