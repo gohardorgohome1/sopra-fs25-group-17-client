@@ -1,12 +1,17 @@
 "use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
 
-import React, { useEffect} from "react";
+import React, { useEffect, useState} from "react";
 // import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // use NextJS router for navigation
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 //import { User } from "@/types/user";
 import { Button, Card } from "antd";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { ToastContainer, toast } from 'react-toastify';  // Importing toast functionality
+import 'react-toastify/dist/ReactToastify.css';  // Importing styles for toast
+import NotificationToast from "@/components/NotificationToast"; 
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
 
@@ -15,6 +20,7 @@ import ExoplanetRanking from "../components/exoplanetRanking";  // Import the Ex
 
 
 const Dashboard: React.FC = () => {
+  const [exoplanets, setExoplanets] = useState([]);
   const router = useRouter();
   const apiService = useApi();
   const {
@@ -43,10 +49,58 @@ const Dashboard: React.FC = () => {
         router.push("/login");
         return;
       }
+      
     }, [token, apiService, router]);
+
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+      connectHeaders: {},
+      onConnect: () => {
+        // Once connected, subscribe to the "/topic/exoplanets" topic
+        client.subscribe("/topic/exoplanets", (message) => {
+          const payload = JSON.parse(message.body);
+        // Extract the username and exoplanet info from the payload
+        const username = payload.user.username;
+        const planetName = payload.exoplanet.planetName;
+
+        toast(<NotificationToast username={username} planetName={planetName} />);
+        
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+    });
+  
+      client.activate();
+  
+      return () => {
+        client.deactivate();
+      };
+    }, []);
+  
 
   return (
     <div className="dashboard-container">
+
+  <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        toastStyle={{
+          backgroundColor: "#FFAE00",
+          color: "#000",              
+          fontFamily: "Jura",
+          fontWeight: 700,
+          fontSize: "20px",
+          lineHeight: "100%",
+          letterSpacing: "0%",
+        }}
+      />
 
     <Button onClick={handleLogout}
       type="primary"
