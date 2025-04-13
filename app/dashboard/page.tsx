@@ -56,12 +56,14 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () =>
-        new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+        new SockJS("http://localhost:8080/ws"),
+      // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
+      // LOCAL SERVER: "http://localhost:8080/ws"
       connectHeaders: {},
       onConnect: () => {
         // Once connected, subscribe to the "/topic/exoplanets" topic
         client.subscribe("/topic/exoplanets", (message) => {
-          const payload = JSON.parse(message.body);
+        const payload = JSON.parse(message.body);
         // Extract the username and exoplanet info from the payload
         const username = payload.user.username;
         const planetName = payload.exoplanet.planetName;

@@ -11,7 +11,7 @@ type NotificationToastProps = {
 const NotificationToast: React.FC<NotificationToastProps> = ({ username, planetName }) => {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <MdNotificationsActive size={24} color="#000" />
+      <MdNotificationsActive size={50} color="#000" />
       <span
         style={{
           fontFamily: "Jura",
