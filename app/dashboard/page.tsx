@@ -290,9 +290,9 @@ const Dashboard: React.FC = () => {
                   color: "#FFFFFF",
                   fontFamily: "Jura",
                   fontWeight: "700",
-                  fontSize: "1.5vw",
+                  fontSize: "1.7vw",
                   borderRadius: "0.8vw",
-                  padding: "0.6vw 1.2vw",
+                  padding: "0.6vw 2.5vw",
                   marginTop: "1vh",
                 }}
               >
