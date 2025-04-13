@@ -13,7 +13,25 @@ const ChatAssistant: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
+      try {
+        const res = await fetch(`http://localhost:8080/users/${userId}`);
+        const data = await res.json();
+        setUsername(data.name);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    };
+
+    fetchUsername();
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -70,6 +88,9 @@ const ChatAssistant: React.FC = () => {
                 key={idx}
                 className={msg.role === "user" ? "message user" : "message assistant"}
               >
+                <strong>
+                  {msg.role === "user" ? username ?? "User" : "AI Assistant"}:
+                </strong>{" "}
                 {msg.content}
               </div>
             ))}
@@ -96,6 +117,11 @@ const ChatAssistant: React.FC = () => {
             />
           </div>
         </div>
+
+        <Button className="dashboard-button" onClick={() => window.location.href = "/dashboard"}>
+            <span className="dashboard-text">Back to Dashboard</span>
+        </Button>
+
       </div>
     </div>
   );
