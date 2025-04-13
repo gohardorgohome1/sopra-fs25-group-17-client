@@ -278,6 +278,26 @@ const Dashboard: React.FC = () => {
               >
                 <ExoplanetRanking />
               </div>
+
+              <Button
+                onClick={() => router.push("/exoplanets/upload")}
+                type="primary"
+                style={{
+                  alignSelf: "flex-end",
+                  backgroundColor:"#A5ADFF",
+                  border: "none",
+                  boxShadow: "0 0 20px rgba(127, 135, 255, 0.6)",
+                  color: "#FFFFFF",
+                  fontFamily: "Jura",
+                  fontWeight: "700",
+                  fontSize: "1.5vw",
+                  borderRadius: "0.8vw",
+                  padding: "0.6vw 1.2vw",
+                  marginTop: "1vh",
+                }}
+              >
+                Analyze and add exoplanet
+              </Button>
             </div>
           </div>
 
