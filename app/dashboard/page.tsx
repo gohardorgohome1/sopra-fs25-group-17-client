@@ -67,8 +67,9 @@ const Dashboard: React.FC = () => {
         // Extract the username and exoplanet info from the payload
         const username = payload.user.username;
         const planetName = payload.exoplanet.planetName;
+        const exoplanetId = payload.exoplanet.id;
 
-        toast(<NotificationToast username={username} planetName={planetName} />);
+        toast(<NotificationToast username={username} planetName={planetName} exoplanetId={exoplanetId} />);
         
         });
       },

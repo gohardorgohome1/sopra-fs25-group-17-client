@@ -1,16 +1,20 @@
 // components/NotificationToast.tsx
-
+"use client"; 
 import React from "react";
 import { MdNotificationsActive } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 type NotificationToastProps = {
   username: string;
   planetName: string;
+  exoplanetId: string;
 };
 
-const NotificationToast: React.FC<NotificationToastProps> = ({ username, planetName }) => {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+const NotificationToast: React.FC<NotificationToastProps> = ({ username, planetName, exoplanetId }) => {
+    const router = useRouter();
+    return (
+    <div onClick={() => router.push(`/exoplanets/${exoplanetId}`)}
+    style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <MdNotificationsActive size={50} color="#000" />
       <span
         style={{
