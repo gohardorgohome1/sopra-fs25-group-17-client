@@ -65,7 +65,11 @@ const ExoplanetProfile: React.FC = () => {
     //clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
-  const handleDeletion = async (exoplanetId) => { // Deleting an Exoplanet
+  const handleDeletion = async (exoplanetId, exoplanetName) => { // Deleting an Exoplanet
+
+  const confirmed = window.confirm(`Are you sure you want to permanently delete this Exoplanet?\n${exoplanetName}`);
+
+  if (!confirmed) return;
 
     try{
       await apiService.delete(`/exoplanets/${exoplanetId}`); // delete exoplanet
@@ -247,7 +251,7 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
     
     <Button // Delete Exoplanet Button
-      onClick={() => handleDeletion(exoplanet.id)}
+      onClick={() => handleDeletion(exoplanet.id, exoplanet.planetName)}
       type="primary"
       style={{
         width: 173, // position
