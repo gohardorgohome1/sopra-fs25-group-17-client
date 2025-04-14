@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import dynamic from 'next/dynamic';
+import { Button } from "antd";
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false
 });
@@ -63,6 +64,26 @@ const ExoplanetProfile: React.FC = () => {
     // set: setToken, // is commented out because we dont need to set or update the token value
     //clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
+
+  const handleDeletion = async (exoplanetId) => { // Deleting an Exoplanet
+
+    try{
+      await apiService.delete(`/exoplanets/${exoplanetId}`); // delete exoplanet
+      router.push("/dashboard"); // redirect after successfull deletion
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes("Exoplanet not found")) {
+          alert("The Exoplanet you are trying to delete, does not exist in the database!");
+        }
+        else{
+          alert(`Something went wrong during the deletion of this Exoplanet:\n${error.message}`);
+        }
+        
+      } else {
+        console.error("An unknown error occurred during the deletion of this Exoplanet!");
+      }
+    }
+  }
 
   
   useEffect(() => {
@@ -224,6 +245,31 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 236, height: 49, left: 22, top: 1039, position: 'absolute', background: '#650808', boxShadow: '69.30000305175781px 69.30000305175781px 69.30000305175781px ', filter: 'blur(34.65px)'}} />
     <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
     <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
+    
+    <Button // Delete Exoplanet Button
+      onClick={() => handleDeletion(exoplanet.id)}
+      type="primary"
+      style={{
+        width: 173, // position
+        height: 55,
+        left: 1500,
+        top: 1029,
+        position: 'absolute',
+
+        background: 'black', // Box
+        boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)', // red glow
+        borderRadius: 46,
+        
+        textAlign: 'center', // Text
+        color: '#8A5555',
+        fontSize: 24,
+        fontFamily: 'Karantina',
+        fontWeight: '700',
+        wordWrap: 'break-word'
+      }}
+    >
+      Delete Exoplanet
+    </Button>
 </div>}
     </div>
   </div>
