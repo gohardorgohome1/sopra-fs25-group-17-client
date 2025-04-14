@@ -51,11 +51,6 @@ const StarMap: React.FC = () => {
     fetchExoplanets();
   }, [reloadKey]);
 
-
-  if (loading) {
-    return <div style={{ color: "white" }}>Loading...</div>;
-  }
-
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () =>
@@ -65,7 +60,7 @@ const StarMap: React.FC = () => {
       connectHeaders: {},
       onConnect: () => {
         // Once connected, subscribe to the "/topic/exoplanets" topic
-        client.subscribe("/topic/exoplanets", (message) => {
+        client.subscribe("/topic/exoplanets", () => {
         // change the variable that triggers reload:
         setReloadKey(prev => prev + 1);
         
@@ -82,6 +77,12 @@ const StarMap: React.FC = () => {
         client.deactivate();
       };
     }, []);
+
+  if (loading) {
+    return <div style={{ color: "white" }}>Loading...</div>;
+  }
+
+
   
 
 // create a manual point to test: 

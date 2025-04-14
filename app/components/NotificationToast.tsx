@@ -26,7 +26,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ username, planetN
           color: "#000",
         }}
       >
-        User {username} has just uploaded a new exoplanet: {planetName}
+        {username} has just uploaded a new exoplanet: {planetName}
       </span>
     </div>
   );
