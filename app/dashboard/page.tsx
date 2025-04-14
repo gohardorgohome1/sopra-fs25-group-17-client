@@ -56,9 +56,9 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () =>
-        new SockJS("http://localhost:8080/ws"),
+        new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
       // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
-      // LOCAL SERVER: "http://localhost:8080/ws"
+      // LOCAL SERVER for testing: "http://localhost:8080/ws"
       connectHeaders: {},
       onConnect: () => {
         // Once connected, subscribe to the "/topic/exoplanets" topic
