@@ -12,6 +12,9 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 import type { ScatterData } from "plotly.js";
 import type { Layout } from "plotly.js";
 
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 
 interface Exoplanet {
   planetName: string;
@@ -25,10 +28,11 @@ const StarMap: React.FC = () => {
   const apiService = useApi();
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     const fetchExoplanets = async () => {
+      setLoading(true);
       try {
         const planets: Exoplanet[] = await apiService.get<Exoplanet[]>("/exoplanets");
         setExoplanets(planets);
@@ -45,12 +49,40 @@ const StarMap: React.FC = () => {
     };
 
     fetchExoplanets();
-  }, []);
+  }, [reloadKey]);
 
 
   if (loading) {
     return <div style={{ color: "white" }}>Loading...</div>;
   }
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJS("http://localhost:8080/ws"),
+      // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
+      // LOCAL SERVER: "http://localhost:8080/ws"
+      connectHeaders: {},
+      onConnect: () => {
+        // Once connected, subscribe to the "/topic/exoplanets" topic
+        client.subscribe("/topic/exoplanets", (message) => {
+        // change the variable that triggers reload:
+        setReloadKey(prev => prev + 1);
+        
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+    });
+  
+      client.activate();
+  
+      return () => {
+        client.deactivate();
+      };
+    }, []);
+  
 
 // create a manual point to test: 
   const manualPoint = {
