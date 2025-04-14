@@ -7,6 +7,11 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 //import { User } from "@/types/user";
 import { Button, Card } from "antd";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { ToastContainer, toast } from 'react-toastify';  // Importing toast functionality
+import 'react-toastify/dist/ReactToastify.css';  // Importing styles for toast
+import NotificationToast from "@/components/NotificationToast"; 
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
 
@@ -15,6 +20,7 @@ import ExoplanetRanking from "../components/exoplanetRanking";  // Import the Ex
 
 
 const Dashboard: React.FC = () => {
+  //const [exoplanets, setExoplanets] = useState([]);
   const router = useRouter();
   const apiService = useApi();
   const {
@@ -43,10 +49,61 @@ const Dashboard: React.FC = () => {
         router.push("/login");
         return;
       }
+      
     }, [token, apiService, router]);
+
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+      // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
+      // LOCAL SERVER for testing: "http://localhost:8080/ws"
+      connectHeaders: {},
+      onConnect: () => {
+        // Once connected, subscribe to the "/topic/exoplanets" topic
+        client.subscribe("/topic/exoplanets", (message) => {
+        const payload = JSON.parse(message.body);
+        // Extract the username and exoplanet info from the payload
+        const username = payload.user.username;
+        const planetName = payload.exoplanet.planetName;
+        const exoplanetId = payload.exoplanet.id;
+
+        toast(<NotificationToast username={username} planetName={planetName} exoplanetId={exoplanetId} />);
+        
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+    });
+  
+      client.activate();
+  
+      return () => {
+        client.deactivate();
+      };
+    }, []);
+  
 
   return (
     <div className="dashboard-container">
+
+  <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        toastStyle={{
+          backgroundColor: "#FFAE00",
+          color: "#000",              
+          fontFamily: "Jura",
+          fontWeight: 700,
+          fontSize: "20px",
+          lineHeight: "100%",
+          letterSpacing: "0%",
+        }}
+      />
 
     <Button onClick={handleLogout}
       type="primary"
@@ -107,25 +164,30 @@ const Dashboard: React.FC = () => {
           marginTop: "1vh",       // pushes it down, adjust as needed
           marginLeft: "auto",     // centers horizontally
           marginRight: "auto",    // centers horizontally
-          padding: "2vw", // position & size
-          paddingTop: "1vh", // adjust to center vertically
-          height: "80vh",
+          //padding: "0.5vw", // position & size
+          //paddingTop: "0.5vh", // adjust to center vertically
+          height: "100vh",
           width: "97vw",
+          maxWidth: "1500px" ,
           background: "#000000",
           border: "none",
-          borderRadius: "2vw",
+          borderRadius: "1vw",
           overflow: "hidden", // prevents children from spilling out
-          zIndex: 1 // foreground
+          zIndex: 1,  // foreground
+          //outline: "1px solid lime",
         }}
+        styles={{ body: { padding: "0", backgroundColor: "black" } }} // overrides antd Card setting
+
       >
       {/* Flexbox container for left and right side */}
       <div
             style={{
               display: "flex",
               flexDirection: "row", // Align children horizontally
-              gap: "2vw", // Space between the sides
-              height: "100vh", // Ensure it takes full height
+              gap: "0.5vw", // Space between the sides
+              height: "80vh", // Ensure it takes full height
               width: "100%",
+              flex: 1,
             }}
           >
             {/* Left Side */}
@@ -134,7 +196,7 @@ const Dashboard: React.FC = () => {
                 flex: 2, // uses 2/3 of the space
                 backgroundColor: "black",
                 borderRadius: "1.5vw",
-                padding: "0vh 2vw",
+                padding: "0vh 0vw",
                 color: "white",
                 display: "flex",
                 flexDirection: "column",
@@ -161,7 +223,7 @@ const Dashboard: React.FC = () => {
               <div
                 style={{
                   flexGrow: 1,
-                  height: "100vh",
+                  height: "100%",
                   width: "100%",
                   position: "relative",
                   display: "flex",
@@ -181,7 +243,7 @@ const Dashboard: React.FC = () => {
                 flex: 1, // uses 1/3 of the space
                 backgroundColor: "black",
                 borderRadius: "1.5vw",
-                padding: "0vh 2vw",
+                padding: "0vh 0vw",
                 color: "white",
                 display: "flex",
                 flexDirection: "column",
@@ -216,6 +278,26 @@ const Dashboard: React.FC = () => {
               >
                 <ExoplanetRanking />
               </div>
+
+              <Button
+                onClick={() => router.push("/exoplanets/upload")}
+                type="primary"
+                style={{
+                  alignSelf: "flex-end",
+                  backgroundColor:"#A5ADFF",
+                  border: "none",
+                  boxShadow: "0 0 20px rgba(127, 135, 255, 0.6)",
+                  color: "#FFFFFF",
+                  fontFamily: "Jura",
+                  fontWeight: "700",
+                  fontSize: "1.7vw",
+                  borderRadius: "0.8vw",
+                  padding: "0.6vw 2.5vw",
+                  marginTop: "1vh",
+                }}
+              >
+                Analyze and add exoplanet
+              </Button>
             </div>
           </div>
 
