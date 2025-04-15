@@ -116,6 +116,10 @@ const ExoplanetProfile: React.FC = () => {
     });
   };
 
+  const isOwner = (exoplanetOwnerId: string) => { // Checking whether the current User is the Owner of this exoplanet
+    const userId = localStorage.getItem("userId");
+    return (userId == exoplanetOwnerId);
+  };
   
   useEffect(() => {
     if (!id) return;
@@ -279,9 +283,11 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
     
     {contextHolder}
+    {isOwner(exoplanet.ownerId) && ( // Only show the button if the User is also the Owner of this exoplanet
     <Button // Delete Exoplanet Button
       onClick={() => handleDeletion(exoplanet.id, exoplanet.planetName)}
       type="primary"
+      //disabled={!isOwner(exoplanet.ownerId)} // If the button should be shown but just not clickable, this would work
       style={{
         width: 173, // position
         height: 55,
@@ -303,6 +309,7 @@ const ExoplanetProfile: React.FC = () => {
     >
       Delete Exoplanet
     </Button>
+    )}
 </div>}
     </div>
   </div>
