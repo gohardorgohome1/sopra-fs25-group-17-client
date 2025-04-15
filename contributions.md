@@ -76,8 +76,8 @@ Note: If a team member fails to show continuous progress after using their Joker
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 | **[@PascalSenn2]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-| **[@gohardorgohome1]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+| **[@gohardorgohome1]** | [14.04.2025]    | [Link to Commit 1](https://github.com/gohardorgohome1/sopra-fs25-group-17-client/commit/8c0bdbf2507cd13949556f8ae018733f08ec3291#diff-bfbaefc6b5853882100daa48b0e02c2867fb4c4aed866ab9d741f6a948fda89c)          | implementation of real time notifications on the dashboard and reload of starmap once a new exoplanet was added     | it offers real-time interaction with other user's uploads, upon clicking on the notification one get redirected directly on the new exoplanet page    |
+|                   | [14.04.2025]    | [Link to Commit 2](https://github.com/gohardorgohome1/sopra-fs25-group-17-server/commit/6b0cfb801a57feef24c8a697cfc4c3579db2b154)          | After implementing the basic web socket notifications in the backen we also needed that notifications "persist", therefore I created the necessary files in the backend/api endpoints/ database handling etc.     | A user who hasn't seen the notification in real time wants to be notified of all the exoplanets which have been uploaded when they were offline. Therefore we need to store notifications in our database and handle seen/unseen notifications.    |
 
 ---
 
