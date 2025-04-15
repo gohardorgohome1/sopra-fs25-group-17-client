@@ -46,17 +46,27 @@ const ExoplanetRanking: React.FC = () => {
     x: 100,
     y: sortedExoplanets.map(exoplanet => exoplanet.earthSimilarityIndex),
     orientation: 'h', // Horizontal bar chart
+    text: [sortedExoplanets.map(exoplanet => exoplanet.planetName),
+    sortedExoplanets.map(exoplanet => exoplanet.earthSimilarityIndex)],
+    fontFamily: "Jura",
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: "32vw",
+    lineHeight: "1.0",
+    letterSpacing: "0",
+    textAlign: "center",
+    marker: {
+      color: '#0F1D56',
+    }
   }];
 
   const layout: Partial<Layout> = {
       autosize: true,
-      // width: "100%",
-      // height: "100vh",
-      //width: 1000,
-      width: 400, 
+      width: 500, 
       height: 700,
       paper_bgcolor: "black",
       plot_bgcolor: "black",
+      bargap: 0.01
       };
 
   return (
