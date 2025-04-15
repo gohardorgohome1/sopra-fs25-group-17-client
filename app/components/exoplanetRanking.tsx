@@ -1,6 +1,11 @@
 // ExoplanetRanking.tsx
 import React, { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
+import dynamic from "next/dynamic";
+
+// Dynamically import Plotly.js component with no SSR
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+import type { Layout } from "plotly.js";
 
 interface Exoplanet {
   planetName: string;
@@ -34,38 +39,35 @@ const ExoplanetRanking: React.FC = () => {
     fetchExoplanets();
   }, []);
 
-  const sortedExoplanets = exoplanets.sort((a, b) => b.earthSimilarityIndex - a.earthSimilarityIndex);
-  const topTenExoplanets = sortedExoplanets.slice(0, 10);
+  const sortedExoplanets = exoplanets.sort((a, b) => b.earthSimilarityIndex - a.earthSimilarityIndex).slice(0, 10);
 
-  function displayExoplanets(exoplanets: Exoplanet[]) {
-    const chartContainer = document.getElementById("exoplanet-chart");
-    if (chartContainer) {
-    chartContainer.innerHTML = ""; // Vorherigen Inhalt löschen
-    topTenExoplanets.forEach(exoplanet => {
-    const row = document.createElement("div");
-    row.className = "exoplanet-row";
-    row.innerHTML = `<strong>${exoplanet.planetName}</strong>: ${exoplanet.earthSimilarityIndex}`;
-    chartContainer.appendChild(row);
-    });
-    }
-    }
-    
+  const data = [{
+    type: 'bar',
+    x: 100,
+    y: sortedExoplanets.map(exoplanet => exoplanet.earthSimilarityIndex),
+    orientation: 'h', // Horizontal bar chart
+  }];
+
+  const layout: Partial<Layout> = {
+      autosize: true,
+      // width: "100%",
+      // height: "100vh",
+      //width: 1000,
+      width: 400, 
+      height: 700,
+      paper_bgcolor: "black",
+      plot_bgcolor: "black",
+      };
 
   return (
-    <div
-      style={{
-              fontFamily: "Jura",
-              color: "#FFFFFF",
-              fontWeight: "700",
-              fontSize: "32vw",
-              lineHeight: "1.0",
-              letterSpacing: "0",
-              textAlign: "center",
-            }}>
-      <div id = "exoplanet-chart">
-
-      </div>
-    </div>
+    <div style={{ width: "100%", height: "100%" }}> 
+            <Plot 
+                data={data}
+                layout={layout}
+                
+                useResizeHandler
+            />
+        </div>
   );
 };
 
