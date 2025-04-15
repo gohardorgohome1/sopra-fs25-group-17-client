@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import dynamic from 'next/dynamic';
-import { Button } from "antd";
+import { Button, Modal, ConfigProvider } from "antd";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false
 });
@@ -50,6 +51,8 @@ interface PhotometricCurve {
   metadata?: Record<string, string>;
 }
 
+const { useModal } = Modal;
+
 const ExoplanetProfile: React.FC = () => {
   const router = useRouter();
   const { id } = useParams(); // Get user ID from the URL
@@ -57,6 +60,7 @@ const ExoplanetProfile: React.FC = () => {
   const [exoplanet, setExoplanet] = useState<Exoplanet | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [lightCurveData, setLightCurveData] = useState<DataPoint[]>([]);
+  const [modal, contextHolder] = useModal();
 
 
   const {
@@ -65,29 +69,52 @@ const ExoplanetProfile: React.FC = () => {
     //clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
-  const handleDeletion = async (exoplanetId, exoplanetName) => { // Deleting an Exoplanet
+  const handleDeletion = (exoplanetId: string, exoplanetName: string) => { // Deleting an Exoplanet (confirmation prompt first)
 
-  const confirmed = window.confirm(`Are you sure you want to permanently delete this Exoplanet?\n${exoplanetName}`);
+    modal.confirm({
+      title: "Are you sure you want to delete this exoplanet?",
+      icon: <ExclamationCircleOutlined />,
+      content: (<span style={{ color: "#ff5555" }}>Deleting an exoplanet cannot be undone!</span>),
+      okText: `Delete ${exoplanetName}`,
+      okType: "danger",
+      cancelText: "Cancel",
 
-  if (!confirmed) return;
-
-    try{
-      await apiService.delete(`/exoplanets/${exoplanetId}`); // delete exoplanet
-      router.push("/dashboard"); // redirect after successfull deletion
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes("Exoplanet not found")) {
-          alert("The Exoplanet you are trying to delete, does not exist in the database!");
+      okButtonProps: { // Delete {exoplanetName} button
+        style: {
+          backgroundColor: "#ff4d4f",
+          borderColor: "#ff4d4f",
+          color: "#fff",
+          fontWeight: "bold",
+        },
+      },
+      cancelButtonProps: { // Cancel button
+        style: {
+          backgroundColor: "#444",
+          borderColor: "#444",
+          color: "#fff",
+        },
+      },
+      
+      onOk: async () => {
+        try{
+          await apiService.delete(`/exoplanets/${exoplanetId}`); // delete exoplanet
+          router.push("/dashboard"); // redirect after successfull deletion
+        } catch (error) {
+          if (error instanceof Error) {
+            Modal.error({
+              title: "Exoplanet not found",
+              content: "The Exoplanet you are trying to delete does not exist in the database!",
+            });
+          } else {
+            Modal.error({
+              title: "Deletion failed",
+              content: error.message || "Something went wrong during deletion.",
+            });
+          }
         }
-        else{
-          alert(`Something went wrong during the deletion of this Exoplanet:\n${error.message}`);
-        }
-        
-      } else {
-        console.error("An unknown error occurred during the deletion of this Exoplanet!");
-      }
-    }
-  }
+      },
+    });
+  };
 
   
   useEffect(() => {
@@ -118,6 +145,7 @@ const ExoplanetProfile: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (!exoplanet) return <div>Exoplanet not found.</div>;
   return (
+    <ConfigProvider>
     <div style={{ width: '100%', height: '100%', position: 'relative', background: 'white', overflow: 'hidden' }}>
     <div className="exoplanet-background" style={{
       top: 0,
@@ -250,6 +278,7 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
     <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
     
+    {contextHolder}
     <Button // Delete Exoplanet Button
       onClick={() => handleDeletion(exoplanet.id, exoplanet.planetName)}
       type="primary"
@@ -277,6 +306,7 @@ const ExoplanetProfile: React.FC = () => {
 </div>}
     </div>
   </div>
+  </ConfigProvider>
   );
 };
 
