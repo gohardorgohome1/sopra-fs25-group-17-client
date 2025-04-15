@@ -101,14 +101,21 @@ const ExoplanetProfile: React.FC = () => {
           router.push("/dashboard"); // redirect after successfull deletion
         } catch (error) {
           if (error instanceof Error) {
-            Modal.error({
-              title: "Exoplanet not found",
-              content: "The Exoplanet you are trying to delete does not exist in the database!",
-            });
+            if (error.message.includes("Exoplanet not found")) {
+              Modal.error({
+                title: "Exoplanet not found",
+                content: "The Exoplanet you are trying to delete does not exist in the database!",
+              });
+            } else {
+              Modal.error({
+                title: "Deletion failed",
+                content: `Deleting this exoplanet failed: ${error.message}`,
+              });
+            }
           } else {
             Modal.error({
               title: "Deletion failed",
-              content: error.message || "Something went wrong during deletion.",
+              content: "An unknown error occurred while trying to delete this exoplanet.",
             });
           }
         }
