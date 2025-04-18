@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import dynamic from 'next/dynamic';
+import { Button, Modal, ConfigProvider } from "antd";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false
 });
@@ -49,6 +51,8 @@ interface PhotometricCurve {
   metadata?: Record<string, string>;
 }
 
+const { useModal } = Modal;
+
 const ExoplanetProfile: React.FC = () => {
   const router = useRouter();
   const { id } = useParams(); // Get user ID from the URL
@@ -56,6 +60,7 @@ const ExoplanetProfile: React.FC = () => {
   const [exoplanet, setExoplanet] = useState<Exoplanet | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [lightCurveData, setLightCurveData] = useState<DataPoint[]>([]);
+  const [modal, contextHolder] = useModal();
 
 
   const {
@@ -64,6 +69,64 @@ const ExoplanetProfile: React.FC = () => {
     //clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
+  const handleDeletion = (exoplanetId: string, exoplanetName: string) => { // Deleting an Exoplanet (confirmation prompt first)
+
+    modal.confirm({
+      title: "Are you sure you want to delete this exoplanet?",
+      icon: <ExclamationCircleOutlined />,
+      content: (<span style={{ color: "#ff5555" }}>Deleting an exoplanet cannot be undone!</span>),
+      okText: `Delete ${exoplanetName}`,
+      okType: "danger",
+      cancelText: "Cancel",
+
+      okButtonProps: { // Delete {exoplanetName} button
+        style: {
+          backgroundColor: "#ff4d4f",
+          borderColor: "#ff4d4f",
+          color: "#fff",
+          fontWeight: "bold",
+        },
+      },
+      cancelButtonProps: { // Cancel button
+        style: {
+          backgroundColor: "#444",
+          borderColor: "#444",
+          color: "#fff",
+        },
+      },
+      
+      onOk: async () => {
+        try{
+          await apiService.delete(`/exoplanets/${exoplanetId}`); // delete exoplanet
+          router.push("/dashboard"); // redirect after successfull deletion
+        } catch (error) {
+          if (error instanceof Error) {
+            if (error.message.includes("Exoplanet not found")) {
+              Modal.error({
+                title: "Exoplanet not found",
+                content: "The Exoplanet you are trying to delete does not exist in the database!",
+              });
+            } else {
+              Modal.error({
+                title: "Deletion failed",
+                content: `Deleting this exoplanet failed: ${error.message}`,
+              });
+            }
+          } else {
+            Modal.error({
+              title: "Deletion failed",
+              content: "An unknown error occurred while trying to delete this exoplanet.",
+            });
+          }
+        }
+      },
+    });
+  };
+
+  const isOwner = (exoplanetOwnerId: string) => { // Checking whether the current User is the Owner of this exoplanet
+    const userId = localStorage.getItem("userId");
+    return (userId == exoplanetOwnerId);
+  };
   
   useEffect(() => {
     if (!id) return;
@@ -93,6 +156,7 @@ const ExoplanetProfile: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (!exoplanet) return <div>Exoplanet not found.</div>;
   return (
+    <ConfigProvider>
     <div style={{ width: '100%', height: '100%', position: 'relative', background: 'white', overflow: 'hidden' }}>
     <div className="exoplanet-background" style={{
       top: 0,
@@ -224,9 +288,39 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 236, height: 49, left: 22, top: 1039, position: 'absolute', background: '#650808', boxShadow: '69.30000305175781px 69.30000305175781px 69.30000305175781px ', filter: 'blur(34.65px)'}} />
     <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
     <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
+    
+    {contextHolder}
+    {isOwner(exoplanet.ownerId) && ( // Only show the button if the User is also the Owner of this exoplanet
+    <Button // Delete Exoplanet Button
+      onClick={() => handleDeletion(exoplanet.id, exoplanet.planetName)}
+      type="primary"
+      //disabled={!isOwner(exoplanet.ownerId)} // If the button should be shown but just not clickable, this would work
+      style={{
+        width: 173, // position
+        height: 55,
+        left: 1500,
+        top: 1029,
+        position: 'absolute',
+
+        background: 'black', // Box
+        boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)', // red glow
+        borderRadius: 46,
+        
+        textAlign: 'center', // Text
+        color: '#8A5555',
+        fontSize: 24,
+        fontFamily: 'Karantina',
+        fontWeight: '700',
+        wordWrap: 'break-word'
+      }}
+    >
+      Delete Exoplanet
+    </Button>
+    )}
 </div>}
     </div>
   </div>
+  </ConfigProvider>
   );
 };
 

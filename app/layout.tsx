@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { App, ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@/styles/globals.css";
+//import "antd/dist/reset.css"; // For the confirmation prompt (handleDeletion()) on exoplanet profile page
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +58,11 @@ export default function RootLayout({
                 algorithm: theme.defaultAlgorithm, // specify a specifc algorithm instead of true/false
               },
               Card: {},
+              Modal: { // Confirmation when trying to delete exoplanet
+                colorBgElevated: "#1e1e1e",
+                colorText: "#ffffff",
+                titleFontSize: 22,
+              },
             },
           }}
         >
