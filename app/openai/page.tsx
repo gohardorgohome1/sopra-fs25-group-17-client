@@ -33,11 +33,11 @@ const ChatAssistant: React.FC = () => {
         const chatRes = await fetch("http://localhost:8080/openai/chat/history");
         const chatData = await chatRes.json();
 
-        const loadedMessages = chatData.map((msg: any) => ({
+        const loadedMessages = chatData.map((msg: Message) => ({
           role: msg.role,
           content: msg.content,
           senderName: msg.senderName,
-        }));
+        }));        
 
         setMessages(loadedMessages);
       } catch (err) {
