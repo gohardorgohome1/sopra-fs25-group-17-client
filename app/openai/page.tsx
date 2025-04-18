@@ -7,6 +7,7 @@ import { SendOutlined } from "@ant-design/icons";
 interface Message {
   role: "user" | "assistant";
   content: string;
+  senderName?: string;
 }
 
 const ChatAssistant: React.FC = () => {
@@ -14,23 +15,37 @@ const ChatAssistant: React.FC = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const fetchUsername = async () => {
-      const userId = localStorage.getItem("userId");
-      if (!userId) return;
+    const fetchData = async () => {
+      const storedUserId = localStorage.getItem("userId");
+      if (!storedUserId) return;
+      setUserId(storedUserId);
 
       try {
-        const res = await fetch(`http://localhost:8080/users/${userId}`);
-        const data = await res.json();
-        setUsername(data.name);
+        const userRes = await fetch(`http://localhost:8080/users/${storedUserId}`);
+        const userData = await userRes.json();
+        setUsername(userData.username);
+;
+
+        const chatRes = await fetch("http://localhost:8080/openai/chat/history");
+        const chatData = await chatRes.json();
+
+        const loadedMessages = chatData.map((msg: any) => ({
+          role: msg.role,
+          content: msg.content,
+          senderName: msg.senderName,
+        }));
+
+        setMessages(loadedMessages);
       } catch (err) {
-        console.error("Error fetching user data:", err);
+        console.error("Error fetching data:", err);
       }
     };
 
-    fetchUsername();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -38,10 +53,25 @@ const ChatAssistant: React.FC = () => {
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    console.log("sending message");
 
-    const userMessage: Message = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    console.log("input:", input);
+    console.log("userId:", userId);
+    console.log("username:", username);
+
+    if (!input.trim() || !userId || !username) {
+      console.log("Missing input/userId/username");
+      return;
+    }
+
+
+
+    const userMessage: Message = {
+      role: "user",
+      content: input,
+    };
+
+    setMessages((prev) => [...prev, { ...userMessage, senderName: username }]);
     setInput("");
     setLoading(true);
 
@@ -52,11 +82,14 @@ const ChatAssistant: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage],
+          userId,
+          username,
+          messages: [userMessage],
         }),
       });
 
       const data = await res.json();
+
       const assistantMessage: Message = {
         role: "assistant",
         content: data.reply,
@@ -64,12 +97,12 @@ const ChatAssistant: React.FC = () => {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
-      console.error("Error calling backend:", err);
+      console.error("Error sending message:", err);
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "Error: could not reach the backend or OpenAI.",
+          content: "Error: could not reach backend or OpenAI.",
         },
       ]);
     } finally {
@@ -80,7 +113,7 @@ const ChatAssistant: React.FC = () => {
   return (
     <div className="chat-background">
       <div className="black-overlay">
-        <h1 className="chat-title">Generative AI Assistant</h1>
+        <h1 className="chat-title">Exoplanet AI Assistant</h1>
         <div className="chat-container">
           <div className="chat-messages">
             {messages.map((msg, idx) => (
@@ -89,7 +122,7 @@ const ChatAssistant: React.FC = () => {
                 className={msg.role === "user" ? "message user" : "message assistant"}
               >
                 <strong>
-                  {msg.role === "user" ? username ?? "User" : "AI Assistant"}:
+                  {msg.role === "user" ? msg.senderName ?? "User" : "AI Assistant"}:
                 </strong>{" "}
                 {msg.content}
               </div>
@@ -105,7 +138,10 @@ const ChatAssistant: React.FC = () => {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onPressEnter={sendMessage}
+              onPressEnter={(e) => {
+                e.preventDefault(); 
+                sendMessage();
+              }}
               placeholder="Type your message..."
               className="input-box"
             />
@@ -118,10 +154,12 @@ const ChatAssistant: React.FC = () => {
           </div>
         </div>
 
-        <Button className="dashboard-button" onClick={() => window.location.href = "/dashboard"}>
-            <span className="dashboard-text">Back to Dashboard</span>
+        <Button
+          className="dashboard-button"
+          onClick={() => (window.location.href = "/dashboard")}
+        >
+          <span className="dashboard-text">Back to Dashboard</span>
         </Button>
-
       </div>
     </div>
   );
