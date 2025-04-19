@@ -39,34 +39,83 @@ const ExoplanetRanking: React.FC = () => {
     fetchExoplanets();
   }, []);
 
-  const sortedExoplanets = exoplanets.sort((a, b) => b.earthSimilarityIndex - a.earthSimilarityIndex).slice(0, 10);
+  if (loading) {
+    return <div style={{ color: "white" }}>Loading...</div>;
+  }
+
+  const uniqueExoplanets = Array.from(
+    new Map(exoplanets.map(planet => [planet.planetName, planet])).values()
+  );
+  const sortedExoplanets = [...uniqueExoplanets].sort((a, b) => b.earthSimilarityIndex - a.earthSimilarityIndex).slice(0, 10);
+
+  const totalTextWidth = 50;
+
+  const text = sortedExoplanets.map((exoplanet) => {
+    const planetName = exoplanet.planetName;
+    const percentage = (exoplanet.earthSimilarityIndex * 100).toFixed(0) + "%";
+  
+    const paddingLength = Math.max(1, totalTextWidth - planetName.length - percentage.length);
+    const spacer = " ".repeat(paddingLength);
+  
+    return ` ${planetName}${spacer}${percentage}`;
+  });
 
   const data = [{
     type: 'bar',
-    x: 100,
-    y: sortedExoplanets.map(exoplanet => exoplanet.earthSimilarityIndex),
-    orientation: 'h', // Horizontal bar chart
-    text: [sortedExoplanets.map(exoplanet => exoplanet.planetName),
-    sortedExoplanets.map(exoplanet => exoplanet.earthSimilarityIndex)],
-    fontFamily: "Jura",
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: "32vw",
-    lineHeight: "1.0",
-    letterSpacing: "0",
-    textAlign: "center",
+    orientation: 'h',
+    x: Array(sortedExoplanets.length).fill(0.08),
+    y: sortedExoplanets.map((exoplanet, index) => index + 1),
+    text: text,
+    //text: sortedExoplanets.map((exoplanet, index) => `${exoplanet.planetName} ${(exoplanet.earthSimilarityIndex * 100).toFixed(0)}%`),
+
+    textposition: "inside",
+    insidetextanchor: "start",
+  
     marker: {
       color: '#0F1D56',
     }
   }];
 
   const layout: Partial<Layout> = {
-      autosize: true,
-      width: 500, 
-      height: 700,
+      yaxis: {
+      autorange: "reversed",
+      tickvals: sortedExoplanets.map((_, index) => index + 1),
+      ticktext: sortedExoplanets.map((_, index) => `${index + 1}. `),
+      tickfont: {
+        family: "Jura",
+        color: "#FFFFFF",
+        weight: 700,
+        size: 20,
+      },
+      showline: false,
+      showgrid: false,
+      zeroline: false,
+      },
+
+      xaxis: {
+        showticklabels: false,
+        showgrid: false,
+        zeroline: false,
+        showline: false,
+      },
+
+      width: 450, 
+      height: 500,
       paper_bgcolor: "black",
       plot_bgcolor: "black",
-      bargap: 0.01
+      font: {
+        family: "Jura",
+        color: "#FFFFFF",
+        weight: 700,
+        size: 20,
+      },
+      bargap: 0.35,
+      margin: {
+        t: 10,  
+        b: 50,
+        l: 40,  
+        r: 10,
+      },
       };
 
   return (
