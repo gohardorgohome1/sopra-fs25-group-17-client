@@ -60,7 +60,7 @@ const ExoplanetRanking: React.FC = () => {
     return ` ${planetName}${spacer}${percentage}`;
   });
 
-  const data = [{
+  const data: Partial<Plotly.Data>[]  = [{
     type: 'bar',
     orientation: 'h',
     x: Array(sortedExoplanets.length).fill(0.08),
