@@ -1,13 +1,16 @@
+"use client";
 // ExoplanetRanking.tsx
 import React, { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 
 // Dynamically import Plotly.js component with no SSR
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 import type { Layout } from "plotly.js";
 
 interface Exoplanet {
+  id: string;
   planetName: string;
   earthSimilarityIndex: number;
 }
@@ -15,6 +18,8 @@ interface Exoplanet {
 // Define ExoplanetRanking as a React Functional Component
 const ExoplanetRanking: React.FC = () => {
   const apiService = useApi();
+  const router = useRouter();
+  const [plotReady, setPlotReady] = useState(false);
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +43,14 @@ const ExoplanetRanking: React.FC = () => {
 
     fetchExoplanets();
   }, []);
+
+    // Wait for the component to fully load and router to be ready
+  useEffect(() => {
+    if (!loading && exoplanets.length > 0) {
+      setPlotReady(true); // Ensure Plot is rendered only when exoplanets are ready
+    }
+  }, [loading, exoplanets]);
+  
 
   if (loading) {
     return <div style={{ color: "white" }}>Loading...</div>;
@@ -119,14 +132,26 @@ const ExoplanetRanking: React.FC = () => {
       };
 
   return (
-    <div style={{ width: "100%", height: "100%" }}> 
-            <Plot 
-                data={data}
-                layout={layout}
-                
-                useResizeHandler
-            />
+    <div style={{ width: "100%", height: "100%" }}>
+      {plotReady && sortedExoplanets.length > 0 && (
+        <div key={JSON.stringify(sortedExoplanets)} style={{ width: "100%", height: "100%" }}>
+          <Plot 
+            data={data}
+            layout={layout}
+            useResizeHandler
+            onClick={(event) => {
+              const pointIndex = event.points?.[0]?.pointIndex;
+              if (typeof pointIndex === 'number') {
+                const clickedPlanet = sortedExoplanets[pointIndex];
+                if (clickedPlanet?.id) {
+                  router.push(`/exoplanets/${clickedPlanet.id}`);
+                }
+              }
+            }}
+          />
         </div>
+      )}
+    </div>
   );
 };
 

@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 //import Plot from "react-plotly.js";
 
-//import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 //import apiService from "../services/apiService"; // Adjust the import based on your structure
 import { useApi } from "@/hooks/useApi";
 
@@ -11,20 +13,21 @@ import dynamic from "next/dynamic";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 import type { ScatterData } from "plotly.js";
 import type { Layout } from "plotly.js";
+import type {PlotMouseEvent} from "plotly.js";
 
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 
 interface Exoplanet {
+  id: string;
   planetName: string;
   orbitalPeriod: number;
   radius: number;
 }
 
 const StarMap: React.FC = () => {
-
-  //const router = useRouter();
+  const router = useRouter();
   const apiService = useApi();
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,6 +90,7 @@ const StarMap: React.FC = () => {
 
 // create a manual point to test: 
   const manualPoint = {
+    id: "test-planet-id",
     orbitalPeriod: 3.23469439654,
     radius: 13.31600225,
     planetName: "Test Planet",
@@ -276,6 +280,15 @@ const StarMap: React.FC = () => {
     responsive: true,
   };
 
+  // Handle click on a planet
+  const handleClick = (event: PlotMouseEvent) => {
+    const clickedPointIndex = event.points[0].pointIndex;
+    const clickedPlanet = combinedPlanets[clickedPointIndex];
+
+    // Redirect to a new page with the exoplanet ID in the URL
+    router.push(`/exoplanets/${clickedPlanet.id}`);
+  };
+
   return (
       <div style={{ width: "100%", height: "100%" }}> 
         <Plot 
@@ -284,6 +297,7 @@ const StarMap: React.FC = () => {
           config={config}
           style={{ width: "100%", height: "100%" }}
           useResizeHandler
+          onClick={handleClick} 
         />
       </div>
   );
