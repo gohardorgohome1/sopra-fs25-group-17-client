@@ -9,6 +9,9 @@ import { useRouter } from "next/navigation";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 import type { Layout } from "plotly.js";
 
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 interface Exoplanet {
   id: string;
   planetName: string;
@@ -22,6 +25,7 @@ const ExoplanetRanking: React.FC = () => {
   const [plotReady, setPlotReady] = useState(false);
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
 
 
   useEffect(() => {
@@ -42,8 +46,34 @@ const ExoplanetRanking: React.FC = () => {
     };
 
     fetchExoplanets();
-  }, []);
+  }, [reloadKey]);
 
+  useEffect(() => {
+      const client = new Client({
+        webSocketFactory: () =>
+          new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+        // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
+        // LOCAL SERVER for testing: "http://localhost:8080/ws"
+        connectHeaders: {},
+        onConnect: () => {
+          // Once connected, subscribe to the "/topic/exoplanets" topic
+          client.subscribe("/topic/exoplanets", () => {
+          // change the variable that triggers reload:
+          setReloadKey(prev => prev + 1);
+          
+          });
+        },
+        onDisconnect: () => {
+          console.log("Disconnected from WebSocket");
+        },
+      });
+    
+        client.activate();
+    
+        return () => {
+          client.deactivate();
+        };
+      }, []);
     // Wait for the component to fully load and router to be ready
   useEffect(() => {
     if (!loading && exoplanets.length > 0) {
