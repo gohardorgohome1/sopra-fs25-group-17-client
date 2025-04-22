@@ -15,6 +15,11 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 //const { Title, Text } = Typography;
 
 //const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+interface Comment {
+  userId: string;
+  message: string;
+  createdAt: string;
+}
 
 interface Exoplanet {
   id: string;
@@ -33,6 +38,7 @@ interface Exoplanet {
   earthSimilarityIndex: number;
 
   photometricCurveId:string;
+  comments: Comment[];
 }
 
 interface DataPoint {
@@ -62,6 +68,11 @@ const ExoplanetProfile: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [lightCurveData, setLightCurveData] = useState<DataPoint[]>([]);
   const [curveOwner, setCurveOwner] = useState<string | null>(null);
+  const [newComment, setNewComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
+  const [commentUsernames, setCommentUsernames] = useState<Record<string, string>>({});
 
 
   const {
@@ -70,6 +81,30 @@ const ExoplanetProfile: React.FC = () => {
     //clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+  
+    try {
+      setSubmitting(true);
+      await apiService.post(`/exoplanets/${id}/comments`, {
+        message: newComment,
+        userId: currentUserId
+      });
+      
+      setCommentUsernames(prev => ({
+        ...prev,
+        [currentUserId!]: currentUserName ?? "You"
+      }));
+      const updatedExoplanet: Exoplanet = await apiService.get(`/exoplanets/${id}`);
+      setExoplanet(updatedExoplanet);
+      setNewComment("");
+    } catch (error) {
+      console.error("Failed to post comment:", error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
   
   useEffect(() => {
     if (!id) return;
@@ -80,6 +115,23 @@ const ExoplanetProfile: React.FC = () => {
         const data: Exoplanet = await apiService.get(`/exoplanets/${id}`);
         console.log(data);
         setExoplanet(data);
+        const uniqueUserIds = [...new Set(data.comments.map(c => c.userId))];
+        const usernamesMap: Record<string, string> = {};
+
+        await Promise.all(
+          uniqueUserIds.map(async (uid) => {
+            try {
+              const user = await apiService.get<User>(`/users/${uid}`);
+              console.log("User response for comment:", user);
+              usernamesMap[uid] = user.username;
+            } catch (err) {
+              console.error(`Failed to fetch user ${uid}`, err);
+              usernamesMap[uid] = "Unknown";
+            }
+          })
+        );
+
+        setCommentUsernames(usernamesMap);
 
         // Fetch photometric/light curve data
         const curve = await apiService.get(`/photometric-curves/${data.photometricCurveId}`);
@@ -103,7 +155,22 @@ const ExoplanetProfile: React.FC = () => {
       }
     };
 
+    const fetchCurrentUser = async () => {
+      const storedId = localStorage.getItem("userId");
+      if (storedId) {
+        setCurrentUserId(storedId);
+        try {
+          const user: User = await apiService.get(`/users/${storedId}`);
+          setCurrentUserName(user.username);
+        } catch (error) {
+          console.error("Failed to fetch current user", error);
+        }
+      }
+    };
+
     fetchExoplanet();
+    fetchCurrentUser();
+
   }, [id, apiService]);
   if (loading) return <div>Loading...</div>;
   if (!exoplanet) return <div>Exoplanet not found.</div>;
@@ -112,7 +179,9 @@ const ExoplanetProfile: React.FC = () => {
     <div className="exoplanet-background" style={{
       top: 0,
       left: 0,
-      zIndex: -1
+      width: '100%',
+      height: '100%',
+      zIndex: -1,
     }}>
 
 {lightCurveData.length > 0 && (
@@ -120,7 +189,7 @@ const ExoplanetProfile: React.FC = () => {
             style={{
               position: 'absolute', // absolute positioning
               top: '100px',          // distance from the top
-              left: '47%',          // center horizontally
+              left: '39%',          // center horizontally
               transform: 'translateX(-50%)', // perfect horizontal centering
               width: '80%',
               zIndex: 10,
@@ -198,11 +267,16 @@ const ExoplanetProfile: React.FC = () => {
             />
           </div>
         )}
+        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: '100vh', backgroundColor: 'transparent' }}>
+
+          {/* Left Section: Light Curve + Planet Info */}
+          <div style={{ flex: '2', position: 'relative', padding: '20px' }}>
       {<div
         style={{
-            transform: 'scale(0.67)',
-            transformOrigin: 'top center',
+            transform: 'scale(0.67) translateX(40px)',
+            transformOrigin: 'top left',          
             position: 'relative', // sets context for all your absolutely positioned elements
+            top: '-30px',
             width: '1215px', // original full canvas width
             height: '800px', // original full canvas height
           }}
@@ -242,6 +316,77 @@ const ExoplanetProfile: React.FC = () => {
       <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
     </div>
 </div>}
+        </div>
+         {/* Right Section: Comments */}
+        <div style={{
+          flex: '1',
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          padding: '20px',
+          color: 'white',
+          fontFamily: 'Jura, sans-serif',
+          borderLeft: '1px solid #333',
+          overflowY: 'auto'
+        }}>
+          <h2 style={{ color: '#FFD9D9', fontSize: '28px' }}>Comments</h2>
+
+          <div style={{ maxHeight: '70vh', overflowY: 'auto', marginBottom: '20px' }}>
+            {exoplanet.comments.length === 0 ? (
+              <p>No comments yet. Be the first to leave one!</p>
+            ) : (
+              exoplanet.comments.map((comment, index) => (
+                <div key={index} style={{
+                  marginBottom: '15px',
+                  padding: '10px',
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: '8px'
+                }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+                    {commentUsernames[comment.userId] || comment.userId}
+                  </div>
+                  <div style={{ fontSize: '14px' }}>{comment.message}</div>
+                  <div style={{ fontSize: '12px', color: '#888', marginTop: '5px' }}>
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <form onSubmit={handleCommentSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              rows={4}
+              placeholder="Write a comment..."
+              style={{
+                resize: 'none',
+                padding: '10px',
+                borderRadius: '8px',
+                border: '1px solid #555',
+                marginBottom: '10px',
+                backgroundColor: '#111',
+                color: '#fff'
+              }}
+            />
+            <button
+              type="submit"
+              disabled={submitting}
+              style={{
+                padding: '10px',
+                backgroundColor: submitting ? '#333' : '#FFD9D9',
+                color: '#000',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: submitting ? 'not-allowed' : 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              {submitting ? 'Submitting...' : 'Submit'}
+            </button>
+          </form>
+        </div>
+
+      </div>
     </div>
   </div>
   );
