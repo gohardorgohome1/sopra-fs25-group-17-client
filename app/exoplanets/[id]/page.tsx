@@ -7,6 +7,11 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import dynamic from 'next/dynamic';
 import { Button, Modal, ConfigProvider } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false
 });
@@ -78,7 +83,7 @@ const ExoplanetProfile: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
   const [commentUsernames, setCommentUsernames] = useState<Record<string, string>>({});
-
+  const [reloadKey, setReloadKey] = useState(0);
 
   const {
     // value: token, // is commented out because we dont need to know the token value for logout
@@ -235,7 +240,35 @@ const ExoplanetProfile: React.FC = () => {
     fetchExoplanet();
     fetchCurrentUser();
 
-  }, [id, apiService]);
+  }, [id, apiService, reloadKey]);
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJS("http://localhost:8080/ws"),
+      // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
+      // LOCAL SERVER for testing: "http://localhost:8080/ws"
+      connectHeaders: {},
+      onConnect: () => {
+        // Once connected, subscribe to the "/topic/exoplanets" topic
+        client.subscribe(`/topic/comments/${id}`, () => {
+        // change the variable that triggers reload:
+        setReloadKey(prev => prev + 1);
+        
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+    });
+  
+      client.activate();
+  
+      return () => {
+        client.deactivate();
+      };
+    }, [id]);
+
   if (loading) return <div>Loading...</div>;
   if (!exoplanet) return <div>Exoplanet not found.</div>;
   return (
