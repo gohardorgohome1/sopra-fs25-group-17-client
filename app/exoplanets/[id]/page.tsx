@@ -7,6 +7,11 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import dynamic from 'next/dynamic';
 import { Button, Modal, ConfigProvider } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false
 });
@@ -78,7 +83,7 @@ const ExoplanetProfile: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
   const [commentUsernames, setCommentUsernames] = useState<Record<string, string>>({});
-
+  const [reloadKey, setReloadKey] = useState(0);
 
   const {
     // value: token, // is commented out because we dont need to know the token value for logout
@@ -235,7 +240,35 @@ const ExoplanetProfile: React.FC = () => {
     fetchExoplanet();
     fetchCurrentUser();
 
-  }, [id, apiService]);
+  }, [id, apiService, reloadKey]);
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+      // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
+      // LOCAL SERVER for testing: "http://localhost:8080/ws"
+      connectHeaders: {},
+      onConnect: () => {
+        // Once connected, subscribe to the "/topic/exoplanets" topic
+        client.subscribe(`/topic/comments/${id}`, () => {
+        // change the variable that triggers reload:
+        setReloadKey(prev => prev + 1);
+        
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+    });
+  
+      client.activate();
+  
+      return () => {
+        client.deactivate();
+      };
+    }, [id]);
+
   if (loading) return <div>Loading...</div>;
   if (!exoplanet) return <div>Exoplanet not found.</div>;
   return (
@@ -364,7 +397,7 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 667, height: 113, left: 1099, top: 715, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.orbitalPeriod.toFixed(2)} days</div>
     <div style={{width: 667, height: 113, left: 546, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.density.toFixed(2)}× ρₑ⊕ </div>
     <div style={{width: 667, height: 113, left: 1250, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.theoreticalTemperature.toFixed(1)} K</div>
-    <div style={{width: 667, height: 113, left: 1193, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.earthSimilarityIndex).toFixed(2)}%</div>
+    <div style={{width: 667, height: 113, left: 1193, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.earthSimilarityIndex*100).toFixed(2)}%</div>
     <div style={{width: 667, height: 113, left: 372, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Density:</div>
     <div style={{width: 667, height: 113, left: 879, top: 715, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Oribital Period:</div>
     <div style={{width: 667, height: 113, left: 968, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Theoretical Temperature:</div>
