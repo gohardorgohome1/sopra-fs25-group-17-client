@@ -143,6 +143,7 @@ const ExoplanetProfile: React.FC = () => {
   const isOwner = (exoplanetOwnerId: string) => { // Checking whether the current User is the Owner of this exoplanet
     const userId = localStorage.getItem("userId");
     return (userId == exoplanetOwnerId);
+  }
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -487,5 +488,3 @@ const ExoplanetProfile: React.FC = () => {
 };
 
 export default ExoplanetProfile;
-
-
