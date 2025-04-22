@@ -3,7 +3,8 @@ import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Button, Form, Input, Card } from "antd";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { PhotometricCurve } from "@/types/photometricCurve";
 
 const Upload: React.FC = () => {
   const router = useRouter();
@@ -30,9 +31,10 @@ const Upload: React.FC = () => {
     formData.append("ownerId", userId);
 
     try {
-      await apiService.post<void>("/photometric-curves/upload",  formData ); // post request for Photometric Curve
+      const curve = await apiService.post<PhotometricCurve>("/photometric-curves/upload",  formData ); // post request for Photometric Curve
+      const exoplanetId = curve.exoplanetId; // Used to redirect the user to the correct page
 
-      router.push("/dashboard");
+      router.push(`/exoplanets/${exoplanetId}`);
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes("Invalid photometric curve file or exoplanet name!")) {
@@ -59,6 +61,13 @@ const Upload: React.FC = () => {
     setSelectedFile(file);  // save new file
   };
 
+  useEffect(() => { // Redirect User to login if he is not logged in
+    const storedToken = localStorage.getItem("token"); 
+    if(!storedToken){
+      router.push("/login");
+      return;
+    }
+  }, [apiService, router]);
 
   return (
     <div

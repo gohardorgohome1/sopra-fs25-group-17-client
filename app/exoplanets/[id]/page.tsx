@@ -17,6 +17,11 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 //const { Title, Text } = Typography;
 
 //const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+interface Comment {
+  userId: string;
+  message: string;
+  createdAt: string;
+}
 
 interface Exoplanet {
   id: string;
@@ -35,6 +40,7 @@ interface Exoplanet {
   earthSimilarityIndex: number;
 
   photometricCurveId:string;
+  comments: Comment[];
 }
 
 interface DataPoint {
@@ -51,6 +57,11 @@ interface PhotometricCurve {
   metadata?: Record<string, string>;
 }
 
+interface User {
+  id: string;
+  username:string
+}
+  
 const { useModal } = Modal;
 
 const ExoplanetProfile: React.FC = () => {
@@ -61,6 +72,12 @@ const ExoplanetProfile: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [lightCurveData, setLightCurveData] = useState<DataPoint[]>([]);
   const [modal, contextHolder] = useModal();
+  const [curveOwner, setCurveOwner] = useState<string | null>(null);
+  const [newComment, setNewComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
+  const [commentUsernames, setCommentUsernames] = useState<Record<string, string>>({});
 
 
   const {
@@ -126,6 +143,30 @@ const ExoplanetProfile: React.FC = () => {
   const isOwner = (exoplanetOwnerId: string) => { // Checking whether the current User is the Owner of this exoplanet
     const userId = localStorage.getItem("userId");
     return (userId == exoplanetOwnerId);
+
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+  
+    try {
+      setSubmitting(true);
+      await apiService.post(`/exoplanets/${id}/comments`, {
+        message: newComment,
+        userId: currentUserId
+      });
+      
+      setCommentUsernames(prev => ({
+        ...prev,
+        [currentUserId!]: currentUserName ?? "You"
+      }));
+      const updatedExoplanet: Exoplanet = await apiService.get(`/exoplanets/${id}`);
+      setExoplanet(updatedExoplanet);
+      setNewComment("");
+    } catch (error) {
+      console.error("Failed to post comment:", error);
+    } finally {
+      setSubmitting(false);
+    }
   };
   
   useEffect(() => {
@@ -137,12 +178,38 @@ const ExoplanetProfile: React.FC = () => {
         const data: Exoplanet = await apiService.get(`/exoplanets/${id}`);
         console.log(data);
         setExoplanet(data);
+        const uniqueUserIds = [...new Set(data.comments.map(c => c.userId))];
+        const usernamesMap: Record<string, string> = {};
+
+        await Promise.all(
+          uniqueUserIds.map(async (uid) => {
+            try {
+              const user = await apiService.get<User>(`/users/${uid}`);
+              console.log("User response for comment:", user);
+              usernamesMap[uid] = user.username;
+            } catch (err) {
+              console.error(`Failed to fetch user ${uid}`, err);
+              usernamesMap[uid] = "Unknown";
+            }
+          })
+        );
+
+        setCommentUsernames(usernamesMap);
 
         // Fetch photometric/light curve data
         const curve = await apiService.get(`/photometric-curves/${data.photometricCurveId}`);
         const typedCurve = curve as PhotometricCurve;
         console.log(curve);
         setLightCurveData(typedCurve.dataPoints); // Assume format: [{ time, brightness, brightnesserror }]
+        
+        try {
+          const user: User = await apiService.get(`/users/${data.ownerId}`);
+          const curveowner = user?.username ?? "Unknown";
+          setCurveOwner(curveowner);
+        } catch (error) {
+          console.error("Error fetching user:", error);
+          setCurveOwner("Unknown");
+        }
       } catch (error) {
         console.error("Failed to fetch exoplanet data:", error);
         router.push("/exoplanets");
@@ -151,7 +218,22 @@ const ExoplanetProfile: React.FC = () => {
       }
     };
 
+    const fetchCurrentUser = async () => {
+      const storedId = localStorage.getItem("userId");
+      if (storedId) {
+        setCurrentUserId(storedId);
+        try {
+          const user: User = await apiService.get(`/users/${storedId}`);
+          setCurrentUserName(user.username);
+        } catch (error) {
+          console.error("Failed to fetch current user", error);
+        }
+      }
+    };
+
     fetchExoplanet();
+    fetchCurrentUser();
+
   }, [id, apiService]);
   if (loading) return <div>Loading...</div>;
   if (!exoplanet) return <div>Exoplanet not found.</div>;
@@ -161,7 +243,9 @@ const ExoplanetProfile: React.FC = () => {
     <div className="exoplanet-background" style={{
       top: 0,
       left: 0,
-      zIndex: -1
+      width: '100%',
+      height: '100%',
+      zIndex: -1,
     }}>
 
 {lightCurveData.length > 0 && (
@@ -169,7 +253,7 @@ const ExoplanetProfile: React.FC = () => {
             style={{
               position: 'absolute', // absolute positioning
               top: '100px',          // distance from the top
-              left: '47%',          // center horizontally
+              left: '39%',          // center horizontally
               transform: 'translateX(-50%)', // perfect horizontal centering
               width: '80%',
               zIndex: 10,
@@ -247,11 +331,16 @@ const ExoplanetProfile: React.FC = () => {
             />
           </div>
         )}
+        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: '100vh', backgroundColor: 'transparent' }}>
+
+          {/* Left Section: Light Curve + Planet Info */}
+          <div style={{ flex: '2', position: 'relative', padding: '20px' }}>
       {<div
         style={{
-            transform: 'scale(0.67)',
-            transformOrigin: 'top center',
+            transform: 'scale(0.67) translateX(40px)',
+            transformOrigin: 'top left',          
             position: 'relative', // sets context for all your absolutely positioned elements
+            top: '-30px',
             width: '1215px', // original full canvas width
             height: '800px', // original full canvas height
           }}
@@ -261,10 +350,10 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 1524, height: 436, left: 136, top: 635, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 26, filter: 'blur(0px)'}} />
     <div style={{width: 1495, height: 420, left: 136, top: 181, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 14, filter: 'blur(0px)'}} />
     <div style={{width: 667, height: 113, left: 1178, top: 137, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Host Star</div>
-    <div style={{width: 667, height: 113, left: 1231, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>User</div>
-    <div style={{width: 667, height: 102, left: 1215, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Analyzed by:</div>
-    <div style={{width: 667, height: 101, left: -105, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>CSIC-IAC</div>
-    <div style={{width: 667, height: 91, left: -98, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Research Group:</div>
+    <div style={{width: 667, height: 113, left: 1220, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{curveOwner}</div>
+    <div style={{width: 667, height: 102, left: 1215, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Analyzed by:</div> 
+    {/*<div style={{width: 667, height: 101, left: -105, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>CSIC-IAC</div>
+    <div style={{width: 667, height: 91, left: -98, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Research Group:</div>*/}
     <div style={{width: 667, height: 113, left: -15, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Fractional Depth:</div>
     <div style={{width: 667, height: 113, left: 190, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.fractionalDepth* 100).toFixed(2)}%</div>
     <div style={{width: 667, height: 113, left: 65, top: 833, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.radius).toFixed(2)} R⊕</div>
@@ -285,10 +374,12 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 667, height: 113, left: -112, top: 963, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Mass:</div>
     <div style={{width: 1001, height: 112, left: -124, top: 35, position: 'absolute', textAlign: 'center', color: '#FFD9D9', fontSize: 96, fontFamily: 'Koulen', fontWeight: '400', wordWrap: 'break-word'}}>{exoplanet.planetName}</div>
     <div style={{width: 1001, height: 78, left: 994, top: 59, position: 'absolute', textAlign: 'center', color: '#FFD9D9', fontSize: 64, fontFamily: 'Koulen', fontWeight: '400', wordWrap: 'break-word'}}>{exoplanet.hostStarName}</div>
-    <div style={{width: 236, height: 49, left: 22, top: 1039, position: 'absolute', background: '#650808', boxShadow: '69.30000305175781px 69.30000305175781px 69.30000305175781px ', filter: 'blur(34.65px)'}} />
-    <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
-    <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
-    
+    <div onClick={() => router.push('/dashboard')} style={{ cursor: 'pointer' }}>
+      <div style={{width: 236, height: 49, left: 22, top: 1039, position: 'absolute', background: '#650808', boxShadow: '69.30000305175781px 69.30000305175781px 69.30000305175781px ', filter: 'blur(34.65px)'}} />
+      <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
+      <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
+    </div>
+        
     {contextHolder}
     {isOwner(exoplanet.ownerId) && ( // Only show the button if the User is also the Owner of this exoplanet
     <Button // Delete Exoplanet Button
@@ -318,6 +409,77 @@ const ExoplanetProfile: React.FC = () => {
     </Button>
     )}
 </div>}
+        </div>
+         {/* Right Section: Comments */}
+        <div style={{
+          flex: '1',
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          padding: '20px',
+          color: 'white',
+          fontFamily: 'Jura, sans-serif',
+          borderLeft: '1px solid #333',
+          overflowY: 'auto'
+        }}>
+          <h2 style={{ color: '#FFD9D9', fontSize: '28px' }}>Comments</h2>
+
+          <div style={{ maxHeight: '70vh', overflowY: 'auto', marginBottom: '20px' }}>
+            {exoplanet.comments.length === 0 ? (
+              <p>No comments yet. Be the first to leave one!</p>
+            ) : (
+              exoplanet.comments.map((comment, index) => (
+                <div key={index} style={{
+                  marginBottom: '15px',
+                  padding: '10px',
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: '8px'
+                }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+                    {commentUsernames[comment.userId] || comment.userId}
+                  </div>
+                  <div style={{ fontSize: '14px' }}>{comment.message}</div>
+                  <div style={{ fontSize: '12px', color: '#888', marginTop: '5px' }}>
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <form onSubmit={handleCommentSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              rows={4}
+              placeholder="Write a comment..."
+              style={{
+                resize: 'none',
+                padding: '10px',
+                borderRadius: '8px',
+                border: '1px solid #555',
+                marginBottom: '10px',
+                backgroundColor: '#111',
+                color: '#fff'
+              }}
+            />
+            <button
+              type="submit"
+              disabled={submitting}
+              style={{
+                padding: '10px',
+                backgroundColor: submitting ? '#333' : '#FFD9D9',
+                color: '#000',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: submitting ? 'not-allowed' : 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              {submitting ? 'Submitting...' : 'Submit'}
+            </button>
+          </form>
+        </div>
+
+      </div>
     </div>
   </div>
   </ConfigProvider>

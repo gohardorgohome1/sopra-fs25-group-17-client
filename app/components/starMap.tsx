@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 //import Plot from "react-plotly.js";
 
-//import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 //import apiService from "../services/apiService"; // Adjust the import based on your structure
 import { useApi } from "@/hooks/useApi";
 
@@ -11,24 +13,29 @@ import dynamic from "next/dynamic";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 import type { ScatterData } from "plotly.js";
 import type { Layout } from "plotly.js";
+import type {PlotMouseEvent} from "plotly.js";
+
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 
 interface Exoplanet {
+  id: string;
   planetName: string;
   orbitalPeriod: number;
   radius: number;
 }
 
 const StarMap: React.FC = () => {
-
-  //const router = useRouter();
+  const router = useRouter();
   const apiService = useApi();
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     const fetchExoplanets = async () => {
+      setLoading(true);
       try {
         const planets: Exoplanet[] = await apiService.get<Exoplanet[]>("/exoplanets");
         setExoplanets(planets);
@@ -45,15 +52,45 @@ const StarMap: React.FC = () => {
     };
 
     fetchExoplanets();
-  }, []);
+  }, [reloadKey]);
 
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+      // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
+      // LOCAL SERVER for testing: "http://localhost:8080/ws"
+      connectHeaders: {},
+      onConnect: () => {
+        // Once connected, subscribe to the "/topic/exoplanets" topic
+        client.subscribe("/topic/exoplanets", () => {
+        // change the variable that triggers reload:
+        setReloadKey(prev => prev + 1);
+        
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+    });
+  
+      client.activate();
+  
+      return () => {
+        client.deactivate();
+      };
+    }, []);
 
   if (loading) {
     return <div style={{ color: "white" }}>Loading...</div>;
   }
 
+
+  
+
 // create a manual point to test: 
   const manualPoint = {
+    id: "test-planet-id",
     orbitalPeriod: 3.23469439654,
     radius: 13.31600225,
     planetName: "Test Planet",
@@ -88,8 +125,8 @@ const StarMap: React.FC = () => {
     autosize: true,
     // width: "100%",
     // height: "100vh",
-    width: 1000, 
-    height: 700,
+    //width: 800, 
+    //height: 600,
     paper_bgcolor: "black",
     plot_bgcolor: "black",
     xaxis: {
@@ -97,13 +134,16 @@ const StarMap: React.FC = () => {
         text: "Orbital Period (Days)",
           font: {
             family: "Jura",  // You can change the font family if needed
-            size: 12,
+            size: 15,
             color: "white"
           },
         },
+      showline: true,
+      linecolor: 'white',
+      linewidth: 4, // Thicker line
       type: "log",
       color: "white",
-      range: [Math.log10(0.2), Math.log10(1000)], // 0.2 to 1000 days
+      range: [Math.log10(0.18), Math.log10(1000)],
       showgrid: false,
       zeroline: false,
       tickmode: "array", // Manually set tick positions
@@ -118,12 +158,15 @@ const StarMap: React.FC = () => {
         text: "Radius (Earth Units)",
           font: {
             family: "Jura",  // You can change the font family if needed
-            size: 12,
+            size: 15,
             color: "white"
           },},
+      showline: true,
+      linecolor: 'white',
+      linewidth: 4, // Thicker line
       type: "log",
       color: "white",
-      range: [Math.log10(0.3), Math.log10(25)], // 0.3 to 25 Earth radii
+      range: [Math.log10(1.5), Math.log10(7)], 
       showgrid: false,
       zeroline: false,
       tickmode: "array", // Manually set tick positions
@@ -135,10 +178,10 @@ const StarMap: React.FC = () => {
     },
 
     margin: {
-      t: 0,  // Top margin - reduce it to give more space
-      b: 30,  // Bottom margin
-      l: 30,  // Left margin
-      r: 0,  // Right margin
+      t: 10,  // Top margin - reduce it to give more space
+      b: 40,  // Bottom margin
+      l: 40,  // Left margin
+      r: 10,  // Right margin
     },
 
     shapes: [
@@ -147,8 +190,8 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 0.2, x1: 4,
         y0: 0.5, y1: 2.5,
-        fillcolor: "#4D0E13",
-        opacity: 1,
+        fillcolor: "#A42222",
+        opacity: 0.45,
         line: { width: 0, color: "white", },
         layer: "below",
       },
@@ -157,8 +200,8 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 4, x1: 140,
         y0: 0.35, y1: 3.5,
-        fillcolor: "#704214",
-        opacity: 1,
+        fillcolor: "#AE6500",
+        opacity: 0.5,
         line: { width: 0 },
         layer: "below",
       },
@@ -167,8 +210,8 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 2, x1: 300,
         y0: 3.5, y1: 10,
-        fillcolor: "#0A2942",
-        opacity: 1,
+        fillcolor: "#005AAE",
+        opacity: 0.45,
         line: { width: 0 },
         layer: "below",
       },
@@ -177,8 +220,8 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 0.5, x1: 10,
         y0: 10, y1: 25,
-        fillcolor: "#422626",
-        opacity: 1,
+        fillcolor: "#8A5555",
+        opacity: 0.48,
         line: { width: 0 },
         layer: "below",
       },
@@ -187,8 +230,8 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 140, x1: 1000,
         y0: 10, y1: 25,
-        fillcolor: "#001133",
-        opacity: 1,
+        fillcolor: "#001670",
+        opacity: 0.6,
         line: { width: 0 },
         layer: "below",
       },
@@ -197,19 +240,19 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 140, x1: 700,
         y0: 0.8, y1: 1.8,
-        fillcolor: "#0B4F2D",
-        opacity: 1,
+        fillcolor: "#22A45C",
+        opacity: 0.6,
         line: { width: 0 },
         layer: "below",
       },
     ],
     
     annotations: [
-      { x: 0.2, y: 0.4, text: "Lava Worlds", showarrow: false, 
+      { x: 0.2, y: 0.38, text: "Lava Worlds", showarrow: false, 
         font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
         xanchor: "right", yanchor: "top"},
 
-      { x: 1.65, y: 0.55, text: "Rocky Planets", showarrow: false, 
+      { x: 1.65, y: 0.52, text: "Rocky Planets", showarrow: false, 
         font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
       xanchor: "right", yanchor: "top"},
 
@@ -217,15 +260,15 @@ const StarMap: React.FC = () => {
         font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
       xanchor: "right", yanchor: "top"},
 
-      { x: 0.55, y: 1.4, text: "Hot Jupiters", showarrow: false, 
+      { x: 0.55, y: 1.39, text: "Hot Jupiters", showarrow: false, 
         font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
       xanchor: "right", yanchor: "top"},
 
-      { x: 2.9, y: 1.4, text: "Cold Gas Giants", showarrow: false, 
+      { x: 2.8, y: 1.38, text: "Cold Gas Giants", showarrow: false, 
         font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
       xanchor: "right", yanchor: "top"},
 
-      { x: 2.84, y: 0.25, text: "Earth-Like Planets", showarrow: false, 
+      { x: 2.75, y: 0.25, text: "Earth-Like Planets", showarrow: false, 
         font: { family: "Jura", color: "white", size: 14 }, xref: "x", yref: "y", 
       xanchor: "right", yanchor: "top"},
     ],
@@ -234,6 +277,16 @@ const StarMap: React.FC = () => {
   const config = {
     displayModeBar: false,
     scrollZoom: true,
+    responsive: true,
+  };
+
+  // Handle click on a planet
+  const handleClick = (event: PlotMouseEvent) => {
+    const clickedPointIndex = event.points[0].pointIndex;
+    const clickedPlanet = combinedPlanets[clickedPointIndex];
+
+    // Redirect to a new page with the exoplanet ID in the URL
+    router.push(`/exoplanets/${clickedPlanet.id}`);
   };
 
   return (
@@ -244,6 +297,7 @@ const StarMap: React.FC = () => {
           config={config}
           style={{ width: "100%", height: "100%" }}
           useResizeHandler
+          onClick={handleClick} 
         />
       </div>
   );
