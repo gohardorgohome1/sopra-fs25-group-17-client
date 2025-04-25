@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Input, Button, Spin } from "antd";
 import { SendOutlined } from "@ant-design/icons";
+import { useApi } from "@/hooks/useApi"; 
 
 interface Message {
   role: "user" | "assistant";
@@ -18,6 +19,8 @@ const ChatAssistant: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  const apiService = useApi(); 
+
   useEffect(() => {
     const fetchData = async () => {
       const storedUserId = localStorage.getItem("userId");
@@ -25,19 +28,17 @@ const ChatAssistant: React.FC = () => {
       setUserId(storedUserId);
 
       try {
-        const userRes = await fetch(`http://localhost:8080/users/${storedUserId}`);
-        const userData = await userRes.json();
+       
+        const userData = await apiService.get<{ username: string }>(`/users/${storedUserId}`);
         setUsername(userData.username);
-;
 
-        const chatRes = await fetch("http://localhost:8080/openai/chat/history");
-        const chatData = await chatRes.json();
+        const chatData = await apiService.get<Message[]>(`/openai/chat/history`);
 
-        const loadedMessages = chatData.map((msg: Message) => ({
+        const loadedMessages = chatData.map((msg) => ({
           role: msg.role,
           content: msg.content,
           senderName: msg.senderName,
-        }));        
+        }));
 
         setMessages(loadedMessages);
       } catch (err) {
@@ -46,7 +47,7 @@ const ChatAssistant: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [apiService]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,8 +65,6 @@ const ChatAssistant: React.FC = () => {
       return;
     }
 
-
-
     const userMessage: Message = {
       role: "user",
       content: input,
@@ -76,19 +75,12 @@ const ChatAssistant: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/openai/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          username,
-          messages: [userMessage],
-        }),
-      });
 
-      const data = await res.json();
+      const data = await apiService.post<{ reply: string }>(`/openai/chat`, {
+        userId,
+        username,
+        messages: [userMessage],
+      });
 
       const assistantMessage: Message = {
         role: "assistant",
@@ -139,7 +131,7 @@ const ChatAssistant: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onPressEnter={(e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 sendMessage();
               }}
               placeholder="Type your message..."
