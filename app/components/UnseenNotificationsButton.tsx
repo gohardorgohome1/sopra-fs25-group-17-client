@@ -20,10 +20,11 @@ export default function UnseenNotificationsButton() {
   const apiService = useApi();
     const {
     } = useLocalStorage<string>("token", "");
-  const userId = localStorage.getItem("userId");
+  
   const [hasUnseen, setHasUnseen] = useState(false);
 
   useEffect(() => {
+    const userId = localStorage.getItem("userId");
     const checkUnseenNotifications = async () => {
       if (!userId) return;
 
@@ -39,7 +40,7 @@ export default function UnseenNotificationsButton() {
     };
 
     checkUnseenNotifications();
-  }, [userId, apiService]);
+  }, [apiService]);
 
   if (!hasUnseen) return null;
 
