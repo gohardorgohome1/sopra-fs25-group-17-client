@@ -6,6 +6,7 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Button, Card } from "antd";
 import 'react-toastify/dist/ReactToastify.css';
+import UnseenNotificationsButton from "../components/UnseenNotificationsButton";
 
 import StarMap from "../components/starMap";
 import ExoplanetRanking from "../components/exoplanetRanking";
@@ -41,7 +42,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard-container">
-
+      <UnseenNotificationsButton />
       {/* Logout Button */}
       <Button
         onClick={handleLogout}
