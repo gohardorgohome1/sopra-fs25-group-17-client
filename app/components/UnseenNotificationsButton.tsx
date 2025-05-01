@@ -75,7 +75,7 @@ export default function UnseenNotificationsButton() {
             padding: "0.5rem",
           }}
         >
-          <h4 style={{ color: "#fff", margin: "0 0 0.5rem 0" }}>Notifications</h4>
+          <h4 style={{ color: "#fff", margin: "0 0 0.5rem 0" }}>Notifications you missed when you were offline</h4>
           {notifications.map((notif, index) => (
             <div
               key={index}
@@ -88,7 +88,7 @@ export default function UnseenNotificationsButton() {
                 fontSize: "0.9rem",
               }}
             >
-              📡 <strong>exoplanet: {notif.planetName}</strong> uploaded by <em>{notif.uploaderUsername}</em>
+              📡 <strong>Exoplanet: {notif.planetName}</strong> has been uploaded by <em>{notif.uploaderUsername}</em>
               <br />
               <small style={{ color: "#888" }}>{notif.createdAt 
                     ? new Date(notif.createdAt).toLocaleString("en-GB", {
