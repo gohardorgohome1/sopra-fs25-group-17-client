@@ -7,9 +7,11 @@ import SockJS from "sockjs-client";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import NotificationToast from "@/components/NotificationToast";
+import { useApi } from "@/hooks/useApi";
 
 export default function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const apiService = useApi();
 
   const disabledPaths = ["/login", "/register"];
 
@@ -25,13 +27,27 @@ export default function WebSocketProvider({ children }: { children: React.ReactN
       // Put this for deployed app: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
       connectHeaders: {},
       onConnect: () => {
-        client.subscribe("/topic/exoplanets", (message) => {
+        client.subscribe("/topic/exoplanets", async (message) => {
           const payload = JSON.parse(message.body);
           const username = payload.user.username;
           const planetName = payload.exoplanet.planetName;
           const exoplanetId = payload.exoplanet.id;
 
           toast(<NotificationToast username={username} planetName={planetName} exoplanetId={exoplanetId} />);
+
+          // Mark this specific notification as seen
+          try {
+            const userId = localStorage.getItem("userId");
+            if (userId && exoplanetId) {
+              await apiService.put<void>("/notifications/mark-seen-single", {
+                userId,
+                exoplanetId,
+              });
+            }
+          } catch (error) {
+            console.error("Failed to mark real-time notification as seen:", error);
+          }
+
         });
       },
       onDisconnect: () => {
