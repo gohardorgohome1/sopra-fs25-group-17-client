@@ -5,23 +5,34 @@ import { Bell } from "lucide-react"; // Icon
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 
+interface Notification {
+    userId: string;
+    uploaderUsername: string;
+    exoplanetId: string;
+    planetName: string;
+    seen: boolean;
+    createdAt: string; // ISO date string (from LocalDateTime in backend)
+  }
+
 export default function UnseenNotificationsButton() {
-  const [notifications, setNotifications] = useState<Array<Record<string, any>>>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const apiService = useApi();
     const {
     } = useLocalStorage<string>("token", "");
   const userId = localStorage.getItem("userId");
+  const [hasUnseen, setHasUnseen] = useState(false);
 
   useEffect(() => {
     const checkUnseenNotifications = async () => {
       if (!userId) return;
 
       try {
-        const res = await apiService.get<Array<Record<string, any>>>(`/notifications?userId=${userId}`);
-        if (res.length > 0) {
-          setNotifications(res);
-        }
+        const res = await apiService.get<Notification>(`/notifications?userId=${userId}`);
+        if (Array.isArray(res) && res.length > 0) {
+            setHasUnseen(true);
+            setNotifications(res); // Store the notifications
+          }
       } catch (err) {
         console.error("Failed to fetch unseen notifications", err);
       }
@@ -30,7 +41,7 @@ export default function UnseenNotificationsButton() {
     checkUnseenNotifications();
   }, [userId, apiService]);
 
-  if (notifications.length === 0) return null;
+  if (!hasUnseen) return null;
 
   return (
     <div style={{ position: "absolute", top: "3vh", right: "22vw", zIndex: 9999 }}>
