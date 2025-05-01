@@ -259,3 +259,11 @@ body, html {
   font-size: 20px;
   font-weight: 700;
 }
+
+
+.profile-background {
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.96;
+  background: url("/background_profile_page.png") lightgray 50% / cover no-repeat;
+}
