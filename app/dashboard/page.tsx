@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import NotificationToast from "@/components/NotificationToast";
 import StarMap from "../components/starMap";
 import ExoplanetRanking from "../components/exoplanetRanking";
+import { FaUserAstronaut } from 'react-icons/fa';
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
@@ -87,6 +88,26 @@ const Dashboard: React.FC = () => {
           letterSpacing: "0%",
         }}
       />
+
+      <Button
+        onClick={() => router.push(`/users/68120b172087224081e02480`)} // provisorisch
+        type="primary"
+        style={{
+          position: "absolute",
+          alignItems: 'center',
+          left: "1vw",
+          top: "4vh",
+          fontSize: "8vh",
+
+          background: "transparent",
+          border: "none",
+          color: 'white',
+
+          cursor: 'pointer',
+        }}
+      >
+        <FaUserAstronaut />
+      </Button>
 
       {/* Logout Button */}
       <Button

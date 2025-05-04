@@ -384,7 +384,6 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 1524, height: 436, left: 136, top: 635, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 26, filter: 'blur(0px)'}} />
     <div style={{width: 1495, height: 420, left: 136, top: 181, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 14, filter: 'blur(0px)'}} />
     <div style={{width: 667, height: 113, left: 1178, top: 137, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Host Star</div>
-    <div style={{width: 667, height: 113, left: 1220, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{curveOwner}</div>
     <div style={{width: 667, height: 102, left: 1215, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Analyzed by:</div> 
     {/*<div style={{width: 667, height: 101, left: -105, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>CSIC-IAC</div>
     <div style={{width: 667, height: 91, left: -98, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Research Group:</div>*/}
@@ -413,6 +412,29 @@ const ExoplanetProfile: React.FC = () => {
       <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
       <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
     </div>
+
+    <Button // Making the owner clickable to get to his profile page
+      onClick={() => router.push(`/users/${exoplanet.ownerId}`)}
+      style={{
+        width: 160,
+        height: 60,
+        left: 1470,
+        top: 547,
+        position: 'absolute',
+        textAlign: 'center',
+        color: 'white',
+        fontSize: 16,
+        fontFamily: 'Jura',
+        fontWeight: '700',
+        wordWrap: 'break-word',
+        background: 'transparent',
+        border: 'none',
+        cursor: 'pointer',
+        padding: 0,
+      }}
+    >
+      {curveOwner}
+    </Button>
         
     {contextHolder}
     {isOwner(exoplanet.ownerId) && ( // Only show the button if the User is also the Owner of this exoplanet
@@ -442,6 +464,7 @@ const ExoplanetProfile: React.FC = () => {
       Delete Exoplanet
     </Button>
     )}
+
 </div>}
         </div>
          {/* Right Section: Comments */}
