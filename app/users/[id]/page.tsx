@@ -105,18 +105,22 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     zIndex: 1 // foreground
                 }}
                 >
+
                 <div // Title: Profile Page
                     style={{
-                        marginLeft: "2vw",
-                        width: "50vw",
+                        position: "absolute",
+                        left: "4vw",
+                        top: "4vh",
+                        width: "60vw",
                         height: "12vh",
+
                         textAlign: "left",
                         color: '#FFD9D9',
-                        fontSize: 72,
+                        fontSize: "10vh",
                         fontFamily: 'Koulen',
                         fontWeight: '400',
 
-                        background: "linear-gradient(90deg, #FFD9D9, #73CBC9)", // color gradient
+                        background: "linear-gradient(90deg, #FFD9D9,rgb(0, 180, 180))", // Had to make right color much stronger to avoid having only white text when the username is short
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                     }}
@@ -130,36 +134,91 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     onClick={editProfile}
                     type="primary"
                     htmlType="button"
+
                     style={{
-                    height: "4vh",
-                    background: "transparent",
-                    borderRadius: 46,
-                    
-                    marginLeft: "1vw",
+                        position: "absolute",
+                        left: "4vw",
+                        top: "2vh",
+                        width: "9vw",
+                        height: "6vh",
+                        padding: "0vw", // Makes the text align with the left edge of the button (avoids default padding of Buttons)
+                        background: "transparent",
 
-                    textAlign: "center",
-                    color: "#8A5555",
-                    fontSize: "4vh",
-                    fontFamily: "Karantina",
-                    fontWeight: "700",
+                        textAlign: "left",
+                        color: "#8A5555",
+                        fontSize: "4vh",
+                        fontFamily: "Karantina",
+                        fontWeight: "700",
 
-                    boxShadow: "none",
+                        boxShadow: "none",
                     }}
                     >
                     <span
                     style={{
+                        display: "inline-block",
+                        width: "100%",
+                        textAlign: "left",
+
                         background: "linear-gradient(90deg, #FFD9D9,rgb(181, 205, 204))",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                    }}
+                    >
+                        Edit Username
+                    </span>
+                </Button>
+                )}
+
+                <div // creation date
+                    style={{
+                        position: "absolute",
+                        right: "4vw",
+                        top: "4vh",
+                        width: "24vw",
+                        height: "12vh",
+
+                        textAlign: "right",
+                        color: '#FFD9D9',
+                        fontSize: "10vh",
+                        fontFamily: 'Koulen',
+                        fontWeight: '400',
+
+                        background: "linear-gradient(90deg, #FFD9D9, #73CBC9)", // color gradient
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
 
                         WebkitTextStrokeWidth: "0.5px",
                         WebkitTextStrokeColor: "#000000",
                     }}
-                    >
-                    Edit Username
-                    </span>
-                </Button>
-                )}
+                >
+                    {user?.creation_date &&
+                        `${user.creation_date.substring(8,10)}.
+                        ${user.creation_date.substring(5,7)}.
+                        ${user.creation_date.substring(0,4)}`
+                    }
+                </div>
+
+                <div
+                    style={{ // created on
+                        position: "absolute",
+                        right: "4vw",
+                        top: "2vh",
+                        width: "24vw", // keep it the same as the creationDate below it to have the same color gradient
+                        height: "6vh",
+
+                        textAlign: "right",
+                        color: "#8A5555",
+                        fontSize: "4vh",
+                        fontFamily: "Karantina",
+                        fontWeight: "700",
+
+                        background: "linear-gradient(90deg, #FFD9D9, #73CBC9)", // color gradient
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                    }}
+                >
+                    created on
+                </div>
 
                 <Button // Button: Back to dashboard
                     onClick={() => router.push("/dashboard")}
@@ -236,7 +295,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                       fontFamily: "Jura",
                       fontSize: "18px",
                       color: "black", // This prevents the font from turning green when hovering over it
-                      background: "linear-gradient(90deg,rgb(188, 118, 118), #8A5555)",
+                      background: "linear-gradient(90deg,rgb(216, 150, 150), #8A5555)",
                       border: "black",
                     }
                   }}
