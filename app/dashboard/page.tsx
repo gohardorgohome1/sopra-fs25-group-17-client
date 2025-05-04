@@ -1,6 +1,6 @@
 "use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering 
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -21,6 +21,7 @@ const Dashboard: React.FC = () => {
     value: token,
     clear: clearToken,
   } = useLocalStorage<string>("token", "");
+  const currentUserId = localStorage.getItem("userId");
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -90,10 +91,12 @@ const Dashboard: React.FC = () => {
       />
 
       <Button
-        onClick={() => router.push(`/users/68120b172087224081e02480`)} // provisorisch
+        onClick={() => router.push(`/users/${currentUserId}`)} // provisorisch
         type="primary"
         style={{
           position: "absolute",
+          width: "8vw",
+          height: "7vh",
           alignItems: 'center',
           left: "1vw",
           top: "4vh",
@@ -101,9 +104,11 @@ const Dashboard: React.FC = () => {
 
           background: "transparent",
           border: "none",
-          color: 'white',
+          color: "rgb(80, 150, 210)",
+          boxShadow: "none",
 
           cursor: 'pointer',
+          zIndex: "2",
         }}
       >
         <FaUserAstronaut />
