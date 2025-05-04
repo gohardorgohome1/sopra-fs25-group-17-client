@@ -13,6 +13,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
     const apiService = useApi();
     const [usernameForm] = Form.useForm();
     const router = useRouter();
+    const [isCorrectUser, setIsCorrectUser] = useState(false);
 
     /*const matchingTokens = async (token: string) => {
         try {
@@ -46,11 +47,14 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         return;
         }
 
+        const storedId = localStorage.getItem("userId");
+
         const fetchUser = async () => {
         try {
             const user = await apiService.get<User>(`/users/${id}`);
+            setIsCorrectUser(user?.id === storedId) // Check if the current user is the user this profile page is from
             setUser(user);
-            //console.log("Fetched users:", user);
+            console.log("Fetched user:", user);
             usernameForm.setFieldsValue({ username: user.username || "" });
         } catch (error) {
             if (error instanceof Error) {
@@ -196,10 +200,11 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
             }}
             >
             <Card
-                title="profile page"
                 style={{
                     width: "95vw", // size
                     height: "95vh",
+
+                    position: "relative",
         
                     background: "black", // visuals
                     border: "none",
@@ -214,7 +219,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                         marginLeft: "2vw",
                         width: "50vw",
                         height: "12vh",
-                        textAlign: 'left',
+                        textAlign: "left",
                         color: '#FFD9D9',
                         fontSize: 72,
                         fontFamily: 'Koulen',
@@ -225,47 +230,45 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                         WebkitTextFillColor: "transparent",
                     }}
                 >
-                    User Profile
+                    {user?.username ?? "Username not available"}
                 </div>
-                <p>username: {user?.username ?? "Username not available"}</p>
-                <p>organization: {user?.organization ?? "This user is not part of any organization"}</p>
 
+                {isCorrectUser && ( // Only show the button if the current user is the correct one
                 <Button // Button: Edit Profile
-                    className="absolute bottom-4 right-4"
+                    className="edit profile"
                     onClick={editProfile}
                     type="primary"
                     htmlType="button"
                     style={{
-                    width: "10vw",
-                    height: "6vh",
-                    background: "black",
+                    height: "4vh",
+                    background: "transparent",
                     borderRadius: 46,
                     
-                    marginLeft: "80vw",
-                    marginTop: "-20vh",
+                    marginLeft: "1vw",
 
                     textAlign: "center",
                     color: "#8A5555",
-                    fontSize: "20px",
+                    fontSize: "4vh",
                     fontFamily: "Karantina",
                     fontWeight: "700",
 
-                    boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)',
+                    boxShadow: "none",
                     }}
                     >
                     <span
                     style={{
-                        background: "linear-gradient(90deg, #8A5555, #FFFFFF)",
+                        background: "linear-gradient(90deg, #FFD9D9,rgb(181, 205, 204))",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
 
-                        WebkitTextStrokeWidth: "1px",
+                        WebkitTextStrokeWidth: "0.5px",
                         WebkitTextStrokeColor: "#000000",
                     }}
                     >
                     Edit Profile
                     </span>
                 </Button>
+                )}
 
                 <Button // Button: Back to dashboard
                     onClick={() => router.push("/dashboard")}
@@ -277,8 +280,9 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     background: "black",
                     borderRadius: 46,
                     
-                    marginLeft: "4vw",
-                    marginTop: "42vh",
+                    position: "absolute",
+                    left: "4vw",
+                    top: "84vh",
 
                     textAlign: "center",
                     color: "#8A5555",
