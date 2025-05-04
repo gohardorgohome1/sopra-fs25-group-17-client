@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
-import { Button, Card, Form, Input } from "antd";
+import { Button, Card, Form, Input, Modal } from "antd";
 import { useRouter } from "next/navigation";
 
 const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -14,31 +14,8 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
     const [usernameForm] = Form.useForm();
     const router = useRouter();
     const [isCorrectUser, setIsCorrectUser] = useState(false);
-
-    /*const matchingTokens = async (token: string) => {
-        try {
-        const response = await apiService.get<{ token: string }>(`/users/${id}/token`);
-
-        const cleanToken = token.replace("", "");
-
-        if (response.token === cleanToken) {
-            return true;
-        } else {
-            return false;
-        }
-        } catch (error) {
-        if (error instanceof Error) {
-            alert(
-            `Something went wrong while getting the Token:\n${error.message}`,
-            );
-        } else {
-            console.error(
-            "An unknown error occurred while getting the Token.",
-            );
-            return false;
-        }
-        }
-    };*/
+    const [isEditing, setIsEditing] = useState(false);
+    const [newUsername, setNewUsername] = useState(user?.username || "");
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
@@ -68,10 +45,10 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         fetchUser();
     }, [id, usernameForm, apiService, router]);
 
-    const setUsername = async (values: { username: string }) => {
+    const setUsername = async () => {
         try {
         const response = await apiService.put(`/users/${id}/username`, {
-            username: values.username,
+            username: newUsername,
         });
         console.log("Username updated successfully:", response);
         const updatedUserUsername = await apiService.get<User>(`/users/${id}`);
@@ -92,100 +69,14 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         }
     };
 
-    const editProfile = async () => {
-        /*const token = checkToken();
-        const isAuthorized = await matchingTokens(token);
+    const editProfile = () => {setIsEditing(true);};
+    const handleSubmit = () => {
+        setUsername();
+        console.log("Successfully changed username to:", newUsername);
+        setIsEditing(false);
+      };
+      const handleCancel = () => setIsEditing(false);
 
-        if (isAuthorized) {
-        setIsEditing(!isEditing);
-        } else {
-        alert(
-            "You are not authorized to edit this profile.",
-        );
-        }*/
-    };
-
-        /*if (isEditing) {
-        return (
-        <div>
-            <Card title="profile page">
-            <h1>User Profile</h1>
-            <p>ID: {user?.id ?? "user id not available"}</p>
-            <p>username: {user?.username ?? "Username not available"}</p>
-            <p>online status: {user?.status ?? "Status not available"}</p>
-            <p>
-                creation date: {user?.creationDate ?? "creation date not available"}
-            </p>
-            <p>birth date: {user?.birthDate ?? "birth date not available"}</p>
-            <p>------------------------------------------</p>
-
-            <Form
-                form={birthDateForm}
-                name="update birth date"
-                size="large"
-                variant="outlined"
-                onFinish={setBirthDate}
-                layout="vertical"
-            >
-                <Form.Item
-                name="birthDate"
-                label="Set/Change your birth date (optional)"
-                rules={[{ required: false }]}
-                >
-                <Input placeholder="dd.MM.yyyy" />
-                </Form.Item>
-                <Form.Item>
-                <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="login-button"
-                >
-                    Set birth date
-                </Button>
-                </Form.Item>
-            </Form>
-
-            <Form
-                form={usernameForm}
-                name="update username"
-                size="large"
-                variant="outlined"
-                onFinish={setUsername}
-                layout="vertical"
-            >
-                <Form.Item
-                name="username"
-                label="change your username (optional)"
-                rules={[{ required: false }]}
-                >
-                <Input placeholder="new_username" />
-                </Form.Item>
-                <Form.Item>
-                <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="login-button"
-                >
-                    Change username
-                </Button>
-                </Form.Item>
-            </Form>
-
-            <p>-----------------------------</p>
-
-            <Button onClick={editProfile} type="primary">
-                Edit profile (close)
-            </Button>
-
-            <p>-----------------------------</p>
-
-            <Button onClick={() => router.push("/users")} type="primary">
-                Back to user overview
-            </Button>
-            </Card>
-        </div>
-        );
-    }*/ 
     return (
         <div
             className={"profile-background"}
@@ -265,7 +156,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                         WebkitTextStrokeColor: "#000000",
                     }}
                     >
-                    Edit Profile
+                    Edit Username
                     </span>
                 </Button>
                 )}
@@ -307,6 +198,60 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     </span>
                 </Button>
             </Card>
+
+            <Modal
+                title={
+                    <span
+                        style={{
+                            fontFamily: "Karantina",
+                            fontSize: "40px",
+                            WebkitTextStrokeWidth: "0.5px",
+                            WebkitTextStrokeColor: "#000000",
+                            background: "linear-gradient(90deg, #73CBC9, #FFD9D9)", // color gradient
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                        }}
+                    >
+                        Edit Username
+                      </span>
+                }
+
+                open={isEditing}
+                onOk={handleSubmit}
+                onCancel={handleCancel}
+                
+                okText="Save"
+                okButtonProps={{
+                    style: {
+                      fontFamily: "Jura",
+                      fontSize: "18px",
+                      background: "linear-gradient(90deg, #73CBC9,rgb(40, 76, 75))",
+                      border: "black",
+                    }
+                  }}
+
+                  cancelText="Cancel"
+                  cancelButtonProps={{
+                    style: {
+                      fontFamily: "Jura",
+                      fontSize: "18px",
+                      color: "black", // This prevents the font from turning green when hovering over it
+                      background: "linear-gradient(90deg,rgb(188, 118, 118), #8A5555)",
+                      border: "black",
+                    }
+                  }}
+            >
+                <Input
+                    value={newUsername}
+                    onChange={(inputString) => setNewUsername(inputString.target.value)}
+                    placeholder="Enter your new username"
+                    className="change-username"
+                    style={{
+                        fontFamily: "Jura",
+                        fontSize: "18px",
+                    }}
+                />
+            </Modal>
         </div>
     );
 };

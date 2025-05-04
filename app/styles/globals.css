@@ -267,3 +267,9 @@ body, html {
   opacity: 0.96;
   background: url("/background_profile_page.png") lightgray 50% / cover no-repeat;
 }
+
+.change-username::placeholder {
+  font-family: 'Jura';
+  font-size: 18px;
+  color: #888888;
+}
