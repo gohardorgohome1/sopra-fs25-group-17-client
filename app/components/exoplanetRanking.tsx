@@ -53,18 +53,19 @@ const ExoplanetRanking: React.FC = () => {
     return <div style={{ color: "white" }}>Loading...</div>;
   }
 
-  const uniqueExoplanets = Array.from(
-    new Map(exoplanets.map(planet => [planet.planetName, planet])).values()
-  );
+  //const uniqueExoplanets = Array.from(
+  //  new Map(exoplanets.map(planet => [planet.planetName, planet])).values()
+  //);
   
-  const sortedExoplanets = [...uniqueExoplanets].sort((a, b) => (b[filterKey] as number) - (a[filterKey] as number)).slice(0, 10);
+  const sortedExoplanets = [...exoplanets].sort((a, b) => (b[filterKey] as number) - (a[filterKey] as number)).slice(0, 10);
   
   const totalTextWidth = 50;
 
   const text = sortedExoplanets.map((exoplanet) => {
     const planetName = exoplanet.planetName;
-    //const percentage = (exoplanet.earthSimilarityIndex * 100).toFixed(0) + "%";
-    const value = (exoplanet[filterKey] as number).toFixed(2);
+    const value =
+      filterKey === "earthSimilarityIndex"? ((exoplanet[filterKey] as number) * 100).toFixed(0) + "%"
+      : (exoplanet[filterKey] as number).toFixed(2);
     const paddingLength = Math.max(1, totalTextWidth - planetName.length - value.length);
     const spacer = " ".repeat(paddingLength);
   
@@ -140,18 +141,32 @@ const ExoplanetRanking: React.FC = () => {
     "escapeVelocity",
     "fractionalDepth"
   ];
-  
+
+  const insertSpacesBeforeCaps = (str: string) =>
+    str.replace(/([a-z])([A-Z])/g, "$1 $2");
+
   return (
     <div style={{ width: "100%", height: "100%" }}>
-      <div style={{ marginBottom: 10 }}>
-        <label>Filter by: </label>
+      <div style={{ marginBottom: 0, marginTop: 5 }}>
+        <label
+        style={{fontFamily: "Jura", color: "#FFFFFF",}}
+        >Filter by: </label>
         <select
           value={filterKey}
           onChange={(e) => setFilterKey(e.target.value as keyof Exoplanet)}
+          style={{
+            backgroundColor: "#0F1D56",
+            color: "#FFFFFF",
+            fontFamily: "Jura",
+            fontWeight: 550,
+            fontSize: "16px",
+            padding: "4px 4px",
+            textTransform: "capitalize",
+          }}
         >
           {filterOptions.map((key) => (
             <option key={key} value={key}>
-              {key}
+              {insertSpacesBeforeCaps(key)}
             </option>
           ))}
         </select>
