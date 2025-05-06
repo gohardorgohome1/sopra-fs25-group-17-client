@@ -36,12 +36,11 @@ const Upload: React.FC = () => {
       const curve = await apiService.post<PhotometricCurve>("/photometric-curves/upload", formData);
       const exoplanetId = curve.exoplanetId;
       router.push(`/exoplanets/${exoplanetId}`);
-    } catch (error: any) {
-      if (error.status === 422) {
+    } catch (error) {
+      if (error && typeof error === "object" && "status" in error && (error as { status: number }).status === 422) {
         const exoplanetName = form.getFieldValue("exoplanetName");
-
+    
         try {
-
           const data = await apiService.post<{ reply: string }>("/openai/helper", exoplanetName);
           setAiSuggestion(data.reply);
         } catch (helperError) {
@@ -54,6 +53,7 @@ const Upload: React.FC = () => {
         console.error("Unknown error:", error);
       }
     }
+    
     
   }
 
