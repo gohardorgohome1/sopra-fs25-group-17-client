@@ -99,6 +99,7 @@ const ExoplanetProfile: React.FC = () => {
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
   const [commentUsernames, setCommentUsernames] = useState<Record<string, string>>({});
   const [reloadKey, setReloadKey] = useState(0);
+  const [hoveredInfo, setHoveredInfo] = useState<string | null>(null);
 
   const {
     // value: token, // is commented out because we dont need to know the token value for logout
@@ -466,7 +467,7 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 667, height: 91, left: -98, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Research Group:</div>*/}
     <div style={{width: 667, height: 113, left: 190, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.fractionalDepth* 100).toFixed(2)}%</div>
     <div style={{width: 667, height: 113, left: 372, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Density:</div>
-    <div style={{width: 667, height: 113, left: -15, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word', zIndex: 10}}>Fractional Depth:
+    <div style={{width: 667, height: 113, left: -15, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word', zIndex: 1}}>Fractional Depth:
     <InfoTooltip
       content={
         <div style={{ textAlign: "left" }}>
@@ -606,17 +607,129 @@ const ExoplanetProfile: React.FC = () => {
             </div>
           </div>
         }
-        tooltipStyle={{}}
+        tooltipStyle={{transform:"translateX(-25%)"}}
       />
     </div>
     <div style={{width: 667, height: 113, left: -98, top: 833, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Radius:</div>
     <div style={{width: 667, height: 113, left: -112, top: 963, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Mass:</div>
     <div style={{width: 1001, height: 112, left: -124, top: 35, position: 'absolute', textAlign: 'center', color: '#FFD9D9', fontSize: 96, fontFamily: 'Koulen', fontWeight: '400', wordWrap: 'break-word'}}>{exoplanet.planetName}</div>
     <div style={{width: 1001, height: 78, left: 994, top: 59, position: 'absolute', textAlign: 'center', color: '#FFD9D9', fontSize: 64, fontFamily: 'Koulen', fontWeight: '400', wordWrap: 'break-word'}}>{exoplanet.hostStarName}</div>
-    <div onClick={() => router.push('/dashboard')} style={{ cursor: 'pointer' }}>
-      <div style={{width: 236, height: 49, left: 22, top: 1039, position: 'absolute', background: '#650808', boxShadow: '69.30000305175781px 69.30000305175781px 69.30000305175781px ', filter: 'blur(34.65px)'}} />
-      <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46}} />
-      <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word'}}>Back to Dashboard</div>
+    <div style={{
+        position: 'absolute',
+        top: '300px',
+        left: '13%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        zIndex: 2
+      }}>
+        {['About the ESI', 'About the Curve', 'Units & Earth Values'].map((label) => (
+          <div
+            key={label}
+            onMouseEnter={() => setHoveredInfo(label)}
+            onMouseLeave={() => setHoveredInfo(null)}
+            style={{
+              backgroundColor: '#FFD9D9',
+              color: '#000',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              fontWeight: 'bold',
+              fontSize: '20px',
+              textAlign: 'center',
+              cursor: 'default',
+              userSelect: 'none',
+              boxShadow: '0 0 8px rgba(255,255,255,0.2)',
+              transition: 'all 0.2s ease-in-out',
+            }}
+          >
+            {label}
+          </div>
+        ))}
+      </div>
+    {hoveredInfo && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '635px', // adjust depending on plot position
+            left: '898px',
+            transform: 'translateX(-50%)',
+            width: '1524px',
+            height: 436,
+            backgroundColor: '#1a1a1a',
+            color: '#FFD9D9',
+            padding: '20px',
+            borderRadius: '26px',
+            fontSize: '21px',
+            fontFamily: 'Jura, sans-serif',
+            boxShadow: '0 0 12px rgba(0,0,0,0.4)',
+            zIndex: 2,
+          }}
+        >
+          {hoveredInfo === 'About the ESI' && (
+            <>
+              <h3 style={{ marginTop: 0, textAlign: "center" }}>What is the ESI (Earth Similarity Index)?</h3>
+              <p>The Earth Similarity Index is a measure that quantifies how similar an exoplanet is to Earth. It ranges from 0 (no similarity) to 1 (identical to Earth).</p>
+
+              <p>It considers multiple planetary properties (like radius, temperature, escape velocity, etc.), and combines them with weights to form a single score using the following formula:</p>
+
+              <div style={{ textAlign: "center", margin: "12px 0" }}
+                  dangerouslySetInnerHTML={renderKaTeX(`
+              ESI = \\prod_{i=1}^{n} \\left(1 - \\left| \\frac{x_i - x_{i0}}{x_i + x_{i0}} \\right|\\right)^{\\frac{w_i}{n}}
+              `)} />
+
+              <div style={{ textAlign: "center", marginTop: "10px" }}>
+                <ul style={{ display: "inline-block", textAlign: "left", paddingLeft: "20px" }}>
+                  <li><strong>x<sub>i</sub></strong> = Value of the characteristic on the exoplanet (e.g., radius, temperature)</li>
+                  <li><strong>x<sub>i0</sub></strong> = Value of the same characteristic on Earth (e.g., 288 K for temperature)</li>
+                  <li><strong>w<sub>i</sub></strong> = Weight assigned to each characteristic (default values from the literature)</li>
+                  <li><strong>n</strong> = Total number of characteristics being compared (typically 4)</li>
+                </ul>
+                <p style={{ marginTop: "10px" }}>
+                  The symbol <span dangerouslySetInnerHTML={renderKaTeX(`\\prod_{i=1}^{n}`)} /> means that all the terms are multiplied together.
+                </p>
+              </div>
+            </>
+          )}
+          {hoveredInfo === 'About the Curve' && (
+            <>
+              <h3 style={{ marginTop: 0, textAlign: "center" }}>What is a Photometric Curve?</h3>
+              <p style={{ textAlign: 'left' }}>
+                A photometric curve shows how a star’s brightness changes over time. It is obtained by measuring the star’s light at regular intervals.
+                <br /><br />
+                When a planet transits (passes in front of) its star, it causes a small dip in brightness, seen as a valley in the curve.
+                <br /><br />
+                From this dip, we calculate the fractional depth, which helps estimate the planet’s size, orbital period, and other properties. Photometric curves are a key tool in detecting and analyzing exoplanets.
+                <br /><br />
+                Smaller planets are harder to detect, as their dips are shallow and noisy, with large error bars. This is why most transit-discovered exoplanets are large gas giants, with low a ESI value.
+              </p>
+            </>
+          )}
+          {hoveredInfo === 'Units & Earth Values' && (
+            <>
+              <div style={{ textAlign: "center" }}>
+                <h3 style={{ marginTop: 0 }}>Units & Earth Reference Values</h3>
+                <p style={{ textAlign: "left"}}>
+                  All values are displayed relative to Earth’s standard values. The reason for this choice is the ultimate purpose of the Earth Similarity Index:
+                  to predict an exoplanet's habitability using the Earth as a reference. With this representation, it is easier to understand the exoplanet's parameters.
+                </p>
+                <p style={{ lineHeight: "1.8" }}>
+                  • Radius: 1 R⊕ = 6,371.00 km<br />
+                  • Mass: 1 M⊕ = 5.97 × 10²⁴ kg<br />
+                  • Surface Gravity: 1 g = 9.80 m/s²<br />
+                  • Escape Velocity: 1 vₑ⊕ = 11.20 km/s<br />
+                  • Density: 1 ρₑ⊕ = 5.50 g/cm³<br />
+                  • Theoretical Temperature: 1 T⊕ = 288.00 K<br />
+                  • Orbital Period: 1 year = 365.25 days
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    <div onClick={() => router.push('/dashboard')} style={{ cursor: 'pointer'}}>
+      <div style={{width: 236, height: 49, left: 22, top: 1039, position: 'absolute', background: '#650808', boxShadow: '69.30000305175781px 69.30000305175781px 69.30000305175781px ', filter: 'blur(34.65px)', zIndex: 312413242}} />
+      <div style={{width: 173, height: 55, left: 64, top: 1029, position: 'absolute', background: 'black', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 46, zIndex: 312413242}} />
+      <div style={{width: 317, height: 49, left: -9, top: 1044, position: 'absolute', textAlign: 'center', color: '#8A5555', fontSize: 24, fontFamily: 'Karantina', fontWeight: '700', wordWrap: 'break-word', zIndex: 312413242}}>Back to Dashboard</div>
     </div>
         
     {contextHolder}
