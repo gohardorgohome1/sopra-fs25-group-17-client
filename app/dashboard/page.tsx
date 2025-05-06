@@ -5,11 +5,9 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Button, Card } from "antd";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import NotificationToast from "@/components/NotificationToast";
+import UnseenNotificationsButton from "../components/UnseenNotificationsButton";
+
 import StarMap from "../components/starMap";
 import ExoplanetRanking from "../components/exoplanetRanking";
 
@@ -42,52 +40,9 @@ const Dashboard: React.FC = () => {
     }
   }, [token, apiService, router]);
 
-  useEffect(() => {
-    const client = new Client({
-      webSocketFactory: () =>
-        new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
-      connectHeaders: {},
-      onConnect: () => {
-        client.subscribe("/topic/exoplanets", (message) => {
-          const payload = JSON.parse(message.body);
-          const username = payload.user.username;
-          const planetName = payload.exoplanet.planetName;
-          const exoplanetId = payload.exoplanet.id;
-
-          toast(<NotificationToast username={username} planetName={planetName} exoplanetId={exoplanetId} />);
-        });
-      },
-      onDisconnect: () => {
-        console.log("Disconnected from WebSocket");
-      },
-    });
-
-    client.activate();
-
-    return () => {
-      client.deactivate();
-    };
-  }, []);
-
   return (
     <div className="dashboard-container">
-
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={true}
-        newestOnTop={true}
-        toastStyle={{
-          backgroundColor: "#FFAE00",
-          color: "#000",
-          fontFamily: "Jura",
-          fontWeight: 700,
-          fontSize: "20px",
-          lineHeight: "100%",
-          letterSpacing: "0%",
-        }}
-      />
-
+      <UnseenNotificationsButton />
       {/* Logout Button */}
       <Button
         onClick={handleLogout}
