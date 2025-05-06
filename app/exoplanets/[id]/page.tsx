@@ -472,12 +472,12 @@ const ExoplanetProfile: React.FC = () => {
       content={
         <div style={{ textAlign: "left" }}>
           <p style={{ marginBottom: "8px" }}>
-            <strong>Fractional depth</strong> measures how much a star's brightness decreases when a planet transits in front of it.
+            <strong>Fractional depth</strong> measures how much a star&apos;s brightness decreases when a planet transits in front of it.
           </p>
 
           <p style={{ marginBottom: "8px" }}>
             It estimates the area ratio between the planet and the star:
-            a larger dip suggests a larger planet or a smaller star. This value is essential for calculating the other exoplanet's parameters.
+            a larger dip suggests a larger planet or a smaller star. This value is essential for calculating the other exoplanet&apos;s parameters.
           </p>
 
           <p style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -523,7 +523,7 @@ const ExoplanetProfile: React.FC = () => {
       content={
         <div style={{textAlign: "left"}}>
           <p style={{ marginBottom: "8px" }}>
-            <strong>Theoretical temperature</strong> is an estimate of the planet's surface temperature,
+            <strong>Theoretical temperature</strong> is an estimate of the planet&apos;s surface temperature,
             assuming it behaves like a blackbody in thermal equilibrium with its star.
           </p>
 
@@ -586,7 +586,7 @@ const ExoplanetProfile: React.FC = () => {
         content={
           <div>
             <p style={{ marginBottom: "8px" }}>
-              <strong>Escape velocity</strong> is the minimum speed required for an object to escape a planet’s gravitational pull without further propulsion.
+              <strong>Escape velocity</strong> is the minimum speed required for an object to escape a planet&apos;s gravitational pull without further propulsion.
             </p>
             <p style={{ marginBottom: "8px" }}>
               <strong>Assumptions:</strong><br />
@@ -694,11 +694,11 @@ const ExoplanetProfile: React.FC = () => {
             <>
               <h3 style={{ marginTop: 0, textAlign: "center" }}>What is a Photometric Curve?</h3>
               <p style={{ textAlign: 'left' }}>
-                A photometric curve shows how a star’s brightness changes over time. It is obtained by measuring the star’s light at regular intervals.
+                A photometric curve shows how a star&apos;s brightness changes over time. It is obtained by measuring the star&apos;s light at regular intervals.
                 <br /><br />
                 When a planet transits (passes in front of) its star, it causes a small dip in brightness, seen as a valley in the curve.
                 <br /><br />
-                From this dip, we calculate the fractional depth, which helps estimate the planet’s size, orbital period, and other properties. Photometric curves are a key tool in detecting and analyzing exoplanets.
+                From this dip, we calculate the fractional depth, which helps estimate the planet&apos;s size, orbital period, and other properties. Photometric curves are a key tool in detecting and analyzing exoplanets.
                 <br /><br />
                 Smaller planets are harder to detect, as their dips are shallow and noisy, with large error bars. This is why most transit-discovered exoplanets are large gas giants, with low a ESI value.
               </p>
@@ -709,8 +709,8 @@ const ExoplanetProfile: React.FC = () => {
               <div style={{ textAlign: "center" }}>
                 <h3 style={{ marginTop: 0 }}>Units & Earth Reference Values</h3>
                 <p style={{ textAlign: "left"}}>
-                  All values are displayed relative to Earth’s standard values. The reason for this choice is the ultimate purpose of the Earth Similarity Index:
-                  to predict an exoplanet's habitability using the Earth as a reference. With this representation, it is easier to understand the exoplanet's parameters.
+                  All values are displayed relative to Earth&apos;s standard values. The reason for this choice is the ultimate purpose of the Earth Similarity Index:
+                  to predict an exoplanet&apos;s habitability using the Earth as a reference. With this representation, it is easier to understand the exoplanet&apos;s parameters.
                 </p>
                 <p style={{ lineHeight: "1.8" }}>
                   • Radius: 1 R⊕ = 6,371.00 km<br />
