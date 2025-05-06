@@ -10,6 +10,15 @@ import type { Layout } from "plotly.js";
 interface Exoplanet {
   planetName: string;
   earthSimilarityIndex: number;
+
+  fractionalDepth: number;
+  density: number;
+  orbitalPeriod: number;
+  radius: number;
+  surfaceGravity: number;
+  theoreticalTemperature: number;
+  mass: number;
+  escapeVelocity: number;
 }
 
 // Define ExoplanetRanking as a React Functional Component
@@ -17,6 +26,7 @@ const ExoplanetRanking: React.FC = () => {
   const apiService = useApi();
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filterKey, setFilterKey] = useState<keyof Exoplanet>("earthSimilarityIndex");
 
 
   useEffect(() => {
@@ -46,18 +56,19 @@ const ExoplanetRanking: React.FC = () => {
   const uniqueExoplanets = Array.from(
     new Map(exoplanets.map(planet => [planet.planetName, planet])).values()
   );
-  const sortedExoplanets = [...uniqueExoplanets].sort((a, b) => b.earthSimilarityIndex - a.earthSimilarityIndex).slice(0, 10);
-
+  
+  const sortedExoplanets = [...uniqueExoplanets].sort((a, b) => (b[filterKey] as number) - (a[filterKey] as number)).slice(0, 10);
+  
   const totalTextWidth = 50;
 
   const text = sortedExoplanets.map((exoplanet) => {
     const planetName = exoplanet.planetName;
-    const percentage = (exoplanet.earthSimilarityIndex * 100).toFixed(0) + "%";
-  
-    const paddingLength = Math.max(1, totalTextWidth - planetName.length - percentage.length);
+    //const percentage = (exoplanet.earthSimilarityIndex * 100).toFixed(0) + "%";
+    const value = (exoplanet[filterKey] as number).toFixed(2);
+    const paddingLength = Math.max(1, totalTextWidth - planetName.length - value.length);
     const spacer = " ".repeat(paddingLength);
   
-    return ` ${planetName}${spacer}${percentage}`;
+    return ` ${planetName}${spacer}${value}`;
   });
 
   const data = [{
@@ -118,8 +129,33 @@ const ExoplanetRanking: React.FC = () => {
       },
       };
 
+  const filterOptions: (keyof Exoplanet)[] = [
+    "earthSimilarityIndex",
+    "density",
+    "mass",
+    "radius",
+    "surfaceGravity",
+    "theoreticalTemperature",
+    "orbitalPeriod",
+    "escapeVelocity",
+    "fractionalDepth"
+  ];
+  
   return (
-    <div style={{ width: "100%", height: "100%" }}> 
+    <div style={{ width: "100%", height: "100%" }}>
+      <div style={{ marginBottom: 10 }}>
+        <label>Filter by: </label>
+        <select
+          value={filterKey}
+          onChange={(e) => setFilterKey(e.target.value as keyof Exoplanet)}
+        >
+          {filterOptions.map((key) => (
+            <option key={key} value={key}>
+              {key}
+            </option>
+          ))}
+        </select>
+      </div>
             <Plot 
                 data={data}
                 layout={layout}
