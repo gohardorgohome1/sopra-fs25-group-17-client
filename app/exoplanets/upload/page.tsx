@@ -12,6 +12,8 @@ const Upload: React.FC = () => {
   const [form] = Form.useForm();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
+
 
   const handleUpload = async (value: {  exoplanetName: string, hostStar: string }) => {
     if (!selectedFile) {
@@ -31,23 +33,28 @@ const Upload: React.FC = () => {
     formData.append("ownerId", userId);
 
     try {
-      const curve = await apiService.post<PhotometricCurve>("/photometric-curves/upload",  formData ); // post request for Photometric Curve
-      const exoplanetId = curve.exoplanetId; // Used to redirect the user to the correct page
-
+      const curve = await apiService.post<PhotometricCurve>("/photometric-curves/upload", formData);
+      const exoplanetId = curve.exoplanetId;
       router.push(`/exoplanets/${exoplanetId}`);
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes("Invalid photometric curve file or exoplanet name!")) {
-          alert("Invalid photometric curve file or exoplanet name!");
+    } catch (error: any) {
+      if (error.status === 422) {
+        const exoplanetName = form.getFieldValue("exoplanetName");
+
+        try {
+
+          const data = await apiService.post<{ reply: string }>("/openai/helper", exoplanetName);
+          setAiSuggestion(data.reply);
+        } catch (helperError) {
+          console.error("Error calling /openai/helper", helperError);
+          setAiSuggestion("Could not get a suggestion from the AI.");
         }
-        else{
-          alert(`Something went wrong during the upload of your photometric curve file:\n${error.message}`);
-        }
-        
+      } else if (error instanceof Error) {
+        alert(`Something went wrong:\n${error.message}`);
       } else {
-        console.error("An unknown error occurred during the upload of your photometric curve file!");
+        console.error("Unknown error:", error);
       }
     }
+    
   }
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,6 +121,28 @@ const Upload: React.FC = () => {
           >
             Exoplanet Transit Analysis
           </div>
+          {aiSuggestion && (
+          <div
+            style={{
+              position: "absolute",
+              top: "43vh",
+              right: "5vw",
+              padding: "1vh",
+              border: "2px solid #FFD9D9", 
+              borderRadius: "16px",
+              color: "#FFD9D9",
+              fontFamily: "Jura",
+              fontSize: "2vw",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              width: "27vw",
+              textAlign: "center",
+              zIndex: 1000,
+            }}
+          >
+            {aiSuggestion}
+          </div>
+        )}
+
           
           <div // This div makes sure the second card can be centered while the title is still at the top left
             style={{
@@ -281,6 +310,7 @@ const Upload: React.FC = () => {
                     />
                   </div>
                 </Form.Item>
+
                 <Form.Item // Input hostStar name field & Label
                   name="hostStar"
                   style = {{
