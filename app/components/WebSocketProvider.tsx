@@ -13,7 +13,7 @@ export default function WebSocketProvider({ children }: { children: React.ReactN
   const pathname = usePathname();
   const apiService = useApi();
 
-  const disabledPaths = ["/login", "/register"];
+  const disabledPaths = ["/", "/login", "/register"];
 
   useEffect(() => {
     if (disabledPaths.includes(pathname)) {
