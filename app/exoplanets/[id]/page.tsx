@@ -7,6 +7,8 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import dynamic from 'next/dynamic';
 import { Button, Modal, ConfigProvider } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
 
 import { Client } from "@stomp/stompjs";
@@ -66,8 +68,21 @@ interface User {
   id: string;
   username:string
 }
+
+interface InfoTooltipProps {
+  content: React.ReactNode;
+  tooltipStyle?: React.CSSProperties; 
+}
   
 const { useModal } = Modal;
+
+function renderKaTeX(latex: string) {
+  return {
+    __html: katex.renderToString(latex, {
+      throwOnError: false,
+    }),
+  };
+}
 
 const ExoplanetProfile: React.FC = () => {
   const router = useRouter();
@@ -91,6 +106,68 @@ const ExoplanetProfile: React.FC = () => {
     //clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
+  const InfoTooltip: React.FC<InfoTooltipProps> = ({ content, tooltipStyle }) => {
+    const [hover, setHover] = useState(false);
+  
+    return (
+      <span
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          position: "relative",
+          display: "inline-block",
+          marginLeft: "6px",
+          transform: "translateY(-18px) translateX(-10px)",
+        }}
+      >
+        <span
+          style={{
+            backgroundColor: "#FFD9D9",
+            color: "#000",
+            width: "18px",
+            height: "18px",
+            borderRadius: "50%",
+            fontSize: "12px",
+            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            userSelect: "none",
+            cursor: "pointer",
+          }}
+        >
+          i
+        </span>
+        {hover && (
+          <div
+            style={{
+              position: "fixed",
+              bottom: "125%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "#1a1a1a",
+              color: "#FFD9D9",
+              padding: "10px",
+              borderRadius: "6px",
+              fontSize: "20px",
+              maxWidth: "1000px", // ← wider now
+              width: "max-content", // allows expanding horizontally
+              whiteSpace: "normal",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+              zIndex: 999999,
+              textAlign: "left",
+              pointerEvents: "auto",
+              ...tooltipStyle, 
+            }}
+          >
+            {content}
+          </div>
+        )}
+      </span>
+    );
+  };
+  
+  
   const handleDeletion = (exoplanetId: string, exoplanetName: string) => { // Deleting an Exoplanet (confirmation prompt first)
 
     modal.confirm({
@@ -239,7 +316,7 @@ const ExoplanetProfile: React.FC = () => {
 
     fetchExoplanet();
     fetchCurrentUser();
-
+   
   }, [id, apiService, reloadKey]);
 
   useEffect(() => {
@@ -279,7 +356,7 @@ const ExoplanetProfile: React.FC = () => {
       left: 0,
       width: '100%',
       height: '100%',
-      zIndex: -1,
+      zIndex: -10,
     }}>
 
 {lightCurveData.length > 0 && (
@@ -290,8 +367,8 @@ const ExoplanetProfile: React.FC = () => {
               left: '39%',          // center horizontally
               transform: 'translateX(-50%)', // perfect horizontal centering
               width: '80%',
-              zIndex: 10,
-              maxWidth: '600px'
+              maxWidth: '600px',
+              zIndex:1
             }}
           >
             <Plot
@@ -379,7 +456,6 @@ const ExoplanetProfile: React.FC = () => {
             height: '800px', // original full canvas height
           }}
         >
-    <div style={{width: 667, height: 113, left: 427, top: 984, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 20, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>100</div>
     <div style={{width: 1629, height: 1042, left: 49, top: 55, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 98, filter: 'blur(0px)'}} />
     <div style={{width: 1524, height: 436, left: 136, top: 635, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 26, filter: 'blur(0px)'}} />
     <div style={{width: 1495, height: 420, left: 136, top: 181, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 14, filter: 'blur(0px)'}} />
@@ -388,8 +464,39 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 667, height: 102, left: 1215, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Analyzed by:</div> 
     {/*<div style={{width: 667, height: 101, left: -105, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>CSIC-IAC</div>
     <div style={{width: 667, height: 91, left: -98, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Research Group:</div>*/}
-    <div style={{width: 667, height: 113, left: -15, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Fractional Depth:</div>
     <div style={{width: 667, height: 113, left: 190, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.fractionalDepth* 100).toFixed(2)}%</div>
+    <div style={{width: 667, height: 113, left: 372, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Density:</div>
+    <div style={{width: 667, height: 113, left: -15, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word', zIndex: 10}}>Fractional Depth:
+    <InfoTooltip
+      content={
+        <div style={{ textAlign: "left" }}>
+          <p style={{ marginBottom: "8px" }}>
+            <strong>Fractional depth</strong> measures how much a star's brightness decreases when a planet transits in front of it.
+          </p>
+
+          <p style={{ marginBottom: "8px" }}>
+            It estimates the area ratio between the planet and the star:
+            a larger dip suggests a larger planet or a smaller star. This value is essential for calculating the other exoplanet's parameters.
+          </p>
+
+          <p style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span>Calculated as:</span>
+            <span
+              dangerouslySetInnerHTML={renderKaTeX(
+                "\\text{Depth} = \\left(\\frac{R_p}{R_\\star}\\right)^2"
+              )}
+            />
+          </p>
+        </div>
+      }
+      tooltipStyle={{
+        transform: "translateX(-50%) translateY(110%)",
+        zIndex: 10
+      }}
+      
+      
+    />
+    </div>
     <div style={{width: 667, height: 113, left: 65, top: 833, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.radius).toFixed(2)} R⊕</div>
     <div style={{width: 667, height: 113, left: 36, top: 962, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.mass).toFixed(2)} M⊕</div>
     <div style={{width: 667, height: 113, left: 652, top: 839, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.surfaceGravity).toFixed(2)} g</div>
@@ -398,12 +505,110 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 667, height: 113, left: 546, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.density.toFixed(2)}× ρₑ⊕ </div>
     <div style={{width: 667, height: 113, left: 1250, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{exoplanet.theoreticalTemperature.toFixed(1)} K</div>
     <div style={{width: 667, height: 113, left: 1193, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>{(exoplanet.earthSimilarityIndex*100).toFixed(2)}%</div>
-    <div style={{width: 667, height: 113, left: 372, top: 711, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Density:</div>
-    <div style={{width: 667, height: 113, left: 879, top: 715, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Oribital Period:</div>
-    <div style={{width: 667, height: 113, left: 968, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Theoretical Temperature:</div>
+    <div style={{width: 667, height: 113, left: 879, top: 715, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Oribital Period:
+    <InfoTooltip
+      content={
+        <div style={{ textAlign: "left" }}>
+          <p style={{ marginBottom: "8px" }}>
+            <strong>Orbital period</strong> is the time a planet takes to complete one full orbit around its star.
+            It is determined from the frequency of transits in the light curve.
+          </p>
+        </div>
+      }
+    />
+    </div>
+    <div style={{width: 667, height: 113, left: 968, top: 836, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Theoretical Temperature:
+    <InfoTooltip
+      content={
+        <div style={{textAlign: "left"}}>
+          <p style={{ marginBottom: "8px" }}>
+            <strong>Theoretical temperature</strong> is an estimate of the planet's surface temperature,
+            assuming it behaves like a blackbody in thermal equilibrium with its star.
+          </p>
+
+          <p style={{ marginBottom: "8px" }}>
+            <strong>Assumptions:</strong><br />
+            • Planet behaves like a blackbody<br />
+            • No atmosphere or greenhouse effect<br />
+            • Uniform heat redistribution<br />
+            • Star and orbital parameters known
+          </p>
+
+          <p style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span>Estimated with:</span>
+            <span
+              dangerouslySetInnerHTML={renderKaTeX(
+                "T = T_\\star \\sqrt{\\frac{R_\\star}{2D}} (1 - A)^{1/4}"
+              )}
+            />
+          </p>
+        </div>
+      }
+      tooltipStyle={{}}
+      
+    />
+
+    </div>
     <div style={{width: 667, height: 113, left: 947, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Earth Index Similarity:</div>
-    <div style={{width: 667, height: 113, left: 432, top: 838, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Surface Gravity:</div>
-    <div style={{width: 667, height: 113, left: 432, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Escape velocity:</div>
+    <div style={{width: 667, height: 113, left: 432, top: 838, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Surface Gravity:
+    <InfoTooltip
+      content={
+        <div style={{ textAlign: "left" }}>
+          <p>
+            <strong>Surface gravity</strong> is the gravitational acceleration felt at the surface of a planet.
+          </p>
+          <p style={{ marginBottom: "8px" }}>
+            It determines how heavy objects feel and affects atmospheric behavior.
+          </p>
+
+          <p style={{ marginBottom: "8px" }}>
+            <strong>Assumptions:</strong><br />
+            • Spherical planet<br />
+            • Known mass and radius<br />
+            • Classical Newtonian gravity
+          </p>
+
+          <p style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span>Calculated as:</span>
+            <span
+              dangerouslySetInnerHTML={renderKaTeX(
+                "g = \\frac{GM}{R^2}"
+              )}
+            />
+          </p>
+        </div>
+      }
+    />
+    </div>
+    <div style={{width: 667, height: 113, left: 432, top: 967, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Escape velocity:
+      <InfoTooltip
+        content={
+          <div>
+            <p style={{ marginBottom: "8px" }}>
+              <strong>Escape velocity</strong> is the minimum speed required for an object to escape a planet’s gravitational pull without further propulsion.
+            </p>
+            <p style={{ marginBottom: "8px" }}>
+              <strong>Assumptions:</strong><br />
+              • No atmosphere or drag<br />
+              • Newtonian gravity<br />
+              • Vacuum environment<br />
+              • Escaping object is massless
+            </p>
+            <p style={{ marginBottom: "8px" }}>
+              Derived using energy conservation:
+            </p>
+            <div style={{ textAlign: "center", marginTop: "6px" }}>
+              <div 
+                dangerouslySetInnerHTML={renderKaTeX(
+                  "v = \\sqrt{\\frac{2GM}{R}}"
+                )}
+              />
+            </div>
+          </div>
+        }
+        tooltipStyle={{}}
+      />
+    </div>
     <div style={{width: 667, height: 113, left: -98, top: 833, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Radius:</div>
     <div style={{width: 667, height: 113, left: -112, top: 963, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Mass:</div>
     <div style={{width: 1001, height: 112, left: -124, top: 35, position: 'absolute', textAlign: 'center', color: '#FFD9D9', fontSize: 96, fontFamily: 'Koulen', fontWeight: '400', wordWrap: 'break-word'}}>{exoplanet.planetName}</div>
