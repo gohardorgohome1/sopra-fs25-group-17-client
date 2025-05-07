@@ -192,9 +192,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     }}
                 >
                     {user?.creation_date &&
-                        `${user.creation_date.substring(8,10)}.
-                        ${user.creation_date.substring(5,7)}.
-                        ${user.creation_date.substring(0,4)}`
+                        `${user.creation_date.substring(0,10)}`
                     }
                 </div>
 
@@ -232,7 +230,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     
                     position: "absolute",
                     left: "4vw",
-                    top: "84vh",
+                    top: "87vh",
 
                     textAlign: "center",
                     color: "#8A5555",

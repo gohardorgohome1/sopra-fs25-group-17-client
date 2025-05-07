@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
           height: "7vh",
           alignItems: 'center',
           left: "1vw",
-          top: "4vh",
+          top: "3.6vh",
           fontSize: "8vh",
 
           background: "transparent",
@@ -113,6 +113,25 @@ const Dashboard: React.FC = () => {
       >
         <FaUserAstronaut />
       </Button>
+
+      <div
+        style={{
+          position: "absolute",
+          width: "2vw",
+          height: "2.2vh",
+          alignItems: 'center',
+          left: "3.5vw",
+          top: "10.6vh",
+          fontSize: "2vh",
+          color: "rgb(80, 150, 210)",
+          background: "rgb(16, 16, 18)", // Prevents stars from the background image interfering with readibility of this text
+
+          fontFamily: "Jura",
+          fontWeight: "700",
+        }}
+      >
+        Profile
+        </div>
 
       {/* Logout Button */}
       <Button
