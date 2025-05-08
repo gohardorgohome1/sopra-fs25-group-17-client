@@ -283,16 +283,35 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                             overflowY: "auto",
                             padding: "2rem",
                             display: "flex",
-                            flexDirection: "column",
                             gap: "1rem",
                           }}
                         >
-                        {exoplanets.map((exoplanet) => (
+                        {[0, 1].map(columnIndex => (
                             <div
-                                key={exoplanet.id}
-                                style={{ color: "white" }}
+                                key={columnIndex}
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "1rem",
+                                    flex: 1
+                                }}
                             >
-                                {exoplanet.planetName} (Owner ID: {exoplanet.ownerId})
+                                {exoplanets
+                                    .filter((_, i) => i % 2 === columnIndex)
+                                    .map((exoplanet) => (
+                                    <Button
+                                        key={exoplanet.id}
+                                        className="Go to Exoplanet"
+                                        onClick={() => router.push(`/exoplanets/${exoplanet.id}`)}
+                                        type="primary"
+                                        htmlType="button"
+                                        style={{
+                                            color: "white"
+                                        }}
+                                    >
+                                        {exoplanet.planetName} (Owner ID: {exoplanet.ownerId})
+                                    </Button>
+                                ))}
                             </div>
                         ))}
                     </div>
