@@ -17,7 +17,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = React.use(params);
     const [user, setUser] = useState<User | null>(null);
     const apiService = useApi();
-    const [usernameForm] = Form.useForm();
+    const [thisUsername, setThisUsername] = useState("");
     const router = useRouter();
     const [isCorrectUser, setIsCorrectUser] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -42,7 +42,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
 
                 getMyExoplanets(user?.id); // Has to be called here to make sure it is executed AFTER the user is already fetched
 
-                usernameForm.setFieldsValue({ username: user.username || "" });
+                setThisUsername( user.username || "" );
             } catch (error) {
                 if (error instanceof Error) {
                 alert(`Something went wrong while fetching user:\n${error.message}`);
@@ -86,7 +86,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         }
 
         fetchUser();
-    }, [id, usernameForm, apiService, router]);
+    }, [id, thisUsername, apiService, router]);
 
     const setUsername = async () => {
         try {
@@ -96,9 +96,9 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         console.log("Username updated successfully:", response);
         const updatedUserUsername = await apiService.get<User>(`/users/${id}`);
         setUser(updatedUserUsername);
-        usernameForm.setFieldsValue({
-            username: updatedUserUsername.username || "",
-        });
+        setThisUsername(
+            updatedUserUsername.username || "",
+        );
         } catch (error) {
         if (error instanceof Error) {
             alert(
@@ -287,9 +287,12 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                             gap: "1rem",
                           }}
                         >
-                        {exoplanets.map((planet) => (
-                            <div key={planet.id} style={{ color: "white" }}>
-                                {planet.planetName} (Owner ID: {planet.ownerId})
+                        {exoplanets.map((exoplanet) => (
+                            <div
+                                key={exoplanet.id}
+                                style={{ color: "white" }}
+                            >
+                                {exoplanet.planetName} (Owner ID: {exoplanet.ownerId})
                             </div>
                         ))}
                     </div>

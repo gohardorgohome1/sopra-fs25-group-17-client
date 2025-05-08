@@ -21,7 +21,7 @@ const Dashboard: React.FC = () => {
     value: token,
     clear: clearToken,
   } = useLocalStorage<string>("token", "");
-  const currentUserId = localStorage.getItem("userId");
+  const [currentUserId, setCurrentUserId] = useState("");
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -41,6 +41,10 @@ const Dashboard: React.FC = () => {
     if (!storedToken) {
       router.push("/login");
       return;
+    }
+    const storedId = localStorage.getItem("userId");
+    if (storedId != null) {
+      setCurrentUserId(storedId);
     }
   }, [token, apiService, router]);
 
