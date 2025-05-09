@@ -347,7 +347,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                                             alignItems: "center",
                                             width: "100%", 
                                             height: "8vh",
-                                            transition: "background-color 0.3s ease",
+                                            transition: "background-color 0.4s ease",
                                         }}
                                     >
                                         <span

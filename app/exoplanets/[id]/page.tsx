@@ -384,7 +384,6 @@ const ExoplanetProfile: React.FC = () => {
     <div style={{width: 1524, height: 436, left: 136, top: 635, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 26, filter: 'blur(0px)'}} />
     <div style={{width: 1495, height: 420, left: 136, top: 181, position: 'absolute', opacity: 0.66, background: 'black', boxShadow: '0px 0px 0px ', borderRadius: 14, filter: 'blur(0px)'}} />
     <div style={{width: 667, height: 113, left: 1178, top: 137, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Host Star</div>
-    <div style={{width: 667, height: 102, left: 1215, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Analyzed by:</div> 
     {/*<div style={{width: 667, height: 101, left: -105, top: 567, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>CSIC-IAC</div>
     <div style={{width: 667, height: 91, left: -98, top: 544, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 16, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Research Group:</div>*/}
     <div style={{width: 667, height: 113, left: -15, top: 713, position: 'absolute', textAlign: 'center', color: 'white', fontSize: 32, fontFamily: 'Jura', fontWeight: '700', wordWrap: 'break-word'}}>Fractional Depth:</div>
@@ -415,11 +414,13 @@ const ExoplanetProfile: React.FC = () => {
 
     <Button // Making the owner clickable to get to his profile page
       onClick={() => router.push(`/users/${exoplanet.ownerId}`)}
+      onMouseEnter={(e) => e.currentTarget.style.color = "rgb(176, 248, 255)"}
+      onMouseLeave={(e) => e.currentTarget.style.color = "white"}
       style={{
         width: 160,
         height: 60,
         left: 1470,
-        top: 547,
+        top: 536,
         position: 'absolute',
         textAlign: 'center',
         color: 'white',
@@ -431,9 +432,13 @@ const ExoplanetProfile: React.FC = () => {
         border: 'none',
         cursor: 'pointer',
         padding: 0,
+        transition: "background-color 0.4s ease",
       }}
     >
-      {curveOwner}
+      <span>
+        Analyzed by:<br />
+        {curveOwner}
+      </span>
     </Button>
         
     {contextHolder}
