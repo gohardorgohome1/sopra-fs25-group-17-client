@@ -4,13 +4,14 @@ import React, { useEffect, useState } from "react";
 
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
-import { Button, Card, Form, Input, Modal } from "antd";
+import { Button, Card, Input, Modal } from "antd";
 import { useRouter } from "next/navigation";
 
 interface Exoplanet {
     id: string;
     planetName: string;
     ownerId: string;
+    earthSimilarityIndex: string,
   }
 
 const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -40,7 +41,9 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                 setUser(user);
                 console.log("Fetched user:", user);
 
-                getMyExoplanets(user?.id); // Has to be called here to make sure it is executed AFTER the user is already fetched
+                if (user.id) { // Only strings and no null value is passed to getMyExoplanets()
+                    getMyExoplanets(user?.id); // Has to be called here to make sure it is executed AFTER the user is already fetched
+                }
 
                 setThisUsername( user.username || "" );
             } catch (error) {
@@ -82,7 +85,14 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     myExoplanets.push(thisExoplanet);
                 }
             }
-            setExoplanets(myExoplanets);
+            /*const exoplanets1 = exoplanets.length // Simulating additional exoplanets to test behaviour
+            ? exoplanets
+            : Array.from({ length: 20 }, (_, i) => ({
+                id: `dummy-${i}`,
+                planetName: `FakePlanet ${i + 1}`,
+                ownerId: "test-user",
+                }));*/
+            setExoplanets(myExoplanets);// exoplanets1
         }
 
         fetchUser();
@@ -129,7 +139,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                 height: "100vh",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "center",
+                justifyContent: "flex-start",
                 alignItems: "center",
             }}
             >
@@ -145,7 +155,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     borderRadius: 98,
                     backgroundColor: "rgba(0, 0, 0, 0.5)", // instead of opacity = 0.66 -> buttons etc. would inherit opacity
         
-                    zIndex: 1 // foreground
+                    zIndex: 1 // before background but behind nested card and contents
                 }}
                 >
 
@@ -273,12 +283,33 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                         border: "none",
                         borderRadius: 98,
                         backgroundColor: "rgba(0, 0, 0, 0.5)",
+
+                        display: "flex",
+                        flexDirection: "column",
+                        //overflow: "hidden", // needed for scrolling functionality
             
                         zIndex: 2 // foreground
                 }}
                 >
                     <div
                         style={{
+                            textAlign: "center",
+                            fontSize: "4vh",
+                            fontFamily: "Karantina",
+                            fontWeight: "700",
+
+                            background: "linear-gradient(90deg, #FFD9D9, #73CBC9)", // color gradient
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                        }}
+                    >
+                        Discovered exoplanets and their earth similarity index
+                    </div>
+
+                    <div
+                        style={{
+                            minHeight: 0,
+                            flex: 1,
                             maxHeight: "100%",
                             overflowY: "auto",
                             padding: "2rem",
@@ -305,11 +336,42 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                                         onClick={() => router.push(`/exoplanets/${exoplanet.id}`)}
                                         type="primary"
                                         htmlType="button"
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(60, 60, 60, 0.8)"}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0)"}
                                         style={{
-                                            color: "white"
+                                            background: "rgb(0, 0, 0)",
+                                            border: "none",
+                                            boxShadow: "none",
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            width: "100%", 
+                                            height: "8vh",
+                                            transition: "background-color 0.3s ease",
                                         }}
                                     >
-                                        {exoplanet.planetName} (Owner ID: {exoplanet.ownerId})
+                                        <span
+                                            style={{
+                                                fontFamily: "Jura",
+                                                fontSize: "28px",
+                                                background: "linear-gradient(90deg, #73CBC9, #FFD9D9)", // color gradient
+                                                WebkitBackgroundClip: "text",
+                                                WebkitTextFillColor: "transparent",
+                                            }}
+                                        >
+                                            {exoplanet.planetName}
+                                        </span>
+                                        <span
+                                            style={{
+                                                fontFamily: "Jura",
+                                                fontSize: "28px",
+                                                background: "linear-gradient(90deg, #73CBC9, #FFD9D9)", // color gradient
+                                                WebkitBackgroundClip: "text",
+                                                WebkitTextFillColor: "transparent",
+                                            }}
+                                        >
+                                            {(Number(exoplanet.earthSimilarityIndex) * 100).toFixed(1)} %
+                                        </span>
                                     </Button>
                                 ))}
                             </div>
