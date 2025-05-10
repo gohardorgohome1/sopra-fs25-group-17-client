@@ -51,14 +51,13 @@ const ExoplanetRanking: React.FC = () => {
       },
       onDisconnect: () => console.log("WebSocket disconnected"),
     });
-  
+
     client.activate();
-  
+
     return () => {
       client.deactivate();
     };
   }, []);
-  
 
   useEffect(() => {
     if (!loading && exoplanets.length > 0) {
@@ -75,32 +74,27 @@ const ExoplanetRanking: React.FC = () => {
     .sort((a, b) => b.earthSimilarityIndex - a.earthSimilarityIndex)
     .slice(0, 10);
 
-  const totalTextWidth = 50;
-  const text = sortedExoplanets.map((exoplanet) => {
-    const planetName = exoplanet.planetName;
-    const percentage = (exoplanet.earthSimilarityIndex * 100).toFixed(0) + "%";
-    const paddingLength = Math.max(1, totalTextWidth - planetName.length - percentage.length);
-    return ` ${planetName}${" ".repeat(paddingLength)}${percentage}`;
-  });
-
   const data: Partial<Plotly.Data>[] = [{
     type: "bar",
     orientation: "h",
-    x: Array(sortedExoplanets.length).fill(0.08),
+    x: sortedExoplanets.map((exo) => exo.earthSimilarityIndex),
     y: sortedExoplanets.map((_, index) => index + 1),
-    text: text,
+    text: sortedExoplanets.map((exo) => `${(exo.earthSimilarityIndex * 100).toFixed(0)}%`),
     textposition: "inside",
-    insidetextanchor: "start",
+    insidetextanchor: "end",
     marker: {
       color: "#101826",
-    }
+    },
   }];
 
   const layout: Partial<Layout> = {
     yaxis: {
       autorange: "reversed",
       tickvals: sortedExoplanets.map((_, index) => index + 1),
-      ticktext: sortedExoplanets.map((_, index) => `${index + 1}. `),
+      ticktext: sortedExoplanets.map((exo, index) => {
+        const name = `${index + 1}. ${exo.planetName}`;
+        return name.padEnd(25, " "); 
+      }),
       tickfont: {
         family: "Jura, monospace",
         color: "#EDEDED",
@@ -115,6 +109,7 @@ const ExoplanetRanking: React.FC = () => {
       showgrid: false,
       zeroline: false,
       showline: false,
+      range: [0, 0.3],
     },
     width: 480,
     height: 520,
@@ -129,7 +124,7 @@ const ExoplanetRanking: React.FC = () => {
     margin: {
       t: 20,
       b: 40,
-      l: 50,
+      l: 170, 
       r: 20,
     },
   };
@@ -138,7 +133,7 @@ const ExoplanetRanking: React.FC = () => {
     <div style={{
       width: "100%",
       height: "100%",
-      backgroundColor: "rgba(10, 10, 10, 0.8)",
+      backgroundColor: "rgba(10, 10, 10, 0.4)",
       borderRadius: "16px",
       boxShadow: "0 0 10px rgba(255,255,255,0.08)",
       padding: "20px",
