@@ -16,7 +16,6 @@ interface Exoplanet {
   planetName: string;
   earthSimilarityIndex: number;
 }
-
 const ExoplanetRanking: React.FC = () => {
   const apiService = useApi();
   const router = useRouter();
