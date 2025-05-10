@@ -14,7 +14,7 @@ To summarize, this is the physical and scientific core of our project, which hel
 - **Backend**: Java 17, Spring Boot, MongoDB
 - **Frontend**: JavaScript, React (with Next.js), Flake, Ant Design (UI), Plotly.js (charts)
 - **Deployment**: Google App Engine (backend), Vercel (frontend)
-- **Build Tools**: Gradle, npm
+- **Build Tools**: Gradle (backend), npm (frontend)
 - **Development Environment**: WSL / Linux recommended for frontend
 
 # High Level Components
