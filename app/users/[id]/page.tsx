@@ -196,7 +196,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
     });
     }
 
-    const isOwner = (exoplanetOwnerId) => {
+    const isOwner = (exoplanetOwnerId: string) => {
         const userId = localStorage.getItem("userId");
         return (userId == exoplanetOwnerId);
     }
