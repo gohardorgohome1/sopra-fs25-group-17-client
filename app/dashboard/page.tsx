@@ -1,18 +1,21 @@
-"use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering 
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Button, Card } from "antd";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import NotificationToast from "@/components/NotificationToast";
+import {
+  LogoutOutlined,
+  RobotOutlined,
+  PlusOutlined,
+  UserOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
+import "react-toastify/dist/ReactToastify.css";
+import UnseenNotificationsButton from "../components/UnseenNotificationsButton";
 import StarMap from "../components/starMap";
 import ExoplanetRanking from "../components/exoplanetRanking";
-import { FaUserAstronaut } from 'react-icons/fa';
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
@@ -48,153 +51,151 @@ const Dashboard: React.FC = () => {
     }
   }, [token, apiService, router]);
 
-  useEffect(() => {
-    const client = new Client({
-      webSocketFactory: () =>
-        new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
-      connectHeaders: {},
-      onConnect: () => {
-        client.subscribe("/topic/exoplanets", (message) => {
-          const payload = JSON.parse(message.body);
-          const username = payload.user.username;
-          const planetName = payload.exoplanet.planetName;
-          const exoplanetId = payload.exoplanet.id;
-
-          toast(<NotificationToast username={username} planetName={planetName} exoplanetId={exoplanetId} />);
-        });
-      },
-      onDisconnect: () => {
-        console.log("Disconnected from WebSocket");
-      },
-    });
-
-    client.activate();
-
-    return () => {
-      client.deactivate();
-    };
-  }, []);
-
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container" style={{ position: "relative" }}>
+      <UnseenNotificationsButton />
 
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={true}
-        newestOnTop={true}
-        toastStyle={{
-          backgroundColor: "#FFAE00",
-          color: "#000",
-          fontFamily: "Jura",
-          fontWeight: 700,
-          fontSize: "20px",
-          lineHeight: "100%",
-          letterSpacing: "0%",
-        }}
-      />
-
-      <Button
-        onClick={() => router.push(`/users/${currentUserId}`)} // provisorisch
-        type="primary"
-        style={{
-          position: "absolute",
-          width: "8vw",
-          height: "7vh",
-          alignItems: 'center',
-          left: "1vw",
-          top: "3.6vh",
-          fontSize: "8vh",
-
-          background: "transparent",
-          border: "none",
-          color: "rgb(80, 150, 210)",
-          boxShadow: "none",
-
-          cursor: 'pointer',
-          zIndex: "2",
-        }}
-      >
-        <FaUserAstronaut />
-      </Button>
-
+      {/* Sidebar Navigation */}
       <div
         style={{
-          position: "absolute",
-          width: "2vw",
-          height: "2.2vh",
-          alignItems: 'center',
-          left: "3.5vw",
-          top: "10.6vh",
-          fontSize: "2vh",
-          color: "rgb(80, 150, 210)",
-          background: "rgb(16, 16, 18)", // Prevents stars from the background image interfering with readibility of this text
-
-          fontFamily: "Jura",
-          fontWeight: "700",
+          position: "fixed",
+          top: "2vh",
+          left: "1vw",
+          width: "14vw",
+          background: "rgba(0, 0, 0, 0.6)",
+          backdropFilter: "blur(8px)",
+          borderRadius: "1vw",
+          padding: "2vh 1vw",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1.5vh",
+          zIndex: 10000,
+          boxShadow: "0 0 10px rgba(0,0,0,0.7)",
         }}
       >
-        Profile
+        <div
+          style={{
+            color: "#D0E0F3",
+            fontSize: "1.3vw",
+            fontFamily: "Jura",
+            fontWeight: "600",
+            textAlign: "center",
+            marginBottom: "1vh",
+            letterSpacing: "0.05em",
+          }}
+        >
+          MENU
         </div>
 
-      {/* Logout Button */}
-      <Button
-        onClick={handleLogout}
-        type="primary"
-        className="logout-button"
-        style={{
-          position: "absolute",
-          top: "2vh",
-          right: "2vw",
-          width: "8vw",
-          height: "3vw",
-          background: "#202343",
-          borderRadius: "0.8vw",
-          textAlign: "center",
-          color: "#FFFFFF",
-          fontSize: "1.4vw",
-          fontFamily: "Jura",
-          fontWeight: "700",
-          boxShadow: "none",
-          zIndex: 1,
-        }}
-      >
-        <span>Logout</span>
-      </Button>
+        <Button
+          icon={<RobotOutlined />}
+          onClick={() => router.push("/openai")}
+          type="primary"
+          block
+          style={{
+            backgroundColor: "#202343",
+            border: "none",
+            color: "#D0E0F3",
+            fontSize: "1vw",
+            fontWeight: "600",
+            fontFamily: "Jura",
+            textAlign: "left",
+            padding: "0.8vw 1vw",
+            borderRadius: "0.7vw",
+          }}
+        >
+          AI Assistant
+        </Button>
 
-      {/* AI Assistant Button */}
-      <Button
-        onClick={() => router.push("/openai")}
-        type="primary"
-        className="logout-button"
-        style={{
-          position: "absolute",
-          bottom: "2vh",
-          left: "2vw",
-          width: "10vw",
-          height: "3vw",
-          background: "#202343",
-          borderRadius: "0.8vw",
-          textAlign: "center",
-          color: "#FFFFFF",
-          fontSize: "1.4vw",
-          fontFamily: "Jura",
-          fontWeight: "700",
-          boxShadow: "none",
-          zIndex: 9999,
-        }}
-      >
-        <span>AI Assistant</span>
-      </Button>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={() => router.push("/exoplanets/upload")}
+          type="primary"
+          block
+          style={{
+            backgroundColor: "#202343",
+            border: "none",
+            color: "#D0E0F3",
+            fontSize: "1vw",
+            fontWeight: "600",
+            fontFamily: "Jura",
+            textAlign: "left",
+            padding: "0.8vw 1vw",
+            borderRadius: "0.7vw",
+          }}
+        >
+          Add Exoplanet
+        </Button>
+
+        <Button
+          icon={<UserOutlined />}
+          onClick={() => router.push(`/users/${currentUserId}`)}
+          type="primary"
+          block
+          style={{
+            backgroundColor: "#202343",
+            border: "none",
+            color: "#D0E0F3",
+            fontSize: "1vw",
+            fontWeight: "600",
+            fontFamily: "Jura",
+            textAlign: "left",
+            padding: "0.8vw 1vw",
+            borderRadius: "0.7vw",
+          }}
+        >
+          Profile
+        </Button>
+
+        <Button
+          icon={<QuestionCircleOutlined />}
+          onClick={() => {}}
+          type="primary"
+          block
+          style={{
+            backgroundColor: "#202343",
+            border: "none",
+            color: "#D0E0F3",
+            fontSize: "1vw",
+            fontWeight: "600",
+            fontFamily: "Jura",
+            textAlign: "left",
+            padding: "0.8vw 1vw",
+            borderRadius: "0.7vw",
+          }}
+        >
+          Help
+        </Button>
+
+        <Button
+          icon={<LogoutOutlined />}
+          onClick={handleLogout}
+          type="primary"
+          danger
+          block
+          style={{
+            backgroundColor: "#442929",
+            border: "none",
+            color: "#FFD6D6",
+            fontSize: "1vw",
+            fontWeight: "600",
+            fontFamily: "Jura",
+            textAlign: "left",
+            padding: "0.8vw 1vw",
+            borderRadius: "0.7vw",
+          }}
+        >
+          Logout
+        </Button>
+      </div>
 
       {/* Header */}
       <div
         style={{
           width: "60vw",
           height: "12vh",
-          top: "3vh",
-          left: "1vh",
-          textAlign: "center",
+          marginLeft: "16vw",
+          textAlign: "left",
         }}
       >
         <h1
@@ -217,73 +218,57 @@ const Dashboard: React.FC = () => {
         style={{
           position: "relative",
           marginTop: "1vh",
-          marginLeft: "auto",
-          marginRight: "auto",
-          height: "100vh",
-          width: "97vw",
+          marginLeft: "16vw",
+          height: "auto",
+          width: "82vw",
           maxWidth: "1500px",
-          background: "#000000",
+          background: "rgba(10, 10, 10, 0.4)",
           border: "none",
           borderRadius: "1vw",
           overflow: "hidden",
           zIndex: 1,
         }}
-        styles={{ body: { padding: "0", backgroundColor: "black" } }}
+        styles={{ body: { padding: "2vh", backgroundColor: "black" } }}
       >
         {/* Flex Container */}
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            gap: "0.5vw",
-            height: "80vh",
+            gap: "1.5vw",
+            minHeight: "75vh",
             width: "100%",
-            flex: 1,
           }}
         >
           {/* Left Side */}
           <div
             style={{
               flex: 2,
-              backgroundColor: "black",
+              backgroundColor: "rgba(10, 10, 10, 0.4)",
               borderRadius: "1.5vw",
-              padding: "0vh 0vw",
+              padding: "2vh 1vw",
               color: "white",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center",
               alignItems: "center",
-              textAlign: "center",
+              justifyContent: "flex-start",
             }}
           >
             <h2
               style={{
                 fontFamily: "Jura",
-                background: "linear-gradient(90deg, #FFFFFF 0%, #0058B6 100%)",
+                background: "linear-gradient(90deg, #FFFFFF 0%,rgb(134, 185, 239) 100%)",
                 WebkitBackgroundClip: "text",
                 color: "transparent",
                 fontWeight: "700",
                 fontSize: "2vw",
                 lineHeight: "1.2",
-                letterSpacing: "0em",
-                textAlign: "center",
+                marginBottom: "2vh",
               }}
             >
               Exoplanet Populations
             </h2>
-            <div
-              style={{
-                flexGrow: 1,
-                height: "100%",
-                width: "100%",
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "#888",
-              }}
-            >
+            <div style={{ width: "100%", height: "100%", position: "relative" }}>
               <StarMap />
             </div>
           </div>
@@ -292,63 +277,33 @@ const Dashboard: React.FC = () => {
           <div
             style={{
               flex: 1,
-              backgroundColor: "black",
+              backgroundColor: "rgba(10, 10, 10, 0.4)",
               borderRadius: "1.5vw",
-              padding: "0vh 0vw",
+              padding: "2vh 1vw",
               color: "white",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center",
               alignItems: "center",
-              textAlign: "center",
+              justifyContent: "flex-start",
             }}
           >
             <h2
               style={{
                 fontFamily: "Jura",
-                background: "linear-gradient(90deg, #FFFFFF 0%, #0058B6 100%)",
+                background: "linear-gradient(90deg, #FFFFFF 0%,rgb(178, 214, 253) 100%)",
                 WebkitBackgroundClip: "text",
                 color: "transparent",
                 fontWeight: "700",
                 fontSize: "2vw",
                 lineHeight: "1.2",
-                letterSpacing: "0em",
-                textAlign: "center",
+                marginBottom: "2vh",
               }}
             >
               Earth Similarity Ranking
             </h2>
-            <div
-              style={{
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "#888",
-              }}
-            >
+            <div style={{ width: "100%" }}>
               <ExoplanetRanking />
             </div>
-
-            <Button
-              onClick={() => router.push("/exoplanets/upload")}
-              type="primary"
-              style={{
-                alignSelf: "flex-end",
-                backgroundColor: "#A5ADFF",
-                border: "none",
-                boxShadow: "0 0 20px rgba(127, 135, 255, 0.6)",
-                color: "#FFFFFF",
-                fontFamily: "Jura",
-                fontWeight: "700",
-                fontSize: "1.7vw",
-                borderRadius: "0.8vw",
-                padding: "0.6vw 2.5vw",
-                marginTop: "1vh",
-              }}
-            >
-              Analyze and add exoplanet
-            </Button>
           </div>
         </div>
       </Card>
