@@ -369,8 +369,19 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                         Discovered exoplanets and their earth similarity index
                     </div>
 
-                    {!exoplanets &&( ////////////////////////////////////////////
-                    <div>
+                    {exoplanets.length === 0 && (
+                    <div
+                        style={{
+                            textAlign: "center",
+                            marginTop: "20vh",
+
+                            fontFamily: "Jura",
+                            fontSize: "28px",
+                            background: "linear-gradient(90deg, #FFD9D9, #73CBC9)", // color gradient
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                        }}
+                    >
                         This user has not discovered any Exoplanets yet!
                     </div>
                     )}
