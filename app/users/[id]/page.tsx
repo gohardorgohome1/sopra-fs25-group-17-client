@@ -6,6 +6,8 @@ import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import { Button, Card, Input, Modal } from "antd";
 import { useRouter } from "next/navigation";
+import { FaTrashAlt } from "react-icons/fa";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 interface Exoplanet {
     id: string;
@@ -13,6 +15,8 @@ interface Exoplanet {
     ownerId: string;
     earthSimilarityIndex: string,
   }
+
+const { useModal } = Modal;
 
 const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = React.use(params);
@@ -24,6 +28,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [newUsername, setNewUsername] = useState(user?.username || "");
     const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
+    const [modal, contextHolder] = useModal();
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
@@ -96,7 +101,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         }
 
         fetchUser();
-    }, [id, thisUsername, apiService, router]);
+    }, [id, thisUsername, apiService, router, exoplanets]);
 
     const setUsername = async () => {
         try {
@@ -129,6 +134,64 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         setIsEditing(false);
       };
       const handleCancel = () => setIsEditing(false);
+
+    const deleteExoplanet = async (exoplanetId: string, exoplanetName: string) => {
+
+    modal.confirm({
+      title: "Are you sure you want to delete this exoplanet?",
+      icon: <ExclamationCircleOutlined />,
+      content: (<span style={{ color: "#ff5555" }}>Deleting an exoplanet cannot be undone!</span>),
+      okText: `Delete ${exoplanetName}`,
+      okType: "danger",
+      cancelText: "Cancel",
+
+      okButtonProps: { // Delete {exoplanetName} button
+        style: {
+          backgroundColor: "#ff4d4f",
+          borderColor: "#ff4d4f",
+          color: "#fff",
+          fontWeight: "bold",
+        },
+      },
+      cancelButtonProps: { // Cancel button
+        style: {
+          backgroundColor: "#444",
+          borderColor: "#444",
+          color: "#fff",
+        },
+      },
+      
+      onOk: async () => {
+        try{
+          await apiService.delete(`/exoplanets/${exoplanetId}`); // delete exoplanet
+        } catch (error) {
+          if (error instanceof Error) {
+            if (error.message.includes("Exoplanet not found")) {
+              Modal.error({
+                title: "Exoplanet not found",
+                content: "The Exoplanet you are trying to delete does not exist in the database!",
+              });
+            } else {
+              Modal.error({
+                title: "Deletion failed",
+                content: `Deleting this exoplanet failed: ${error.message}`,
+              });
+            }
+          } else {
+            Modal.error({
+              title: "Deletion failed",
+              content: "An unknown error occurred while trying to delete this exoplanet.",
+            });
+          }
+        }
+      },
+    });
+    }
+
+    const isOwner = (exoplanetOwnerId) => {
+        const userId = localStorage.getItem("userId");
+        return (userId == exoplanetOwnerId);
+    }
 
     return (
         <div
@@ -306,6 +369,12 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                         Discovered exoplanets and their earth similarity index
                     </div>
 
+                    {!exoplanets &&( ////////////////////////////////////////////
+                    <div>
+                        This user has not discovered any Exoplanets yet!
+                    </div>
+                    )}
+
                     <div
                         style={{
                             minHeight: 0,
@@ -317,6 +386,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                             gap: "1rem",
                           }}
                         >
+                        {contextHolder}
                         {[0, 1].map(columnIndex => (
                             <div
                                 key={columnIndex}
@@ -348,30 +418,63 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                                             width: "100%", 
                                             height: "8vh",
                                             transition: "background-color 0.4s ease",
+                                            padding: 0, // makes sure delete button is at the very right
                                         }}
                                     >
-                                        <span
+                                        <div // left part of the button (redirect to Exoplanet profile page)
                                             style={{
-                                                fontFamily: "Jura",
-                                                fontSize: "28px",
-                                                background: "linear-gradient(90deg, #73CBC9, #FFD9D9)", // color gradient
-                                                WebkitBackgroundClip: "text",
-                                                WebkitTextFillColor: "transparent",
-                                            }}
+                                                display: "flex",
+                                                flex: 5,
+                                                alignItems: "center",
+                                                justifyContent: "space-between",
+                                                padding: "0 1rem",
+                                                }}
                                         >
-                                            {exoplanet.planetName}
-                                        </span>
-                                        <span
+                                            <span
+                                                style={{
+                                                    fontFamily: "Jura",
+                                                    fontSize: "28px",
+                                                    background: "linear-gradient(90deg, #73CBC9, #FFD9D9)", // color gradient
+                                                    WebkitBackgroundClip: "text",
+                                                    WebkitTextFillColor: "transparent",
+                                                }}
+                                            >
+                                                {exoplanet.planetName}
+                                            </span>
+                                            <span
+                                                style={{
+                                                    fontFamily: "Jura",
+                                                    fontSize: "28px",
+                                                    background: "linear-gradient(90deg, #73CBC9, #FFD9D9)", // color gradient
+                                                    WebkitBackgroundClip: "text",
+                                                    WebkitTextFillColor: "transparent",
+                                                }}
+                                            >
+                                                {(Number(exoplanet.earthSimilarityIndex) * 100).toFixed(1)} %
+                                            </span>
+                                        </div>
+
+                                        {isOwner(exoplanet.ownerId) && ( // delete button only if user is the owner
+                                        <div // right part of the button (delete Exoplanet)
                                             style={{
-                                                fontFamily: "Jura",
-                                                fontSize: "28px",
-                                                background: "linear-gradient(90deg, #73CBC9, #FFD9D9)", // color gradient
-                                                WebkitBackgroundClip: "text",
-                                                WebkitTextFillColor: "transparent",
-                                            }}
+                                                borderRadius: 8, // ensures background red does not go over the button itself
+                                                flex: 1,
+                                                height: "100%",
+                                                backgroundColor: "rgba(255, 0, 0, 0.16)",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                cursor: "pointer",
+                                                color: "rgb(244, 244, 244)",
+                                                }}
+                                                onClick={(e) => {
+                                                e.stopPropagation(); // stops redirecting user when clicking on trash bin
+                                                deleteExoplanet(exoplanet.id, exoplanet.planetName);
+                                                }}
                                         >
-                                            {(Number(exoplanet.earthSimilarityIndex) * 100).toFixed(1)} %
-                                        </span>
+                                            {<FaTrashAlt />}
+                                        </div>
+                                        )}
                                     </Button>
                                 ))}
                             </div>
