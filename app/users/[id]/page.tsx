@@ -29,6 +29,14 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
     const [newUsername, setNewUsername] = useState(user?.username || "");
     const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
     const [modal, contextHolder] = useModal();
+    
+    const [currentPage, setCurrentPage] = useState(0);
+    const buttonsPerPage = 10;
+    const pagedButtons = exoplanets.slice(
+    currentPage * buttonsPerPage,
+    (currentPage + 1) * buttonsPerPage
+    );
+    const totalPages = Math.ceil(exoplanets.length / buttonsPerPage);
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
@@ -408,7 +416,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                                     flex: 1
                                 }}
                             >
-                                {exoplanets
+                                {pagedButtons
                                     .filter((_, i) => i % 2 === columnIndex)
                                     .map((exoplanet) => (
                                     <Button
@@ -491,6 +499,53 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                             </div>
                         ))}
                     </div>
+
+                    {exoplanets.length !== 0 && ( // Disabled if there are no discovered exoplanets by this user
+                    <div // Different pages for many discovered Exoplanets -> Show 10 buttons on each page
+                        style={{
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: "1vw",
+                            position: "absolute",
+                            top: "70vh",
+                            }}
+                        >
+                        <Button
+                            onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+                            disabled={currentPage === 0}
+                            style={{
+                                background: "#FFD9D9",
+                                color: "black",
+                                border: "none",
+                                fontFamily: "Jura",
+                            }}
+                        >
+                            Previous
+                        </Button>
+                        <span
+                        style={{
+                            color: "white",
+                            fontFamily: "Jura",
+                            fontSize: "18px"
+                            }}>
+                            Page {currentPage + 1} of {totalPages}
+                        </span>
+                        <Button
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+                            disabled={currentPage >= totalPages - 1}
+                            style={{
+                                background: "#73CBC9",
+                                color: "black",
+                                border: "none",
+                                fontFamily: "Jura",
+                            }}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                    )}
                 </Card>
 
                 <Button // Button: Back to dashboard
@@ -514,6 +569,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     fontWeight: "700",
 
                     boxShadow: '0px 0px 40px 12px rgba(255, 0, 0, 0.25)',
+                    zIndex: 2,
                     }}
                     >
                     <span
