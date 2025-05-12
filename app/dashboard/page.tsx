@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -20,7 +20,11 @@ import ExoplanetRanking from "../components/exoplanetRanking";
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
-  const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
+  const {
+    value: token,
+    clear: clearToken,
+  } = useLocalStorage<string>("token", "");
+  const [currentUserId, setCurrentUserId] = useState("");
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -40,6 +44,10 @@ const Dashboard: React.FC = () => {
     if (!storedToken) {
       router.push("/login");
       return;
+    }
+    const storedId = localStorage.getItem("userId");
+    if (storedId != null) {
+      setCurrentUserId(storedId);
     }
   }, [token, apiService, router]);
 
@@ -121,7 +129,7 @@ const Dashboard: React.FC = () => {
 
         <Button
           icon={<UserOutlined />}
-          onClick={() => {}}
+          onClick={() => router.push(`/users/${currentUserId}`)}
           type="primary"
           block
           style={{

@@ -18,6 +18,11 @@ const ExoplanetNonExistant: React.FC = () => {
           onClick={() => router.push("/dashboard")}
           type="primary"
           htmlType="button"
+          style={{
+            width: "100vw",
+            height: "100vh",
+            background: "black",
+          }}
         >
           Please wait to be redirected to the dashboard.
           If you are not automatically redirected, please click here
