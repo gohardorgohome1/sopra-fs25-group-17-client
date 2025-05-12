@@ -280,7 +280,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     <span
                     style={{
                         display: "inline-block",
-                        width: "100%",
+                        width: "110%",
                         textAlign: "left",
 
                         background: "linear-gradient(90deg, #FFD9D9,rgb(181, 205, 204))",
