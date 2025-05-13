@@ -57,7 +57,8 @@ const ExoplanetRanking: React.FC = () => {
   //  new Map(exoplanets.map(planet => [planet.planetName, planet])).values()
   //);
   
-  const sortedExoplanets = [...exoplanets].sort((a, b) => (b[filterKey] as number) - (a[filterKey] as number)).slice(0, 10);
+  const sortedExoplanets = [...exoplanets].sort((a, b) => (b[filterKey] as number) - (a[filterKey] as number))
+  //.slice(0, 10);
   
   const totalTextWidth = 50;
 
@@ -159,8 +160,10 @@ const ExoplanetRanking: React.FC = () => {
     <div style={{ width: "100%", height: "100%" }}>
       <div style={{ marginBottom: 0, marginTop: 5 }}>
         <label
-        style={{fontFamily: "Jura, monospace", color: "#EDEDED",}}
-        >Filter by: </label>
+          style={{ fontFamily: "Jura, monospace", color: "#EDEDED" }}
+        >
+          Filter by:{" "}
+        </label>
         <select
           value={filterKey}
           onChange={(e) => setFilterKey(e.target.value as keyof Exoplanet)}
@@ -181,14 +184,12 @@ const ExoplanetRanking: React.FC = () => {
           ))}
         </select>
       </div>
-            <Plot 
-                data={data}
-                layout={layout}
-                
-                useResizeHandler
-            />
-        </div>
-  );
+  
+      <div style={{ height: "600px", overflowY: "auto" }}>
+        <Plot data={data} layout={{ ...layout, height: sortedExoplanets.length * 50 }} useResizeHandler />
+      </div>
+    </div>
+  );  
 };
 
 export default ExoplanetRanking;
