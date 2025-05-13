@@ -63,9 +63,19 @@ const ExoplanetRanking: React.FC = () => {
 
   const text = sortedExoplanets.map((exoplanet) => {
     const planetName = exoplanet.planetName;
-    const value =
-      filterKey === "earthSimilarityIndex"? ((exoplanet[filterKey] as number) * 100).toFixed(0) + "%"
-      : (exoplanet[filterKey] as number).toFixed(2);
+    let value: string;
+    if (filterKey === "earthSimilarityIndex") {
+      value = ((exoplanet[filterKey] as number) * 100).toFixed(0) + "%";
+    }
+    else if (filterKey === "fractionalDepth") {
+      value = ((exoplanet[filterKey] as number) * 100).toFixed(2) + "%";
+    }
+    else if (filterKey === "theoreticalTemperature") {
+      value = (exoplanet[filterKey] as number).toFixed(1);
+    }
+    else {
+      value = (exoplanet[filterKey] as number).toFixed(2);
+    }
     const paddingLength = Math.max(1, totalTextWidth - planetName.length - value.length);
     const spacer = " ".repeat(paddingLength);
   
@@ -84,7 +94,7 @@ const ExoplanetRanking: React.FC = () => {
     insidetextanchor: "start",
   
     marker: {
-      color: '#0F1D56',
+      color: "#101826",
     }
   }];
 
@@ -94,8 +104,8 @@ const ExoplanetRanking: React.FC = () => {
       tickvals: sortedExoplanets.map((_, index) => index + 1),
       ticktext: sortedExoplanets.map((_, index) => `${index + 1}. `),
       tickfont: {
-        family: "Jura",
-        color: "#FFFFFF",
+        family: "Jura, monospace",
+        color: "#EDEDED",
         weight: 700,
         size: 20,
       },
@@ -116,8 +126,8 @@ const ExoplanetRanking: React.FC = () => {
       paper_bgcolor: "black",
       plot_bgcolor: "black",
       font: {
-        family: "Jura",
-        color: "#FFFFFF",
+        family: "Jura, monospace",
+        color: "#EDEDED",
         weight: 700,
         size: 20,
       },
@@ -149,15 +159,15 @@ const ExoplanetRanking: React.FC = () => {
     <div style={{ width: "100%", height: "100%" }}>
       <div style={{ marginBottom: 0, marginTop: 5 }}>
         <label
-        style={{fontFamily: "Jura", color: "#FFFFFF",}}
+        style={{fontFamily: "Jura, monospace", color: "#EDEDED",}}
         >Filter by: </label>
         <select
           value={filterKey}
           onChange={(e) => setFilterKey(e.target.value as keyof Exoplanet)}
           style={{
-            backgroundColor: "#0F1D56",
-            color: "#FFFFFF",
-            fontFamily: "Jura",
+            backgroundColor: "#101826",
+            color: "#EDEDED",
+            fontFamily: "Jura, monospace",
             fontWeight: 550,
             fontSize: "16px",
             padding: "4px 4px",
