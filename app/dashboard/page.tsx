@@ -15,7 +15,7 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import UnseenNotificationsButton from "../components/UnseenNotificationsButton";
 import StarMap from "../components/starMap";
-import InfoTooltip from "../components/infoToolTip"; // adjust path if needed
+import InfoTooltip from "../components/infoToolTip"; 
 import ExoplanetRanking from "../components/exoplanetRanking";
 
 const Dashboard: React.FC = () => {
@@ -172,10 +172,10 @@ const Dashboard: React.FC = () => {
               </p>
         
               <p>
-                During a transit, the star's light slightly dims. This change in brightness is
+                During a transit, the star&apos;s light slightly dims. This change in brightness is
                 recorded as a <em>photometric curve</em>, which users can upload to our system.
                 From this curve, the platform calculates the percentage drop in brightness and,
-                using additional data from NASA’s Exoplanet Archive API, estimates key planetary characteristics.
+                using additional data from NASA&apos;s Exoplanet Archive API, estimates key planetary characteristics.
               </p>
         
               <p>These include:</p>
