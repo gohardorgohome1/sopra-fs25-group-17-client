@@ -1,31 +1,30 @@
+"use client";
 // ExoplanetRanking.tsx
 import React, { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 
-// Dynamically import Plotly.js component with no SSR
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 import type { Layout } from "plotly.js";
 
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 interface Exoplanet {
+  id: string;
   planetName: string;
   earthSimilarityIndex: number;
-
-  fractionalDepth: number;
-  density: number;
-  orbitalPeriod: number;
-  radius: number;
-  surfaceGravity: number;
-  theoreticalTemperature: number;
-  mass: number;
-  escapeVelocity: number;
 }
 
 // Define ExoplanetRanking as a React Functional Component
 const ExoplanetRanking: React.FC = () => {
   const apiService = useApi();
+  const router = useRouter();
+  const [plotReady, setPlotReady] = useState(false);
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);  
   const [filterKey, setFilterKey] = useState<keyof Exoplanet>("earthSimilarityIndex");
 
 
@@ -34,23 +33,43 @@ const ExoplanetRanking: React.FC = () => {
       try {
         const planets: Exoplanet[] = await apiService.get<Exoplanet[]>("/exoplanets");
         setExoplanets(planets);
-        console.log("Fetched exoplanets:", planets);
       } catch (error) {
-        if (error instanceof Error) {
-          alert(`Something went wrong while fetching exoplanets:\n${error.message}`);
-        } else {
-          console.error("Unknown error while fetching exoplanets.");
-        }
+        alert(`Error fetching exoplanets: ${error}`);
       } finally {
         setLoading(false);
       }
     };
 
     fetchExoplanets();
+  }, [reloadKey]);
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () => new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+      connectHeaders: {},
+      onConnect: () => {
+        client.subscribe("/topic/exoplanets", () => {
+          setReloadKey(prev => prev + 1);
+        });
+      },
+      onDisconnect: () => console.log("WebSocket disconnected"),
+    });
+
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
   }, []);
 
+  useEffect(() => {
+    if (!loading && exoplanets.length > 0) {
+      setPlotReady(true);
+    }
+  }, [loading, exoplanets]);
+
   if (loading) {
-    return <div style={{ color: "white" }}>Loading...</div>;
+    return <div style={{ color: "#DADADA", fontFamily: "Jura, monospace" }}>Loading...</div>;
   }
 
   //const uniqueExoplanets = Array.from(
@@ -92,54 +111,53 @@ const ExoplanetRanking: React.FC = () => {
     //text: sortedExoplanets.map((exoplanet, index) => `${exoplanet.planetName} ${(exoplanet.earthSimilarityIndex * 100).toFixed(0)}%`),
 
     textposition: "inside",
-    insidetextanchor: "start",
-  
+    insidetextanchor: "end",
     marker: {
       color: "#101826",
-    }
+    },
   }];
 
   const layout: Partial<Layout> = {
-      yaxis: {
+    yaxis: {
       autorange: "reversed",
       tickvals: sortedExoplanets.map((_, index) => index + 1),
-      ticktext: sortedExoplanets.map((_, index) => `${index + 1}. `),
+      ticktext: sortedExoplanets.map((exo, index) => {
+        const name = `${index + 1}. ${exo.planetName}`;
+        return name.padEnd(25, " "); 
+      }),
       tickfont: {
         family: "Jura, monospace",
         color: "#EDEDED",
-        weight: 700,
-        size: 20,
+        size: 16,
       },
       showline: false,
       showgrid: false,
       zeroline: false,
-      },
-
-      xaxis: {
-        showticklabels: false,
-        showgrid: false,
-        zeroline: false,
-        showline: false,
-      },
-
-      width: 450, 
-      height: 500,
-      paper_bgcolor: "black",
-      plot_bgcolor: "black",
-      font: {
-        family: "Jura, monospace",
-        color: "#EDEDED",
-        weight: 700,
-        size: 20,
-      },
-      bargap: 0.35,
-      margin: {
-        t: 10,  
-        b: 50,
-        l: 40,  
-        r: 10,
-      },
-      };
+    },
+    xaxis: {
+      showticklabels: false,
+      showgrid: false,
+      zeroline: false,
+      showline: false,
+      range: [0, 0.3],
+    },
+    width: 480,
+    height: 520,
+    paper_bgcolor: "#0A0A0A",
+    plot_bgcolor: "#0A0A0A",
+    font: {
+      family: "Jura, monospace",
+      color: "#EDEDED",
+      size: 16,
+    },
+    bargap: 0.3,
+    margin: {
+      t: 20,
+      b: 40,
+      l: 170, 
+      r: 20,
+    },
+  };
 
   const filterOptions: (keyof Exoplanet)[] = [
     "earthSimilarityIndex",

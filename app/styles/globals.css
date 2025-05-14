@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Karantina:wght@300;400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jura:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Koulen:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Koulen&family=Jura&display=swap');
 
 :root {
   --background: #ffffff;
@@ -81,7 +82,6 @@ a {
   width: 100vw;
   height: 100vh;
   opacity: 0.96;
-  z-index: -1;
   background: url("/backgroundExoplanet.png") lightgray 50% / cover no-repeat;
 }
 
@@ -90,4 +90,184 @@ a {
   height: 100vh;
   opacity: 0.96;
   background: url("/background2.png") lightgray 50% / cover no-repeat;
+}
+
+/*.ant-form-item-explain-error {
+  text-align: center;
+  font-size: 1vw;
+}*/ /*Could be used to change style of message, when not filling an input field properly*/
+
+
+/* OpenAI Chat Styling */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Jura', sans-serif;
+  overflow: hidden;
+}
+
+.chat-background {
+  background: url('/background2.png') lightgray 50% / cover no-repeat;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.chat-title {
+  font-family: 'Koulen', sans-serif;
+  font-size: 48px;
+  text-align: center;
+  background: linear-gradient(90deg, #d9ecff 0%, #95affa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 0px;
+  margin-bottom: 12px;
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 1450px;
+  height: 100%;
+  max-height: 780px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 45px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
+  overflow: hidden;
+  backdrop-filter: blur(3px);
+  box-sizing: border-box;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(63, 66, 80) transparent;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: rgb(66, 70, 94);
+  border-radius: 4px;
+}
+
+.message {
+  padding: 15px 25px;
+  margin-bottom: 15px;
+  color: rgb(229, 237, 249);
+  word-break: break-word;
+}
+
+.message.user {
+  background: #14161e;
+  border-radius: 45px 45px 0px 45px;
+  max-width: 900px;
+  align-self: flex-end;
+}
+
+.message.assistant {
+  background: #303444;
+  border-radius: 45px 45px 45px 0px;
+  max-width: 1136px;
+  align-self: flex-start;
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: auto;
+}
+
+.input-box {
+  flex: 1;
+  height: 50px;
+  border-radius: 45px;
+  background: #2b2c31 !important;
+  color: rgb(255, 255, 255) !important;
+  font-size: 18px;
+  padding: 0 20px;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.input-box::placeholder {
+  color: rgb(255, 255, 255);
+  opacity: 0.6;
+}
+
+.send-button {
+  height: 91px;
+  width: 91px;
+  border-radius: 50%;
+  background-color: #3f3a82 !important;
+  border: none !important;
+  font-size: 24px;
+  color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.dashboard-button.ant-btn {
+  all: unset;
+  position: absolute !important;
+  bottom: 3px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 150px !important;
+  height: 35px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background-color: black !important;
+  border-radius: 20px !important;
+  cursor: pointer;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25) !important;
+  z-index: 999 !important;
+}
+
+.dashboard-text {
+  background: linear-gradient(90deg, #4447a5 0%, #FFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Jura', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-background {
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.96;
+  background: url("/background_profile_page.png") lightgray 50% / cover no-repeat;
+}
+
+.change-username::placeholder {
+  font-family: 'Jura';
+  font-size: 18px;
+  color: #888888;
+}
+
+.white-placeholder .ant-select-selection-placeholder {
+  color: white !important;
+  opacity: 0.6;
+}
+
+.white-placeholder .ant-select-selection-item {
+  color: white !important;
 }
