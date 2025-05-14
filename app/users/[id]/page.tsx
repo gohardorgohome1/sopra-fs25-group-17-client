@@ -28,6 +28,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [newUsername, setNewUsername] = useState(user?.username || "");
     const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
+    const [changedExoplanets, setChangedExoplanets] = useState(0);
     const [modal, contextHolder] = useModal();
     
     const [currentPage, setCurrentPage] = useState(0);
@@ -109,7 +110,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         }
 
         fetchUser();
-    }, [id, thisUsername, apiService, router, exoplanets]);
+    }, [id, thisUsername, apiService, router, changedExoplanets]);
 
     const setUsername = async () => {
         try {
@@ -172,6 +173,7 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
       onOk: async () => {
         try{
           await apiService.delete(`/exoplanets/${exoplanetId}`); // delete exoplanet
+          setChangedExoplanets(changedExoplanets + 1); // refreshes page (through useEffect()) when deleting an exoplanet
         } catch (error) {
           if (error instanceof Error) {
             if (error.message.includes("Exoplanet not found")) {

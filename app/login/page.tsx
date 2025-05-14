@@ -35,9 +35,11 @@ const Login: React.FC = () => {
       if (error instanceof Error) {
         if (error.message.includes("Invalid username or password")) {
           alert("Invalid username or password.");
+          console.log("Invalid username or password.", error);
         }
         else{
-          alert(`Something went wrong during the login:\n${error.message}`);
+          alert(`Something went wrong during the login.`);
+          console.log(`Something went wrong during the login:\n${error.message}`);
         }
         
       } else {
