@@ -325,7 +325,7 @@ const ChatAssistant: React.FC = () => {
 
         </Modal>
 
-        {/* Botón con estilo personalizado y posición estética */}
+        {/* Dashboard button */}
         <Button
           className="dashboard-button"
           onClick={() => (window.location.href = "/dashboard")}
