@@ -146,42 +146,41 @@ const StarMap: React.FC = () => {
       range: [Math.log10(0.18), Math.log10(1000)],
       showgrid: false,
       zeroline: false,
-      tickmode: "array", // Manually set tick positions
+      tickmode: "array", 
       tickvals: [1, 10, 100, 1000], // Set specific ticks
       ticktext: [ "1", "10", "100", "1000"], // Corresponding labels
-      tickangle: 0, // If you'd like to adjust label angle
-      //ticks: "outside", // Optional: you can set it as "inside" for a different look
+      tickangle: 0, 
+
       scaleanchor: "y",
     },
     yaxis: {
       title: { 
         text: "Radius (Earth Units)",
           font: {
-            family: "Jura",  // You can change the font family if needed
+            family: "Jura",  
             size: 15,
             color: "white"
           },},
       showline: true,
       linecolor: 'white',
-      linewidth: 4, // Thicker line
+      linewidth: 4, 
       type: "log",
       color: "white",
       range: [Math.log10(1.5), Math.log10(7)], 
       showgrid: false,
       zeroline: false,
-      tickmode: "array", // Manually set tick positions
+      tickmode: "array", 
       tickvals: [1, 4, 10, 20], // Set specific ticks
-      ticktext: ["1", "4", "10", "20"], // Corresponding labels
-      tickangle: 0, // If you'd like to adjust label angle
-      //ticks: "outside", // Optional: you can set it as "inside" for a different look
+      ticktext: ["1", "4", "10", "20"], 
+      tickangle: 0, 
       scaleanchor: "x",
     },
 
     margin: {
-      t: 10,  // Top margin - reduce it to give more space
-      b: 40,  // Bottom margin
-      l: 40,  // Left margin
-      r: 10,  // Right margin
+      t: 10,  
+      b: 40, 
+      l: 40,  
+      r: 10, 
     },
 
     shapes: [
@@ -190,7 +189,7 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 0.2, x1: 4,
         y0: 0.5, y1: 2.5,
-        fillcolor: "#A42222",
+        fillcolor: "rgba(207, 104, 104, 0.8)",
         opacity: 0.45,
         line: { width: 0, color: "white", },
         layer: "below",
@@ -200,7 +199,7 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 4, x1: 140,
         y0: 0.35, y1: 3.5,
-        fillcolor: "#AE6500",
+        fillcolor: "rgba(211, 150, 107, 0.8)",
         opacity: 0.5,
         line: { width: 0 },
         layer: "below",
@@ -210,7 +209,7 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 2, x1: 300,
         y0: 3.5, y1: 10,
-        fillcolor: "#005AAE",
+        fillcolor: "rgba(112, 156, 237, 0.8)",
         opacity: 0.45,
         line: { width: 0 },
         layer: "below",
@@ -220,7 +219,7 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 0.5, x1: 10,
         y0: 10, y1: 25,
-        fillcolor: "#8A5555",
+        fillcolor: "rgba(202, 156, 70, 0.8)",
         opacity: 0.48,
         line: { width: 0 },
         layer: "below",
@@ -230,7 +229,7 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 140, x1: 1000,
         y0: 10, y1: 25,
-        fillcolor: "#001670",
+        fillcolor: "rgba(128, 106, 210, 0.8)",
         opacity: 0.6,
         line: { width: 0 },
         layer: "below",
@@ -240,7 +239,7 @@ const StarMap: React.FC = () => {
         type: "rect",
         x0: 140, x1: 700,
         y0: 0.8, y1: 1.8,
-        fillcolor: "#22A45C",
+        fillcolor: "rgba(105, 218, 196, 0.8)",
         opacity: 0.6,
         line: { width: 0 },
         layer: "below",
@@ -280,12 +279,12 @@ const StarMap: React.FC = () => {
     responsive: true,
   };
 
-  // Handle click on a planet
+
   const handleClick = (event: PlotMouseEvent) => {
     const clickedPointIndex = event.points[0].pointIndex;
     const clickedPlanet = combinedPlanets[clickedPointIndex];
 
-    // Redirect to a new page with the exoplanet ID in the URL
+
     router.push(`/exoplanets/${clickedPlanet.id}`);
   };
 

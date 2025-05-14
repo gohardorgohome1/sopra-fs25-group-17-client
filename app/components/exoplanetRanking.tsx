@@ -2,44 +2,71 @@
 // ExoplanetRanking.tsx
 import React, { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-
-// Dynamically import Plotly.js component with no SSR
-const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
-import type { Layout } from "plotly.js";
-
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { FaBars } from "react-icons/fa"; // Import the icon
+
+
 
 interface Exoplanet {
   id: string;
   planetName: string;
   earthSimilarityIndex: number;
+  fractionalDepth: number;
+  density: number;
+  orbitalPeriod: number;
+  radius: number;
+  surfaceGravity: number;
+  theoreticalTemperature: number;
+  mass: number;
+  escapeVelocity: number;
+  ownerId: string; // This already exists
+  ownerUsername?: string; // Add this to store the fetched username
+}
+
+interface User {
+  id: string;
+  username:string
 }
 
 // Define ExoplanetRanking as a React Functional Component
 const ExoplanetRanking: React.FC = () => {
   const apiService = useApi();
   const router = useRouter();
-  const [plotReady, setPlotReady] = useState(false);
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [loading, setLoading] = useState(true);
-  const [reloadKey, setReloadKey] = useState(0);
-
+  const [reloadKey, setReloadKey] = useState(0);  
+  const [filterKey, setFilterKey] = useState<keyof Exoplanet>("earthSimilarityIndex");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     const fetchExoplanets = async () => {
       try {
         const planets: Exoplanet[] = await apiService.get<Exoplanet[]>("/exoplanets");
-        setExoplanets(planets);
-        console.log("Fetched exoplanets:", planets);
+
+        // Fetch the username for each exoplanet's ownerId
+        const exoplanetPromises = planets.map(async (planet) => {
+          if (planet.ownerId) {
+            try {
+              // Fetch the user (with correct typing)
+              const user: User = await apiService.get<User>(`/users/${planet.ownerId}`);
+              planet.ownerUsername = user?.username ?? "Unknown"; // Store the username or fallback to "Unknown"
+            } catch (error) {
+              console.error(`Error fetching user for ownerId ${planet.ownerId}:`, error);
+              planet.ownerUsername = "Unknown";
+            }
+          } else {
+            planet.ownerUsername = "Unknown";
+          }
+          return planet;
+        });
+
+        const updatedExoplanets = await Promise.all(exoplanetPromises);
+        setExoplanets(updatedExoplanets);
       } catch (error) {
-        if (error instanceof Error) {
-          alert(`Something went wrong while fetching exoplanets:\n${error.message}`);
-        } else {
-          console.error("Unknown error while fetching exoplanets.");
-        }
+        alert(`Error fetching exoplanets: ${error}`);
       } finally {
         setLoading(false);
       }
@@ -49,140 +76,239 @@ const ExoplanetRanking: React.FC = () => {
   }, [reloadKey]);
 
   useEffect(() => {
-      const client = new Client({
-        webSocketFactory: () =>
-          new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
-        // REAL SERVER: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
-        // LOCAL SERVER for testing: "http://localhost:8080/ws"
-        connectHeaders: {},
-        onConnect: () => {
-          // Once connected, subscribe to the "/topic/exoplanets" topic
-          client.subscribe("/topic/exoplanets", () => {
-          // change the variable that triggers reload:
+    const client = new Client({
+      webSocketFactory: () => new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+      connectHeaders: {},
+      onConnect: () => {
+        client.subscribe("/topic/exoplanets", () => {
           setReloadKey(prev => prev + 1);
-          
-          });
-        },
-        onDisconnect: () => {
-          console.log("Disconnected from WebSocket");
-        },
-      });
-    
-        client.activate();
-    
-        return () => {
-          client.deactivate();
-        };
-      }, []);
-    // Wait for the component to fully load and router to be ready
-  useEffect(() => {
-    if (!loading && exoplanets.length > 0) {
-      setPlotReady(true); // Ensure Plot is rendered only when exoplanets are ready
-    }
-  }, [loading, exoplanets]);
-  
+        });
+      },
+      onDisconnect: () => console.log("WebSocket disconnected"),
+    });
+
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
+  }, []);
+
 
   if (loading) {
-    return <div style={{ color: "white" }}>Loading...</div>;
+    return <div style={{ color: "#DADADA", fontFamily: "Jura, monospace" }}>Loading...</div>;
   }
 
-  const uniqueExoplanets = Array.from(
-    new Map(exoplanets.map(planet => [planet.planetName, planet])).values()
-  );
-  const sortedExoplanets = [...uniqueExoplanets].sort((a, b) => b.earthSimilarityIndex - a.earthSimilarityIndex).slice(0, 10);
-
-  const totalTextWidth = 50;
-
-  const text = sortedExoplanets.map((exoplanet) => {
-    const planetName = exoplanet.planetName;
-    const percentage = (exoplanet.earthSimilarityIndex * 100).toFixed(0) + "%";
+  //const uniqueExoplanets = Array.from(
+  //  new Map(exoplanets.map(planet => [planet.planetName, planet])).values()
+  //);
   
-    const paddingLength = Math.max(1, totalTextWidth - planetName.length - percentage.length);
-    const spacer = " ".repeat(paddingLength);
+  const sortedExoplanets = [...exoplanets].sort((a, b) => (b[filterKey] as number) - (a[filterKey] as number))
+  //.slice(0, 10);
   
-    return ` ${planetName}${spacer}${percentage}`;
-  });
+  //const totalTextWidth = 50;
 
-  const data: Partial<Plotly.Data>[]  = [{
-    type: 'bar',
-    orientation: 'h',
-    x: Array(sortedExoplanets.length).fill(0.08),
-    y: sortedExoplanets.map((exoplanet, index) => index + 1),
-    text: text,
-    //text: sortedExoplanets.map((exoplanet, index) => `${exoplanet.planetName} ${(exoplanet.earthSimilarityIndex * 100).toFixed(0)}%`),
+  const filterOptions: (keyof Exoplanet)[] = [
+    "earthSimilarityIndex",
+    "density",
+    "mass",
+    "radius",
+    "surfaceGravity",
+    "theoreticalTemperature",
+    "orbitalPeriod",
+    "escapeVelocity",
+    "fractionalDepth"
+  ];
 
-    textposition: "inside",
-    insidetextanchor: "start",
-  
-    marker: {
-      color: '#0F1D56',
-    }
-  }];
+  const insertSpacesBeforeCaps = (str: string) =>
+    str.replace(/([a-z])([A-Z])/g, "$1 $2");
 
-  const layout: Partial<Layout> = {
-      yaxis: {
-      autorange: "reversed",
-      tickvals: sortedExoplanets.map((_, index) => index + 1),
-      ticktext: sortedExoplanets.map((_, index) => `${index + 1}. `),
-      tickfont: {
-        family: "Jura",
-        color: "#FFFFFF",
-        weight: 700,
-        size: 20,
-      },
-      showline: false,
-      showgrid: false,
-      zeroline: false,
-      },
+return (
+  <div style={{
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(10, 10, 10, 0.4)",
+    borderRadius: "16px",
+    boxShadow: "0 0 10px rgba(255,255,255,0.08)",
+    padding: "0px",
+  }}>
+    
+    {/* Filter dropdown */}
+    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
+      <div
+        style={{
+          backgroundColor: "#D9D9D9",
+          borderRadius: "12px",
+          padding: "6px 12px",
+          display: "flex",
+          alignItems: "center",
+          fontFamily: "Jura, monospace",
+          fontWeight: "bold",
+          fontSize: "16px",
+          color: "#0A0A0A",
+          gap: "8px",
+          cursor: "pointer",
+        }}
+        onClick={() => setDropdownOpen((prev) => !prev)}
+      >
+        Filter by <FaBars color="#0A0A0A" size={18} />
+      </div>
 
-      xaxis: {
-        showticklabels: false,
-        showgrid: false,
-        zeroline: false,
-        showline: false,
-      },
-
-      width: 450, 
-      height: 500,
-      paper_bgcolor: "black",
-      plot_bgcolor: "black",
-      font: {
-        family: "Jura",
-        color: "#FFFFFF",
-        weight: 700,
-        size: 20,
-      },
-      bargap: 0.35,
-      margin: {
-        t: 10,  
-        b: 50,
-        l: 40,  
-        r: 10,
-      },
-      };
-
-  return (
-    <div style={{ width: "100%", height: "100%" }}>
-      {plotReady && sortedExoplanets.length > 0 && (
-        <div key={JSON.stringify(sortedExoplanets)} style={{ width: "100%", height: "100%" }}>
-          <Plot 
-            data={data}
-            layout={layout}
-            useResizeHandler
-            onClick={(event) => {
-              const pointIndex = event.points?.[0]?.pointIndex;
-              if (typeof pointIndex === 'number') {
-                const clickedPlanet = sortedExoplanets[pointIndex];
-                if (clickedPlanet?.id) {
-                  router.push(`/exoplanets/${clickedPlanet.id}`);
-                }
-              }
+      <div style={{ position: "relative" }}>
+        {dropdownOpen && (
+          <div
+            style={{
+              position: "absolute",
+              top: "40px",
+              left: 0,
+              backgroundColor: "#101826",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+              padding: "8px 0",
+              zIndex: 1000,
             }}
-          />
-        </div>
-      )}
+          >
+            {filterOptions.map((key) => (
+              <div
+                key={key}
+                onClick={() => {
+                  setFilterKey(key);
+                  setDropdownOpen(false);
+                }}
+                style={{
+                  padding: "8px 16px",
+                  color: "#EDEDED",
+                  fontFamily: "Jura, monospace",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  textTransform: "capitalize",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {insertSpacesBeforeCaps(key)}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
-  );
+
+    {/* Main scrollable list */}
+    {sortedExoplanets.length > 0 && (
+      <div
+        key={JSON.stringify(sortedExoplanets)}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: "60vh",
+          overflowY: "auto",
+          gap: "15px", // spacing between bars
+          padding: "20px",
+          position: "relative",
+        }}
+      >
+        {sortedExoplanets.map((exo, index) => {
+          let value: string;
+          if (filterKey === "earthSimilarityIndex") {
+            value = ((exo[filterKey] as number) * 100).toFixed(0) + "%";
+          } else if (filterKey === "fractionalDepth") {
+            value = ((exo[filterKey] as number) * 100).toFixed(2) + "%";
+          } else if (filterKey === "theoreticalTemperature") {
+            value = (exo[filterKey] as number).toFixed(1);
+          } else {
+            value = (exo[filterKey] as number).toFixed(2);
+          }
+
+          return (
+            <div
+              key={exo.id}
+              onClick={() => router.push(`/exoplanets/${exo.id}`)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px", // space between rank and box
+                fontFamily: "Jura, monospace",
+                fontSize: "22px",
+                fontWeight: 700,
+                color: "#EDEDED",
+              }}
+              onMouseEnter={(e) => {
+                const box = e.currentTarget.querySelector(".planet-box") as HTMLElement;
+                const hoverText = e.currentTarget.querySelector(".hover-text") as HTMLElement;
+                if (box) {
+                  box.style.backgroundColor = "#2A2A2A";
+                  box.style.color = "#FFFFFF";
+                }
+                if (hoverText) {
+                  hoverText.style.display = "block";
+                }
+              }}
+              onMouseLeave={(e) => {
+                const box = e.currentTarget.querySelector(".planet-box") as HTMLElement;
+                const hoverText = e.currentTarget.querySelector(".hover-text") as HTMLElement;
+                if (box) {
+                  box.style.backgroundColor = "#0F1D56";
+                  box.style.color = "#EDEDED";
+                }
+                if (hoverText) {
+                  hoverText.style.display = "none";
+                }
+              }}
+            >
+              {/* Rank number */}
+              <span style={{ minWidth: "20px", textAlign: "right" }}>
+                {index + 1}.
+              </span>
+
+              {/* Name + value box */}
+              <div
+                className="planet-box"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#0F1D56",
+                  borderRadius: "8px",
+                  height: "40px",
+                  padding: "0 12px",
+                  flexGrow: 1,
+                  transition: "background-color 0.2s, color 0.2s",
+                  position: "relative",
+                }}
+              >
+                <span style={{ whiteSpace: "nowrap" }}>{exo.planetName}</span>
+                <span style={{ minWidth: "10vw", textAlign: "right" }}>{value}</span>
+                  {/* Hover text for "Uploaded by" */}
+                <div
+                  className="hover-text"
+                  style={{
+                    display: "none", // Initially hidden
+                    position: "absolute", // Use absolute positioning inside the planet-box
+                    backgroundColor: "#2A2A2A",
+                    color: "#FFF",
+                    borderRadius: "4px",
+                    padding: "4px 8px",
+                    fontSize: "14px",
+                    zIndex: 10, // Ensure hover text is on top
+                    top: "-10px", // Position it above the box (adjust this value as needed)
+                    left: "50%", // Center it horizontally
+                    transform: "translateX(-50%)", // Center it horizontally
+                    whiteSpace: "nowrap", // Prevent text wrapping
+                    fontWeight: "bold", // Make the text stand out
+                  }}
+                >
+                  Uploaded by {exo.ownerUsername}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+  </div>
+);
+
 };
 
 export default ExoplanetRanking;
