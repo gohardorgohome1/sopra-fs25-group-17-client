@@ -33,11 +33,16 @@ export default function WebSocketProvider({ children }: { children: React.ReactN
           const planetName = payload.exoplanet.planetName;
           const exoplanetId = payload.exoplanet.id;
 
-          toast(<NotificationToast username={username} planetName={planetName} exoplanetId={exoplanetId} />);
+          toast(
+            <NotificationToast 
+            type="upload"
+            username={username} 
+            planetName={planetName} 
+            exoplanetId={exoplanetId} />);
 
+          const userId = localStorage.getItem("userId");
           // Mark this specific notification as seen
           try {
-            const userId = localStorage.getItem("userId");
             if (userId && exoplanetId) {
               await apiService.put<void>("/notifications/mark-seen-single", {
                 userId,
@@ -49,6 +54,29 @@ export default function WebSocketProvider({ children }: { children: React.ReactN
           }
 
         });
+
+        // Comment Notification
+        client.subscribe("/topic/comments", (message) => {
+          const payload = JSON.parse(message.body);
+          const userId = localStorage.getItem("userId");
+
+          if (payload.ownerId === userId) {
+            const commenterUsername = payload.commenterUsername;
+            const planetName = payload.planetName;
+            const exoplanetId = payload.exoplanetId;
+
+            toast(
+              <NotificationToast
+                type="comment"
+                username={commenterUsername}
+                planetName={planetName}
+                exoplanetId={exoplanetId}
+              />
+            );
+          }
+        });
+
+
       },
       onDisconnect: () => {
         console.log("Disconnected from WebSocket");
