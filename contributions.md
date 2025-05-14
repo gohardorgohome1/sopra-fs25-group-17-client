@@ -150,7 +150,8 @@ Note: If a team member fails to show continuous progress after using their Joker
 | **[@PascalSenn2]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 | **[@gohardorgohome1]** | 14.05.2025    | [Link to Commit 1](https://github.com/gohardorgohome1/sopra-fs25-group-17-client/commit/9ef7e3e3d9be2393cd6719f53b8a4d427f0ad0b5)         | I implemented the ranking, deleted plotly, because this was clearly the wrong choice, implemented the filtering, aligned the design with the one we had initially on figma, and I added a hover on function, which displays the uploader of the exoplanet! I was able to recycle some functions from Ayleen but I deleted a lot and had to rewrite, see in the commit.    | It's a central piece of our dashboard, and with the additional hover function it enhances collaborativity.     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+|                   | 14.05.2025   | [Link to Commit 2](https://github.com/gohardorgohome1/sopra-fs25-group-17-client/commit/e821bd031707a82051186217538d323706055287)          | when a user comments on YOUR OWN exoplanet you get an instant notification --> it also included some small work in the backend! (persistence of this notification!)    | adds value to the app in terms of collaboration    |
+|                   | [date]    | [Link to Commit 3]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 
 ---
 
