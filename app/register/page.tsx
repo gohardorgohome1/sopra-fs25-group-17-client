@@ -30,8 +30,8 @@ const Register: React.FC = () => {
         
       } catch (error) {
         if (error instanceof Error) {
-          alert(`Registration failed:\n${error.message}`);
-          return;
+          alert(`This username is already taken. Please choose another one and try again.`);
+          console.error(`Registration failed:\n${error.message}`);
         } else {
           console.error("An unknown error occurred during registration.");
           return;
