@@ -585,6 +585,44 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                     Back to Dashboard
                     </span>
                 </Button>
+                <Button // Button: Go to Users Page
+                    onClick={() => router.push("/users")}
+                    type="primary"
+                    htmlType="button"
+                    style={{
+                        width: "10vw",
+                        height: "6vh",
+                        background: "black",
+                        borderRadius: 46,
+
+                        position: "absolute",
+                        right: "4vw", // now on the right side
+                        top: "87vh",  // same vertical alignment as the other button
+
+                        textAlign: "center",
+                        color: "#8A5555",
+                        fontSize: "20px",
+                        fontFamily: "Karantina",
+                        fontWeight: "700",
+
+                        boxShadow: "0px 0px 40px 12px rgba(0, 255, 255, 0.25)", // cyan glow
+                        zIndex: 2,
+                    }}
+                    >
+                    <span
+                        style={{
+                        background: "linear-gradient(90deg, #73CBC9, #FFFFFF)", // matching the theme
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+
+                        WebkitTextStrokeWidth: "1px",
+                        WebkitTextStrokeColor: "#000000",
+                        }}
+                    >
+                        Users Page
+                    </span>
+                    </Button>
+
             </Card>
 
             <Modal
