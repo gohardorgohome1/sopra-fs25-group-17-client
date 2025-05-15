@@ -34,6 +34,7 @@ const Register: React.FC = () => {
           console.error(`Registration failed:\n${error.message}`);
         } else {
           console.error("An unknown error occurred during registration.");
+          return;
         }
       }
       const response = await apiService.post<User>("/login",  values );

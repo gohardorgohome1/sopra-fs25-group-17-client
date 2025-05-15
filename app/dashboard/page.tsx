@@ -10,6 +10,7 @@ import {
   RobotOutlined,
   PlusOutlined,
   UserOutlined,
+  TeamOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 import "react-toastify/dist/ReactToastify.css";
@@ -146,6 +147,26 @@ const Dashboard: React.FC = () => {
           }}
         >
           Profile
+        </Button>
+
+        <Button
+          icon={<TeamOutlined />}
+          onClick={() => router.push(`/users`)}
+          type="primary"
+          block
+          style={{
+            backgroundColor: "#202343",
+            border: "none",
+            color: "#D0E0F3",
+            fontSize: "1vw",
+            fontWeight: "600",
+            fontFamily: "Jura",
+            textAlign: "left",
+            padding: "0.8vw 1vw",
+            borderRadius: "0.7vw",
+          }}
+        >
+          Users Page
         </Button>
 
         <InfoTooltip
@@ -289,7 +310,7 @@ const Dashboard: React.FC = () => {
             maxWidth: "13vw",
             lineHeight: "1.5",
             textAlign: "center",
-            transform: "translateY(230px) translateX(-220px)"
+            transform: "translateY(280px) translateX(-215px)"
           }}
         >
           You can view an exoplanet’s profile <br /> by clicking on it in the plot or the ranking.

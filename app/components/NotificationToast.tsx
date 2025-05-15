@@ -5,13 +5,24 @@ import { MdNotificationsActive } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
 type NotificationToastProps = {
+  type?: "upload" | "comment"; // optional, default to "upload"
   username: string;
   planetName: string;
   exoplanetId: string;
 };
 
-const NotificationToast: React.FC<NotificationToastProps> = ({ username, planetName, exoplanetId }) => {
+const NotificationToast: React.FC<NotificationToastProps> = ({ type = "upload", username, planetName, exoplanetId }) => {
     const router = useRouter();
+
+    let message = "";
+
+    if (type === "comment") {
+      message = `${username} commented on your exoplanet: ${planetName}`;
+    } else {
+      message = `${username} has just uploaded a new exoplanet: ${planetName}`;
+    }
+
+
     return (
     <div onClick={() => router.push(`/exoplanets/${exoplanetId}`)}
     style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -26,7 +37,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ username, planetN
           color: "#000",
         }}
       >
-        {username} has just uploaded a new exoplanet: {planetName}
+        {message}
       </span>
     </div>
   );
