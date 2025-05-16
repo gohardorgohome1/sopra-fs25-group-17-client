@@ -8,6 +8,8 @@ import { Button, Card, Input, Modal } from "antd";
 import { useRouter } from "next/navigation";
 import { FaTrashAlt } from "react-icons/fa";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { MdWavingHand } from "react-icons/md";
+import { Tooltip } from "antd"; 
 
 interface Exoplanet {
     id: string;
@@ -203,6 +205,20 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
         return (userId == exoplanetOwnerId);
     }
 
+    const sendNudge = async (toUserId: string) => {
+        const fromUserId = localStorage.getItem("userId");
+        if (!fromUserId) return;
+
+        try {
+            await apiService.post("/notifications/nudge", {
+            fromUserId,
+            toUserId,
+            });
+        } catch (error) {
+            console.error("Failed to send nudge:", error);
+        }
+    };
+
     return (
         <div
             className={"profile-background"}
@@ -232,26 +248,54 @@ const UserProfile = ({ params }: { params: Promise<{ id: string }> }) => {
                 }}
                 >
 
-                <div // Title: Profile Page
+                <div
+                style={{
+                    position: "absolute",
+                    left: "4vw",
+                    top: "4vh",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1vw",
+                }}
+                >
+                <div
                     style={{
-                        position: "absolute",
-                        left: "4vw",
-                        top: "4vh",
-                        width: "60vw",
-                        height: "12vh",
-
-                        textAlign: "left",
-                        color: '#FFD9D9',
-                        fontSize: "10vh",
-                        fontFamily: 'Koulen',
-                        fontWeight: '400',
-
-                        background: "linear-gradient(90deg, #FFD9D9,rgb(0, 180, 180))", // Had to make right color much stronger to avoid having only white text when the username is short
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
+                    width: "max-content",
+                    height: "12vh",
+                    textAlign: "left",
+                    fontSize: "10vh",
+                    fontFamily: "Koulen",
+                    fontWeight: "400",
+                    background: "linear-gradient(90deg, #FFD9D9, rgb(0, 180, 180))",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
                     }}
                 >
                     {user?.username ?? "Username not available"}
+                </div>
+
+                {!isCorrectUser && user?.id && (
+                    <Tooltip
+                    title='Click here to "nudge" this user so they check out your profile!'
+                    placement="right"
+                    color="#FFD9D9"
+                    >
+                    <MdWavingHand
+                        onClick={(e) => {
+                        e.stopPropagation();
+                        sendNudge(user.id!);
+                        }}
+                        style={{
+                        fontSize: "6vh",
+                        cursor: "pointer",
+                        color: "rgb(255, 200, 66)",
+                        transition: "transform 0.2s",
+                        }}
+                        onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.4)")}
+                        onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    />
+                    </Tooltip>
+                )}
                 </div>
 
                 {isCorrectUser && ( // Only show the button if the current user is the correct one
