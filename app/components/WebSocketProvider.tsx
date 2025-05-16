@@ -25,7 +25,9 @@ export default function WebSocketProvider({ children }: { children: React.ReactN
         new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
       // Put this for testing locally: "http://localhost:8080/ws"
       // Put this for deployed app: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
-      connectHeaders: {},
+      connectHeaders: {
+        userId: localStorage.getItem("userId") || "",
+      },
       onConnect: () => {
         client.subscribe("/topic/exoplanets", async (message) => {
           const payload = JSON.parse(message.body);
@@ -75,6 +77,28 @@ export default function WebSocketProvider({ children }: { children: React.ReactN
             );
           }
         });
+
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          // `/user/${userId}/queue/notifications`
+          // "/queue/notifications"
+          // "/user/queue/notifications"
+          client.subscribe("/user/queue/notifications", (message) => {
+            const payload = JSON.parse(message.body);
+            const fromUsername = payload.fromUsername;
+            const fromUserId = payload.fromUserId;
+
+            toast(
+              <NotificationToast
+                type="nudge"
+                username={fromUsername}
+                userId={fromUserId}
+                planetName="" // not used for nudge
+                exoplanetId="" // not used for nudge
+              />
+            );
+          });
+        }
 
 
       },
