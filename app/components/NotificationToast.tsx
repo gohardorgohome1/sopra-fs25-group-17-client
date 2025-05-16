@@ -23,7 +23,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ type = "upload", 
       message = `${username} commented on your exoplanet: ${planetName}`;
       onClickHandler = () => router.push(`/exoplanets/${exoplanetId}`);
     } else if (type === "nudge") {
-      message = `${username} nudged you! 👋`;
+      message = `${username} nudged you! Check out their profile by clicking here!`;
       onClickHandler = () => {
         if (userId) {
           router.push(`/users/${userId}`);
