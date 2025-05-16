@@ -7,6 +7,10 @@ import { useApi } from "@/hooks/useApi"; // Make sure this hook is correctly imp
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import InfoTooltip from "../components/infoToolTip"; 
+// import { FaHandPaper } from "react-icons/fa";
+// import { PiHandWaving } from "react-icons/pi";
+import { MdWavingHand } from "react-icons/md";
+
 
 interface User {
   id: string;
@@ -51,6 +55,20 @@ const AllUsersPage = () => {
   
     fetchUsersAndExoplanets();
   }, [apiService]);
+
+    const sendNudge = async (toUserId: string) => {
+      const fromUserId = localStorage.getItem("userId");
+      if (!fromUserId) return;
+
+      try {
+        await apiService.post("/notifications/nudge", {
+          fromUserId,
+          toUserId,
+        });
+      } catch (error) {
+        console.error("Failed to send nudge:", error);
+      }
+    };
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: 'white', overflow: 'hidden' }}>
@@ -258,18 +276,36 @@ const AllUsersPage = () => {
                         cursor: "pointer",
                       }}
                     >
-                      <span
-                        style={{
-                          fontSize: "24px",
-                          fontFamily: "Jura",
-                          fontWeight: "bold",
-                          background: "linear-gradient(90deg, #73CBC9, #FFD9D9)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                        }}
-                      >
-                        {user.username}
-                      </span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
+                        <span
+                          style={{
+                            fontSize: "24px",
+                            fontFamily: "Jura",
+                            fontWeight: "bold",
+                            background: "linear-gradient(90deg, #73CBC9, #FFD9D9)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                          }}
+                        >
+                          {user.username}
+                        </span>
+
+                        <MdWavingHand
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent navigation when clicking the icon
+                            sendNudge(user.id);
+                          }}
+                          title="say hi!"
+                          style={{
+                            fontSize: "30px",
+                            cursor: "pointer",
+                            color:"rgb(255, 200, 66)",
+                            transition: "transform 0.2s",
+                          }}
+                          onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.4)")}
+                          onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                        />
+                      </div>
 
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <span

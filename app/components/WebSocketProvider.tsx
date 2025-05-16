@@ -76,6 +76,25 @@ export default function WebSocketProvider({ children }: { children: React.ReactN
           }
         });
 
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          client.subscribe(`/user/${userId}/queue/nudge`, (message) => {
+            const payload = JSON.parse(message.body);
+            const fromUsername = payload.fromUsername;
+            const fromUserId = payload.fromUserId;
+
+            toast(
+              <NotificationToast
+                type="nudge"
+                username={fromUsername}
+                userId={fromUserId}
+                planetName="" // not used for nudge
+                exoplanetId="" // not used for nudge
+              />
+            );
+          });
+        }
+
 
       },
       onDisconnect: () => {
