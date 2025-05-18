@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button } from "antd";
 import { useRouter } from "next/navigation";
-import { useApi } from "@/hooks/useApi"; // Make sure this hook is correctly implemented
+import { useApi } from "@/hooks/useApi"; 
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import InfoTooltip from "../components/infoToolTip"; 
@@ -146,7 +146,7 @@ const AllUsersPage = () => {
                       🏅 User Rank System 🏅
                     </h3>
 
-                    <p>Each user is assigned a rank based on the number of exoplanets they’ve discovered:</p>
+                    <p>Each user is assigned a rank based on the number of exoplanets they’ve analyzed:</p>
 
                     <ul style={{ paddingLeft: "25px", marginBottom: "16px", listStyleType: "disc" }}>
                       <li><strong>Novice</strong>: 0 exoplanets — <span style={{ color: "#999" }}>gray badge</span></li>

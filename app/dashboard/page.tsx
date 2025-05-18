@@ -16,7 +16,7 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import UnseenNotificationsButton from "../components/UnseenNotificationsButton";
 import StarMap from "../components/starMap";
-import InfoTooltip from "../components/infoToolTip"; 
+import InfoTooltip from "../components/infoToolTip";
 import ExoplanetRanking from "../components/exoplanetRanking";
 
 const Dashboard: React.FC = () => {
@@ -27,6 +27,35 @@ const Dashboard: React.FC = () => {
     clear: clearToken,
   } = useLocalStorage<string>("token", "");
   const [currentUserId, setCurrentUserId] = useState("");
+
+  type FilterKey =
+  | "earthSimilarityIndex"
+  | "mass"
+  | "density"
+  | "radius"
+  | "orbitalPeriod"
+  | "surfaceGravity"
+  | "theoreticalTemperature"
+  | "escapeVelocity"
+  | "fractionalDepth";
+
+  
+  const [filterKey, setFilterKey] = useState<FilterKey>("earthSimilarityIndex");
+
+  const getRankingTitle = () => {
+    const map: Record<string, string> = {
+      earthSimilarityIndex: "Earth Similarity Ranking",
+      mass: "Mass Ranking",
+      density: "Density Ranking",
+      radius: "Radius Ranking",
+      orbitalPeriod: "Orbital Period Ranking",
+      surfaceGravity: "Surface Gravity Ranking",
+      theoreticalTemperature: "Temperature Ranking",
+      escapeVelocity: "Escape Velocity Ranking",
+      fractionalDepth: "Transit Depth Ranking",
+    };
+    return map[filterKey] || "Ranking";
+  };
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -310,7 +339,7 @@ const Dashboard: React.FC = () => {
             maxWidth: "13vw",
             lineHeight: "1.5",
             textAlign: "center",
-            transform: "translateY(280px) translateX(-215px)"
+            transform: "translateY(280px) translateX(-215px)",
           }}
         >
           You can view an exoplanet’s profile <br /> by clicking on it in the plot or the ranking.
@@ -335,7 +364,6 @@ const Dashboard: React.FC = () => {
         }}
         styles={{ body: { padding: "2vh", backgroundColor: "black" } }}
       >
-        {/* Flex Container */}
         <div
           style={{
             display: "flex",
@@ -436,6 +464,7 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
+
           {/* Right Side */}
           <div
             style={{
@@ -460,66 +489,70 @@ const Dashboard: React.FC = () => {
                 fontSize: "2vw",
                 lineHeight: "1.2",
                 marginBottom: "2vh",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
               }}
             >
-              Earth Similarity Ranking
-              <InfoTooltip
-                tooltipStyle={{
-                  maxWidth: "1000px",
-                  width: "80vw",
-                  padding: "30px 40px",
-                  fontSize: "16px",
-                  textAlign: "left",
-                  lineHeight: "1.6",
-                  color: "#FFD9D9"
-                }}
-                content={
-                  <div>
-                    <h3 style={{ textAlign: "center", fontSize: "20px", marginBottom: "18px", fontWeight: "bold" }}>
-                      About the Earth Similarity Ranking
-                    </h3>
-                    <p>
-                      This ranking shows the top exoplanets that most closely resemble Earth, based on the
-                      <strong> Earth Similarity Index (ESI)</strong>. The ESI considers parameters like
-                      radius, temperature, density, and gravity to estimate how similar a planet is to Earth.
-                    </p>
-
-                    <p>
-                      The higher the percentage, the closer the planet is to Earth-like conditions.
-                      While these values are calculated scientifically, they are meant to be a <strong>guiding</strong> tool rather
-                      than an absolute truth about habitability.
-                    </p>
-
-                    <p style={{ marginTop: "14px" }}>
-                      All planets ranked here are uploaded by users of the platform, so that they are more prone to seek for new
-                      discoveries and contributions, making the exploration of potentially habitable exoplanets more accessible and interactive.
-                    </p>
-                  </div>
-                }
-              >
-                <span
-                  style={{
-                    backgroundColor: "#E0FFFF", 
-                    color: "#000",
-                    width: "18px",
-                    height: "18px",
-                    borderRadius: "50%",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    userSelect: "none",
-                    cursor: "pointer",
-                    transform: "translateY(-8px)"
+              {getRankingTitle()}
+              {filterKey === "earthSimilarityIndex" && (
+                <InfoTooltip
+                  tooltipStyle={{
+                    maxWidth: "1000px",
+                    width: "80vw",
+                    padding: "30px 40px",
+                    fontSize: "16px",
+                    textAlign: "left",
+                    lineHeight: "1.6",
+                    color: "#FFD9D9",
                   }}
+                  content={
+                    <div>
+                      <h3 style={{ textAlign: "center", fontSize: "20px", marginBottom: "18px", fontWeight: "bold" }}>
+                        About the Earth Similarity Ranking
+                      </h3>
+                      <p>
+                        This ranking shows the top exoplanets that most closely resemble Earth, based on the
+                        <strong> Earth Similarity Index (ESI)</strong>. The ESI considers parameters like
+                        radius, temperature, density, and gravity to estimate how similar a planet is to Earth.
+                      </p>
+                      <p>
+                        The higher the percentage, the closer the planet is to Earth-like conditions.
+                        While these values are calculated scientifically, they are meant to be a <strong>guiding</strong> tool rather
+                        than an absolute truth about habitability.
+                      </p>
+                      <p style={{ marginTop: "14px" }}>
+                        All planets ranked here are uploaded by users of the platform, so that they are more prone to seek for new
+                        discoveries and contributions, making the exploration of potentially habitable exoplanets more accessible and interactive.
+                      </p>
+                    </div>
+                  }
                 >
-                  i
-                </span>
-              </InfoTooltip>
+                  <span
+                    style={{
+                      backgroundColor: "#E0FFFF",
+                      color: "#000",
+                      width: "18px",
+                      height: "18px",
+                      borderRadius: "50%",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      userSelect: "none",
+                      cursor: "pointer",
+                      transform: "translateY(-8px)",
+                    }}
+                  >
+                    i
+                  </span>
+                </InfoTooltip>
+              )}
             </h2>
+
             <div style={{ width: "100%" }}>
-              <ExoplanetRanking />
+              <ExoplanetRanking filterKey={filterKey} setFilterKey={setFilterKey} />
             </div>
           </div>
         </div>
