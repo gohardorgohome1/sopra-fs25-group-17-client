@@ -29,9 +29,22 @@ interface User {
 }
 
 interface Props {
-  filterKey: keyof Exoplanet;
-  setFilterKey: React.Dispatch<React.SetStateAction<keyof Exoplanet>>;
+  filterKey: FilterKey;
+  setFilterKey: React.Dispatch<React.SetStateAction<FilterKey>>;
 }
+
+
+type FilterKey =
+  | "earthSimilarityIndex"
+  | "density"
+  | "mass"
+  | "radius"
+  | "surfaceGravity"
+  | "theoreticalTemperature"
+  | "orbitalPeriod"
+  | "escapeVelocity"
+  | "fractionalDepth";
+
 
 const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
   const apiService = useApi();
@@ -99,17 +112,18 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
     (a, b) => (b[filterKey] as number) - (a[filterKey] as number)
   );
 
-  const filterOptions: (keyof Exoplanet)[] = [
-    "earthSimilarityIndex",
-    "density",
-    "mass",
-    "radius",
-    "surfaceGravity",
-    "theoreticalTemperature",
-    "orbitalPeriod",
-    "escapeVelocity",
-    "fractionalDepth",
-  ];
+  const filterOptions: FilterKey[] = [
+  "earthSimilarityIndex",
+  "density",
+  "mass",
+  "radius",
+  "surfaceGravity",
+  "theoreticalTemperature",
+  "orbitalPeriod",
+  "escapeVelocity",
+  "fractionalDepth",
+];
+
 
   const insertSpacesBeforeCaps = (str: string) =>
     str.replace(/([a-z])([A-Z])/g, "$1 $2");

@@ -328,7 +328,7 @@ const ChatAssistant: React.FC = () => {
     </p>
     <p>
       You can chat with other users to share knowledge and insights. You can also enable or disable the expert AI Assistant on exoplanets by clicking the
-      <strong> "Activate AI"</strong> or <strong>"Deactivate AI"</strong> button that you will find in the Group Conversation. Once the assistant is activated, you can ask it questions—other members of the group will be able to see both your questions and the AI’s answers.
+      <strong>&quot;Activate AI&quot;</strong> or <strong>&quot;Deactivate AI&quot;</strong> button that you will find in the Group Conversation. Once the assistant is activated, you can ask it questions—other members of the group will be able to see both your questions and the AI’s answers.
     </p>
 
     <h3 style={{ color: "#89e0dc", marginTop: 24 }}>How to create a Group Conversation:</h3>

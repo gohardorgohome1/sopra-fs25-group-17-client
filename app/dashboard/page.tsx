@@ -27,7 +27,20 @@ const Dashboard: React.FC = () => {
     clear: clearToken,
   } = useLocalStorage<string>("token", "");
   const [currentUserId, setCurrentUserId] = useState("");
-  const [filterKey, setFilterKey] = useState<any>("earthSimilarityIndex");
+
+  type FilterKey =
+  | "earthSimilarityIndex"
+  | "mass"
+  | "density"
+  | "radius"
+  | "orbitalPeriod"
+  | "surfaceGravity"
+  | "theoreticalTemperature"
+  | "escapeVelocity"
+  | "fractionalDepth";
+
+  
+  const [filterKey, setFilterKey] = useState<FilterKey>("earthSimilarityIndex");
 
   const getRankingTitle = () => {
     const map: Record<string, string> = {
