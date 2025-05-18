@@ -33,7 +33,6 @@ interface Props {
   setFilterKey: React.Dispatch<React.SetStateAction<FilterKey>>;
 }
 
-
 type FilterKey =
   | "earthSimilarityIndex"
   | "density"
@@ -44,7 +43,6 @@ type FilterKey =
   | "orbitalPeriod"
   | "escapeVelocity"
   | "fractionalDepth";
-
 
 const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
   const apiService = useApi();
@@ -57,12 +55,12 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
   useEffect(() => {
     const fetchExoplanets = async () => {
       try {
-        const planets: Exoplanet[] = await apiService.get<Exoplanet[]>("/exoplanets");
+        const planets = await apiService.get<Exoplanet[]>("/exoplanets");
 
         const exoplanetPromises = planets.map(async (planet) => {
           if (planet.ownerId) {
             try {
-              const user: User = await apiService.get<User>(`/users/${planet.ownerId}`);
+              const user = await apiService.get<User>(`/users/${planet.ownerId}`);
               planet.ownerUsername = user?.username ?? "Unknown";
             } catch (error) {
               console.error(`Error fetching user for ownerId ${planet.ownerId}:`, error);
@@ -112,18 +110,19 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
     (a, b) => (b[filterKey] as number) - (a[filterKey] as number)
   );
 
-  const filterOptions: FilterKey[] = [
-  "earthSimilarityIndex",
-  "density",
-  "mass",
-  "radius",
-  "surfaceGravity",
-  "theoreticalTemperature",
-  "orbitalPeriod",
-  "escapeVelocity",
-  "fractionalDepth",
-];
+  const maxValue = Math.max(...sortedExoplanets.map(p => p[filterKey] as number));
 
+  const filterOptions: FilterKey[] = [
+    "earthSimilarityIndex",
+    "density",
+    "mass",
+    "radius",
+    "surfaceGravity",
+    "theoreticalTemperature",
+    "orbitalPeriod",
+    "escapeVelocity",
+    "fractionalDepth",
+  ];
 
   const insertSpacesBeforeCaps = (str: string) =>
     str.replace(/([a-z])([A-Z])/g, "$1 $2");
@@ -139,7 +138,6 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
         padding: "0px",
       }}
     >
-      {/* Filter dropdown */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
         <div
           style={{
@@ -199,7 +197,6 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
         </div>
       </div>
 
-      {/* Ranking list */}
       {sortedExoplanets.length > 0 && (
         <div
           key={JSON.stringify(sortedExoplanets)}
@@ -208,101 +205,121 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
             flexDirection: "column",
             maxHeight: "60vh",
             overflowY: "auto",
-            gap: "15px",
-            padding: "20px",
+            gap: "20px",
+            padding: "20px 30px",
             position: "relative",
           }}
         >
+          <style jsx>{`
+            ::-webkit-scrollbar {
+              width: 6px;
+            }
+            ::-webkit-scrollbar-thumb {
+              background: rgb(32, 40, 54);
+              border-radius: 3px;
+            }
+            ::-webkit-scrollbar-track {
+              background: transparent;
+            }
+
+            .ranking-item {
+              transition: background-color 0.2s ease-in-out;
+              border-radius: 6px;
+              padding: 4px 8px;
+            }
+
+            .ranking-item:hover {
+              background-color: rgba(255, 255, 255, 0.05);
+            }
+          `}</style>
+
           {sortedExoplanets.map((exo, index) => {
+            const rawValue = exo[filterKey] as number;
             let value: string;
             if (filterKey === "earthSimilarityIndex") {
-              value = ((exo[filterKey] as number) * 100).toFixed(0) + "%";
+              value = (rawValue * 100).toFixed(0) + "%";
             } else if (filterKey === "fractionalDepth") {
-              value = ((exo[filterKey] as number) * 100).toFixed(2) + "%";
+              value = (rawValue * 100).toFixed(2) + "%";
             } else if (filterKey === "theoreticalTemperature") {
-              value = (exo[filterKey] as number).toFixed(1);
+              value = rawValue.toFixed(1);
             } else {
-              value = (exo[filterKey] as number).toFixed(2);
+              value = rawValue.toFixed(2);
             }
+
+            const barWidth = (rawValue / maxValue) * 100;
 
             return (
               <div
                 key={exo.id}
+                title={`Analyzed by ${exo.ownerUsername}`}
                 onClick={() => router.push(`/exoplanets/${exo.id}`)}
+                className="ranking-item"
                 style={{
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: "12px",
                   fontFamily: "Jura, monospace",
-                  fontSize: "22px",
-                  fontWeight: 700,
-                  color: "#EDEDED",
-                }}
-                onMouseEnter={(e) => {
-                  const box = e.currentTarget.querySelector(".planet-box") as HTMLElement;
-                  const hoverText = e.currentTarget.querySelector(".hover-text") as HTMLElement;
-                  if (box) {
-                    box.style.backgroundColor = "#2A2A2A";
-                    box.style.color = "#FFFFFF";
-                  }
-                  if (hoverText) {
-                    hoverText.style.display = "block";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  const box = e.currentTarget.querySelector(".planet-box") as HTMLElement;
-                  const hoverText = e.currentTarget.querySelector(".hover-text") as HTMLElement;
-                  if (box) {
-                    box.style.backgroundColor = "#0F1D56";
-                    box.style.color = "#EDEDED";
-                  }
-                  if (hoverText) {
-                    hoverText.style.display = "none";
-                  }
+                  fontWeight: 600,
+                  fontSize: "16px",
+                  color: "#DDE4F0",
                 }}
               >
-                {/* Rank number */}
-                <span style={{ minWidth: "20px", textAlign: "right" }}>{index + 1}.</span>
-
-                {/* Name + value box */}
+                <span style={{ width: "140px", color: "#8DA3B7" }}>
+                  {index + 1}. {exo.planetName}
+                </span>
                 <div
-                  className="planet-box"
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    backgroundColor: "#0F1D56",
-                    borderRadius: "8px",
-                    height: "40px",
-                    padding: "0 12px",
                     flexGrow: 1,
-                    transition: "background-color 0.2s, color 0.2s",
                     position: "relative",
+                    height: "22px",
+                    backgroundColor: "#12141A",
+                    borderRadius: "4px",
+                    overflow: "hidden",
+                    marginLeft: "12px",
                   }}
                 >
-                  <span style={{ whiteSpace: "nowrap" }}>{exo.planetName}</span>
-                  <span style={{ minWidth: "10vw", textAlign: "right" }}>{value}</span>
-                  <div
-                    className="hover-text"
-                    style={{
-                      display: "none",
-                      position: "absolute",
-                      backgroundColor: "#2A2A2A",
-                      color: "#FFF",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      fontSize: "14px",
-                      zIndex: 10,
-                      top: "-10px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      whiteSpace: "nowrap",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Uploaded by {exo.ownerUsername}
-                  </div>
+                  {barWidth > 20 ? (
+                    <div
+                      style={{
+                        width: `${barWidth}%`,
+                        height: "100%",
+                        backgroundColor: "#1B2A41",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-end",
+                        paddingRight: "8px",
+                        color: "#FFFFFF",
+                        fontWeight: "bold",
+                        transition: "width 0.4s ease-in-out",
+                      }}
+                    >
+                      {value}
+                    </div>
+                  ) : (
+                    <>
+                      <div
+                        style={{
+                          width: `${barWidth}%`,
+                          height: "100%",
+                          backgroundColor: "#1B2A41",
+                          transition: "width 0.4s ease-in-out",
+                        }}
+                      />
+                      <span
+                        style={{
+                          position: "absolute",
+                          left: `calc(${barWidth}% + 8px)`,
+                          color: "#FFFFFF",
+                          fontWeight: "bold",
+                          whiteSpace: "nowrap",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        }}
+                      >
+                        {value}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             );

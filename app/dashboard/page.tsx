@@ -491,6 +491,7 @@ const Dashboard: React.FC = () => {
                 marginBottom: "2vh",
                 display: "flex",
                 alignItems: "center",
+                whiteSpace: "nowrap",
                 gap: "10px",
               }}
             >

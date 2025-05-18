@@ -399,13 +399,17 @@ const ChatAssistant: React.FC = () => {
             style={{ width: "100%" }}
             dropdownStyle={{ backgroundColor: "#1a1a1a", color: "white" }}
             className="white-placeholder"
+            showSearch
+            filterOption={(input, option) =>
+              String(option?.children).toLowerCase().includes(input.toLowerCase())
+            }
           >
             {users.map((u) => (
               <Option key={u.id} value={u.id} style={{ color: "white" }}>
                 {u.username}
               </Option>
             ))}
-          </Select>
+        </Select>
         </div>
       </Modal>
     </div>
