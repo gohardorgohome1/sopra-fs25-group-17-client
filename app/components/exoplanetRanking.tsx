@@ -215,11 +215,21 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
               width: 6px;
             }
             ::-webkit-scrollbar-thumb {
-              background:rgb(32, 40, 54);
+              background: rgb(32, 40, 54);
               border-radius: 3px;
             }
             ::-webkit-scrollbar-track {
               background: transparent;
+            }
+
+            .ranking-item {
+              transition: background-color 0.2s ease-in-out;
+              border-radius: 6px;
+              padding: 4px 8px;
+            }
+
+            .ranking-item:hover {
+              background-color: rgba(255, 255, 255, 0.05);
             }
           `}</style>
 
@@ -241,7 +251,9 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
             return (
               <div
                 key={exo.id}
+                title={`Analyzed by ${exo.ownerUsername}`}
                 onClick={() => router.push(`/exoplanets/${exo.id}`)}
+                className="ranking-item"
                 style={{
                   cursor: "pointer",
                   display: "flex",
@@ -271,7 +283,7 @@ const ExoplanetRanking: React.FC<Props> = ({ filterKey, setFilterKey }) => {
                       style={{
                         width: `${barWidth}%`,
                         height: "100%",
-                        backgroundColor:  "#1B2A41",
+                        backgroundColor: "#1B2A41",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "flex-end",
