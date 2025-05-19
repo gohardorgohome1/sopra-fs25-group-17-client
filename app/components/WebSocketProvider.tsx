@@ -85,16 +85,13 @@ export default function WebSocketProvider({ children }: { children: React.ReactN
           // "/user/queue/notifications"
           client.subscribe("/user/queue/notifications", (message) => {
             const payload = JSON.parse(message.body);
-            const fromUsername = payload.fromUsername;
-            const fromUserId = payload.fromUserId;
+            const { type, fromUsername, fromUserId } = payload;
 
             toast(
               <NotificationToast
-                type="nudge"
+                type={type}
                 username={fromUsername}
                 userId={fromUserId}
-                planetName="" // not used for nudge
-                exoplanetId="" // not used for nudge
               />
             );
           });
