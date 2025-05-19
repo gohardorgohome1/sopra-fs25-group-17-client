@@ -1,5 +1,8 @@
 "use client";
 
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 import { useEffect, useRef, useState } from "react";
 import {
   Input,
@@ -50,6 +53,7 @@ const ChatAssistant: React.FC = () => {
   const [newGroupName, setNewGroupName] = useState("");
   const [aiEnabledGroups, setAiEnabledGroups] = useState<{ [groupId: string]: boolean }>({});
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
 
   const apiService = useApi();
@@ -86,6 +90,34 @@ const ChatAssistant: React.FC = () => {
       console.error("Error fetching messages", err);
     }
   };
+
+  useEffect(() => {
+    if (selectedGroupId) {
+      loadMessagesForGroup(selectedGroupId);
+    }
+  }, [reloadKey, selectedGroupId]);
+
+  // this function listens for backend updates via WebSocket
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () => new SockJS("https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"),
+      // local: "http://localhost:8080/ws"
+      // real app: "https://sopra-fs25-group-17-server.oa.r.appspot.com/ws"
+      connectHeaders: {},
+      onConnect: () => {
+        client.subscribe(`/topic/ai-chat/${selectedGroupId}`, () => {
+          setReloadKey(prev => prev + 1);
+        });
+      },
+      onDisconnect: () => console.log("Disconnected from WebSocket"),
+    });
+
+    client.activate();
+
+    return () => {
+      if (client.active) client.deactivate();
+    };
+  }, [selectedGroupId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -176,6 +208,7 @@ const ChatAssistant: React.FC = () => {
       name: newGroupName,
       userIds: [userId, ...newGroupUserIds.filter((id) => id !== userId)],
     };
+    const toUserIds = newGroupUserIds.filter((id) => id !== userId); // exclude self
 
     try {
       const newGroup = await apiService.post<Group>(`/openai/chat/group`, groupData);
@@ -183,6 +216,13 @@ const ChatAssistant: React.FC = () => {
       setIsModalVisible(false);
       setNewGroupName("");
       setNewGroupUserIds([]);
+
+      // Send chat-invite notification
+      await apiService.post("/notifications/chat-invite", {
+        fromUserId: userId,
+        toUserIds,
+      });
+
     } catch (err) {
       console.error("Error creating group", err);
     }

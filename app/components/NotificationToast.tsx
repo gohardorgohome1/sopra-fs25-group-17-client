@@ -5,7 +5,7 @@ import { MdNotificationsActive } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
 type NotificationToastProps = {
-  type?: "upload" | "comment" | "nudge";
+  type?: "upload" | "comment" | "nudge" | "chat-invite";
   username: string;
   planetName?: string;
   exoplanetId?: string;
@@ -29,7 +29,13 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ type = "upload", 
           router.push(`/users/${userId}`);
         }
       };
-    } else {
+    } 
+      else if (type === "chat-invite") {
+      message = `${username} added you to an AI chat! Click to join.`;
+      onClickHandler = () => router.push("/openai");
+    }
+    
+      else {
       message = `${username} has just uploaded a new exoplanet: ${planetName}`;
       onClickHandler = () => router.push(`/exoplanets/${exoplanetId}`);
     }
